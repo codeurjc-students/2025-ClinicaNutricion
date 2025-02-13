@@ -23,6 +23,12 @@ public class Availability {
     @Column(name = "date", nullable = false)
     private Date date;
 
+    @Column(name = "start_time", nullable = false)
+    private Date start_time;
+
+    @Column(name = "number_of_appointments", nullable = false)
+    private int number_of_appointments;
+
     @Column(name = "reason")
     private String reason;
 }

@@ -1,7 +1,5 @@
 package com.jorgeleal.clinicanutricion.model;
 
-import java.util.Date;
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,9 +8,14 @@ import lombok.*;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Auxiliary extends User {
-    public Auxiliary(String idUser, String name, String surname, Date birthDate, String phone, String dni, Gender gender, UserType userType) {
-        super(idUser, name, surname, birthDate, phone, dni, gender, userType);
-    }
+@AllArgsConstructor
+public class Auxiliary {
+    @Id
+    private String idUser;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "id_user")
+    private User user;
 }
 

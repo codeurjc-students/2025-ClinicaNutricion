@@ -9,19 +9,23 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Nutritionist extends User {
+public class Nutritionist {
+    @Id
+    private String idUser;
 
-    @Column(name = "collegiate_number", unique = true, nullable = false)
-    private String collegiateNumber;
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "id_user")
+    private User user;
 
     @Column(name = "start_time", nullable = false)
     private String startTime;
 
-    @Column(name = "end_time", nullable = false)
-    private String endTime;
-
     @Column(name = "appointment_duration", nullable = false)
     private int appointmentDuration;
+
+    @Column(name = "number_of_appointments_per_day", nullable = false)
+    private int numberAppointmentsDay;
 
     @Column(name = "min_days_between_appointments", nullable = false)
     private int minDaysBetweenAppointments;

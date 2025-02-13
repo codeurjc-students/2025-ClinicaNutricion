@@ -29,10 +29,4 @@ public class Appointment {
 
     @Column(name = "time", nullable = false)
     private String time;
-
-    @Column(name = "duration", nullable = false)
-    private int duration;
-
-    @Column(name = "notes")
-    private String notes;
 }

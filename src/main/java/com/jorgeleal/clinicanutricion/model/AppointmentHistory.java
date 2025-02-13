@@ -19,6 +19,4 @@ public class AppointmentHistory {
     @JoinColumn(name = "id_patient")
     private Patient patient;
 
-    @Column(name = "details")
-    private String details;
 }

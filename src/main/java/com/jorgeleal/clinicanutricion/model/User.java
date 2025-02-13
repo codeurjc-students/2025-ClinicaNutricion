@@ -6,7 +6,6 @@ import java.util.Date;
 
 @Entity
 @Table(name = "user")
-@Inheritance(strategy = InheritanceType.JOINED) //Subclases con tablas propias
 @Getter
 @Setter
 @NoArgsConstructor
@@ -29,6 +28,9 @@ public class User {
     @Column(name = "phone", nullable = false)
     private String phone;
 
+    @Column(name = "mail", nullable = false)
+    private String mail;
+
     @Column(name = "dni", unique = true, nullable = false)
     private String dni;
 
@@ -39,4 +41,16 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "user_type", nullable = false)
     private UserType userType;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, optional = true)
+    private Nutritionist nutritionist;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, optional = true)
+    private Auxiliary auxiliary;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, optional = true)
+    private AdminAuxiliary adminAuxiliary;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, optional = true)
+    private Patient patient;
 }
