@@ -1,5 +1,7 @@
 package com.jorgeleal.clinicanutricion.model;
 
+import java.time.LocalTime;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,13 +21,13 @@ public class Nutritionist {
     private User user;
 
     @Column(name = "start_time", nullable = false)
-    private String startTime;
+    private LocalTime startTime;
+
+    @Column(name = "end_time", nullable = false)
+    private LocalTime endTime;
 
     @Column(name = "appointment_duration", nullable = false)
     private int appointmentDuration;
-
-    @Column(name = "number_of_appointments_per_day", nullable = false)
-    private int numberAppointmentsDay;
 
     @Column(name = "min_days_between_appointments", nullable = false)
     private int minDaysBetweenAppointments;
