@@ -1,11 +1,10 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
-import 'bootstrap/dist/css/bootstrap.min.css';  //Importamos el css de bootstrap
+import React from "react";
+import ReactDOM from "react-dom";
+import App from "./App";
+import { Amplify } from "aws-amplify";
+import awsconfig from "./aws-exports";
+import 'bootstrap/dist/css/bootstrap.min.css'; // Importar estilos de Bootstrap
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+Amplify.configure(awsconfig);
+
+ReactDOM.render(<App />, document.getElementById("root"));
