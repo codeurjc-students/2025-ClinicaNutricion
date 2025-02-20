@@ -1,22 +1,31 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Auth } from "aws-amplify";
 
 const NutritionistDashboard = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const handleLogout = async () => {
-        await Auth.signOut();
-        navigate("/");
-    };
+  useEffect(() => {
+    // Verificar si el usuario tiene el rol de nutricionista
+    const userRole = localStorage.getItem("userRole");
+    if (userRole !== "nutritionist") {
+      navigate("/login"); // Redirigir si no es nutricionista
+    }
+  }, [navigate]);
 
-    return (
-        <div className="container mt-5">
-            <h2>Nutritionist Dashboard</h2>
-            <p>Welcome! Here you can manage your schedule and appointments.</p>
-            <button className="btn btn-danger" onClick={handleLogout}>Logout</button>
-        </div>
-    );
+  return (
+    <div>
+      <h1>Panel de Nutricionista</h1>
+      <p>Bienvenido al panel del nutricionista.</p>
+      <button
+        onClick={() => {
+          localStorage.removeItem("userRole"); // Cerrar sesión
+          navigate("/login");
+        }}
+      >
+        Cerrar Sesión
+      </button>
+    </div>
+  );
 };
 
 export default NutritionistDashboard;

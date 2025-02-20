@@ -1,22 +1,26 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import React from "react";
+import { Route, Routes, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import AdminDashboard from "./pages/AdminDashboard";
 import NutritionistDashboard from "./pages/NutritionistDashboard";
-import AuxiliaryDashboard from "./pages/AuxiliaryDashboard";
-import PatientDashboard from "./pages/PatientDashboard";
 
-function AppRoutes() {
+const isAuthenticated = () => {
+  return !!localStorage.getItem("token"); // Verifica si el usuario tiene un token válido
+};
+
+const ProtectedRoute = ({ element }) => {
+  return isAuthenticated() ? element : <Navigate to="/login" />;
+};
+
+const AppRoutes = () => {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/admin-dashboard" element={<AdminDashboard />} />
-        <Route path="/nutritionist-dashboard" element={<NutritionistDashboard />} />
-        <Route path="/auxiliary-dashboard" element={<AuxiliaryDashboard />} />
-        <Route path="/patient-dashboard" element={<PatientDashboard />} />
-      </Routes>
-    </BrowserRouter>
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/dashboard" element={<ProtectedRoute element={<AdminDashboard />} />} />
+      <Route path="/nutritionist" element={<ProtectedRoute element={<NutritionistDashboard />} />} />
+      <Route path="*" element={<Navigate to="/login" />} />
+    </Routes>
   );
-}
+};
 
 export default AppRoutes;

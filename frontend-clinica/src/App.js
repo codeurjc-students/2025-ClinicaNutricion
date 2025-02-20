@@ -1,18 +1,21 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Login from "../pages/Login";
-import AdminDashboard from "../pages/AdminDashboard";
-import NutritionistDashboard from "../pages/NutritionistDashboard";
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import AppRoutes from "./routes";
 
-function App() {
-    return (
-        <Router>
-            <Routes>
-                <Route path="/" element={<Login />} />
-                <Route path="/admin-dashboard" element={<AdminDashboard />} />
-                <Route path="/nutritionist-dashboard" element={<NutritionistDashboard />} />
-            </Routes>
-        </Router>
-    );
-}
+const App = () => {
+  const navigate = useNavigate();
+
+  const signOut = () => {
+    localStorage.removeItem("token");
+    navigate("/login"); // Redirige al login después de cerrar sesión
+  };
+
+  return (
+    <div>
+      <button onClick={signOut} style={{ position: "absolute", top: 10, right: 10 }}>Sign Out</button>
+      <AppRoutes />
+    </div>
+  );
+};
 
 export default App;

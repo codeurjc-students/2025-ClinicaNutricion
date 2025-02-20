@@ -1,85 +1,48 @@
 import React, { useState } from "react";
-import { Auth } from "aws-amplify";
-import { useNavigate } from "react-router-dom";
-import { Container, Form, Button, Alert, Spinner } from "react-bootstrap";
 
 const Login = () => {
-  const [formData, setFormData] = useState({ email: "", password: "" });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
 
-  // Manejar cambios en el formulario
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  // Manejar el inicio de sesión con Cognito
-  const handleSubmit = async (e) => {
+  const signIn = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError("");
-
     try {
-      const user = await Auth.signIn(formData.email, formData.password);
-      console.log("Usuario autenticado:", user);
+      const response = await fetch("https://eu-west-3akiycc7tp.auth.eu-west-3.amazoncognito.com/oauth2/token", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          grant_type: "password",
+          client_id: "eu-west-3_akIyCC7tP",
+          username: username,
+          password: password,
+        }),
+      });
 
-      // Obtener grupo del usuario desde los atributos
-      const userGroups = user.signInUserSession.accessToken.payload["cognito:groups"];
-      console.log("Grupos del usuario:", userGroups);
-
-      // Redirigir según el tipo de usuario
-      if (userGroups?.includes("Admin_Auxiliary")) {
-        navigate("/admin-dashboard");
-      } else if (userGroups?.includes("Nutritionist")) {
-        navigate("/nutritionist-dashboard");
-      } else if (userGroups?.includes("Auxiliary")) {
-        navigate("/auxiliary-dashboard");
-      } else if (userGroups?.includes("Patient")) {
-        navigate("/patient-dashboard");
+      const data = await response.json();
+      if (data.access_token) {
+        localStorage.setItem("token", data.access_token);
+        window.location.href = "/dashboard"; // Redirige después de iniciar sesión
       } else {
-        setError("No tienes permisos asignados.");
-        setLoading(false);
+        throw new Error(data.error_description || "Login failed");
       }
     } catch (error) {
-      setError("Error al iniciar sesión: " + error.message);
-      console.error("Error de autenticación:", error);
-      setLoading(false);
+      setError(error.message);
     }
   };
 
   return (
-    <Container className="mt-5">
-      <h2>Iniciar Sesión</h2>
-      {error && <Alert variant="danger">{error}</Alert>}
-      <Form onSubmit={handleSubmit}>
-        <Form.Group controlId="email">
-          <Form.Label>Email</Form.Label>
-          <Form.Control
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-        </Form.Group>
-
-        <Form.Group controlId="password" className="mt-3">
-          <Form.Label>Contraseña</Form.Label>
-          <Form.Control
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-        </Form.Group>
-
-        <Button variant="primary" type="submit" className="mt-4" disabled={loading}>
-          {loading ? <Spinner animation="border" size="sm" /> : "Iniciar Sesión"}
-        </Button>
-      </Form>
-    </Container>
+    <div>
+      <h2>Login</h2>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      <form onSubmit={signIn}>
+        <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} required />
+        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        <button type="submit">Sign In</button>
+      </form>
+    </div>
   );
 };
 
