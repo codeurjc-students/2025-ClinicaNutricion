@@ -1,15 +1,17 @@
-import React from "react";
-import { useAuth } from "react-oidc-context";
+import React, { useState } from "react";
+import CreateUserForm from "./CreateUserForm";
 
 const AdminDashboard = () => {
-    const auth = useAuth();
+    const [showForm, setShowForm] = useState(false);
 
     return (
         <div>
-            <h2>Bienvenido al Panel de Administración</h2>
-            <p>Tu rol es: {auth.user?.profile["cognito:groups"]}</p>
+            <h2>Panel de Administración</h2>
+            <button onClick={() => setShowForm(!showForm)}>
+                {showForm ? "Cerrar Formulario" : "Crear Nutricionista/Auxiliar"}
+            </button>
             
-            <button onClick={() => auth.signoutRedirect()}>Cerrar Sesión</button>
+            {showForm && <CreateUserForm />}
         </div>
     );
 };
