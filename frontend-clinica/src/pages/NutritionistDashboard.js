@@ -1,31 +1,15 @@
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
+import { useAuth } from "react-oidc-context";
 
 const NutritionistDashboard = () => {
-  const navigate = useNavigate();
+    const auth = useAuth();
 
-  useEffect(() => {
-    // Verificar si el usuario tiene el rol de nutricionista
-    const userRole = localStorage.getItem("userRole");
-    if (userRole !== "nutritionist") {
-      navigate("/login"); // Redirigir si no es nutricionista
-    }
-  }, [navigate]);
-
-  return (
-    <div>
-      <h1>Panel de Nutricionista</h1>
-      <p>Bienvenido al panel del nutricionista.</p>
-      <button
-        onClick={() => {
-          localStorage.removeItem("userRole"); // Cerrar sesión
-          navigate("/login");
-        }}
-      >
-        Cerrar Sesión
-      </button>
-    </div>
-  );
+    return (
+        <div>
+            <h2>Bienvenido al Panel de Nutricionistas</h2>
+            <p>Tu rol es: {auth.user?.profile["cognito:groups"]}</p>
+        </div>
+    );
 };
 
 export default NutritionistDashboard;

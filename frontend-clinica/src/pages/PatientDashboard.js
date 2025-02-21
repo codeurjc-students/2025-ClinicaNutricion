@@ -1,17 +1,15 @@
 import React from "react";
 import { useAuth } from "react-oidc-context";
 
-const AdminDashboard = () => {
+const PatientDashboard = () => {
     const auth = useAuth();
 
     return (
         <div>
-            <h2>Bienvenido al Panel de Administración</h2>
+            <h2>Bienvenido al Panel de Pacientes</h2>
             <p>Tu rol es: {auth.user?.profile["cognito:groups"]}</p>
-            
-            <button onClick={() => auth.signoutRedirect()}>Cerrar Sesión</button>
         </div>
     );
 };
 
-export default AdminDashboard;
+export default PatientDashboard;

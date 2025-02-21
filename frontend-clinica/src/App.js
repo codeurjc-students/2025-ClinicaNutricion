@@ -1,21 +1,20 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "react-oidc-context";
 import AppRoutes from "./routes";
 
 const App = () => {
-  const navigate = useNavigate();
+    const auth = useAuth();
+    
+    if (!auth.isAuthenticated) {
+        return <button onClick={() => auth.signinRedirect()} style={{ position: "absolute", top: 10, right: 10 }}>Iniciar Sesión</button>;
+    }
 
-  const signOut = () => {
-    localStorage.removeItem("token");
-    navigate("/login"); // Redirige al login después de cerrar sesión
-  };
-
-  return (
-    <div>
-      <button onClick={signOut} style={{ position: "absolute", top: 10, right: 10 }}>Sign Out</button>
-      <AppRoutes />
-    </div>
-  );
+    return (
+        <div>
+            <button onClick={() => auth.signoutRedirect()} style={{ position: "absolute", top: 10, right: 10 }}>Cerrar Sesión</button>
+            <AppRoutes />
+        </div>
+    );
 };
 
 export default App;
