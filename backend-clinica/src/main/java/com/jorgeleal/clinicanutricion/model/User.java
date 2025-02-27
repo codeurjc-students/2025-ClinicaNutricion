@@ -2,7 +2,7 @@ package com.jorgeleal.clinicanutricion.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "user")
@@ -23,7 +23,7 @@ public class User {
     private String surname;
 
     @Column(name = "birth_date", nullable = false)
-    private Date birthDate;
+    private LocalDate birthDate;
 
     @Column(name = "phone", nullable = false)
     private String phone;

@@ -34,4 +34,8 @@ public class Nutritionist {
 
     @Column(name = "max_active_appointments", nullable = false)
     private int maxActiveAppointments;
+
+    public int getAppointmentDuration() {
+        return appointmentDuration;
+    }
 }
