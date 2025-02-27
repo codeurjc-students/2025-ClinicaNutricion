@@ -6,19 +6,18 @@ const ProtectedRoute = ({ allowedRoles }) => {
     const auth = useAuth();
 
     if (!auth.isAuthenticated || !auth.user) {
-        console.warn("🔴 Usuario no autenticado. Redirigiendo a login...");
-        return <Navigate to="/login" />;
+        //Si no está autenticado, redirigir a la página de login
+        return <Navigate to="/" />;
     }
 
     const roles = auth.user?.profile["cognito:groups"] || [];
-    console.log("🟢 Intentando acceder con roles:", roles);
-
+    
+    //Si el usuario no tiene ninguno de los roles permitidos, redirigir a la página de acceso no autorizado
     if (!roles.some(role => allowedRoles.includes(role))) {
-        console.warn(`🔴 Usuario con roles '${roles}' no autorizado para esta ruta. Redirigiendo...`);
         return <Navigate to="/unauthorized" />;
     }
 
-    console.log("🟢 Acceso permitido para roles:", roles);
+    //Si el usuario está autenticado y tiene al menos uno de los roles permitidos, mostrar el contenido
     return <Outlet />;
 };
 

@@ -1,7 +1,7 @@
 import { useAuth } from "react-oidc-context";
 
 export const login = () => {
-    window.location.href = "http://localhost:3000/login";
+    window.location.href = "http://localhost:3000";
 };
 
 export const useAuthService = () => {
@@ -16,7 +16,7 @@ export const useAuthService = () => {
         auth.signoutRedirect({
             extraQueryParams: {
                 client_id: auth.settings.client_id,
-                logout_uri: window.location.origin + "/login",
+                logout_uri: window.location.origin,
             },
         });
     };
