@@ -1,0 +1,95 @@
+.sidebar {
+    width: 120px;
+    background-color: #e6f2e6;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    transition: all 0.3s ease-in-out;
+    position: fixed;
+}
+
+
+.sidebar-logo {
+    width: 120%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.icon {
+    width: 50px; 
+    height: 50px;
+    object-fit: contain;
+    cursor: pointer;
+    background-color: transparent;
+}
+
+.logo {
+    width: 100px;
+    height: auto;
+    max-width: 100px;
+}
+
+.sidebar-separator {
+    width: 70%;
+    border: none;
+    height: 2px;
+    background-color: #ccc;
+    margin: 10px 0;
+}
+
+/* Botón normal */
+.sidebar-button {
+    background: none; 
+    border: none; 
+    padding: 10px;
+    margin: 25px 0;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease-in-out;
+}
+
+/* Botón en hover */
+.sidebar-button:hover {
+    background-color: #c8e6c9; 
+}
+
+/* Botón cuando está activo */
+.sidebar-button.active {
+    background-color: #213e22;
+    border-radius: 50px;
+    filter: brightness(1.2);
+}
+
+.sidebar-button.active .icon {
+    filter: invert(1);
+}
+
+/* Estilos para Móviles */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 60px;
+    }
+    .icon {
+        width: 40px;
+    }
+    .logo{
+        width: 60px;
+    }
+}
+
+@media (max-width: 480px) {
+    .sidebar {
+        width: 50px;
+    }
+    .icon {
+        width: 35px;
+    }
+    .logo{
+        width: 50px;
+    }
+}

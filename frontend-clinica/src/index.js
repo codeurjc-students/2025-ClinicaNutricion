@@ -7,8 +7,8 @@ import App from "./App";
 const cognitoAuthConfig = {
   authority: "https://cognito-idp.eu-west-3.amazonaws.com/eu-west-3_akIyCC7tP",
   client_id: "38902ociv96ik2ih3p9446ela2",
-  redirect_uri: "http://localhost:3000/login",
-  post_logout_redirect_uri: "http://localhost:3000/login",
+  redirect_uri: "http://localhost:3000/",
+  post_logout_redirect_uri: "http://localhost:3000/",
   response_type: "code",
   scope: "email openid phone",
 };
@@ -20,8 +20,8 @@ const AuthRedirect = () => {
 
   useEffect(() => {
     if (auth.isAuthenticated) {
-      // Redirige solo si el usuario se encuentra en "/" o "/login"
-      if (location.pathname === "/" || location.pathname === "/login") {
+      // Redirige solo si el usuario se encuentra en "/" 
+      if (location.pathname === "/") {
         const roles = auth.user?.profile["cognito:groups"] || [];
         if (roles.includes("admin")) {
           navigate("/admin");
