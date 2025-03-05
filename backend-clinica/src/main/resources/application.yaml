@@ -1,0 +1,23 @@
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://cognito-idp.eu-west-3.amazonaws.com/eu-west-3_akIyCC7tP
+          jwk-set-uri: https://cognito-idp.eu-west-3.amazonaws.com/eu-west-3_akIyCC7tP/.well-known/jwks.json
+
+server:
+  port: 8081
+
+# Configuración de la base de datos MySQL
+spring.datasource:
+  url: jdbc:mysql://localhost:3306/db_clinica_nutricion
+  username: root
+  password: '#2-gestionCitas'
+  driver-class-name: com.mysql.cj.jdbc.Driver
+
+spring.jpa:
+  database-platform: org.hibernate.dialect.MySQL8Dialect
+  hibernate.ddl-auto: update
+  show-sql: true
+  

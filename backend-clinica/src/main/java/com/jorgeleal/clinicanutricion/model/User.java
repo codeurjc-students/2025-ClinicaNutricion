@@ -2,9 +2,12 @@ package com.jorgeleal.clinicanutricion.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.util.Date;
+import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "idUser")
 @Table(name = "user")
 @Getter
 @Setter
@@ -23,16 +26,13 @@ public class User {
     private String surname;
 
     @Column(name = "birth_date", nullable = false)
-    private Date birthDate;
+    private LocalDate birthDate;
 
     @Column(name = "phone", nullable = false)
     private String phone;
 
-    @Column(name = "mail", nullable = false)
+    @Column(name = "mail", unique = true, nullable = false)
     private String mail;
-
-    @Column(name = "dni", unique = true, nullable = false)
-    private String dni;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "gender", nullable = false)

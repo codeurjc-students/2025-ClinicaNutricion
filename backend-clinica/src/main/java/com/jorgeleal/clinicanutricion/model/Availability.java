@@ -2,7 +2,8 @@ package com.jorgeleal.clinicanutricion.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "availability")
@@ -21,10 +22,10 @@ public class Availability {
     private Nutritionist nutritionist;
 
     @Column(name = "date", nullable = false)
-    private Date date;
+    private LocalDate date;
 
     @Column(name = "start_time", nullable = false)
-    private Date start_time;
+    private LocalTime start_time;
 
     @Column(name = "number_of_appointments", nullable = false)
     private int number_of_appointments;

@@ -4,8 +4,11 @@ import java.time.LocalTime;
 
 import jakarta.persistence.*;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "idUser")
 @Table(name = "nutritionist")
 @Getter
 @Setter
@@ -34,4 +37,8 @@ public class Nutritionist {
 
     @Column(name = "max_active_appointments", nullable = false)
     private int maxActiveAppointments;
+
+    public int getAppointmentDuration() {
+        return appointmentDuration;
+    }
 }
