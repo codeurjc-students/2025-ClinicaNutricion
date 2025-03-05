@@ -20,6 +20,10 @@ const AuthRedirect = () => {
 
   useEffect(() => {
     if (auth.isAuthenticated) {
+      const token = auth.user?.access_token; 
+      if (token) {
+        localStorage.setItem("token", token);
+      }
       // Redirige solo si el usuario se encuentra en "/" 
       if (location.pathname === "/") {
         const roles = auth.user?.profile["cognito:groups"] || [];

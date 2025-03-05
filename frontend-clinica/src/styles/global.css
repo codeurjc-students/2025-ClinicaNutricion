@@ -11,7 +11,7 @@
     justify-content: flex-start; 
     width: calc(100% - 100px); /* Ajusta el espacio para el contenido */
     padding-top: 50px; /* Espacio arriba */
-    margin-left: 100px; /* Espacio para que el sidebar no lo tape */
+    margin-left: 150px; /* Espacio para que el sidebar no lo tape */
     overflow-x: hidden;
 }
 

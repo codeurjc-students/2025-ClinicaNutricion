@@ -1,0 +1,78 @@
+/* Contenedor principal */
+.search-container {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+    margin-top: -20px;
+}
+
+/* Tipo de búsqueda */
+.search-type {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.search-type label {
+    font-weight: bold;
+}
+
+/* Formulario de búsqueda */
+.search-form {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.search-form input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 200px;
+}
+
+.search-form button {
+    padding: 8px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.search-form button:hover {
+    background-color: #45a049;
+}
+
+/* Tabla de resultados */
+.results-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.results-table th, .results-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.results-table th {
+    background-color: #f2f2f2;
+}
+
+/* Botones de acción */
+.edit-btn, .delete-btn {
+    padding: 5px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.edit-btn {
+    color: blue;
+}
+
+.delete-btn {
+    color: red;
+}
