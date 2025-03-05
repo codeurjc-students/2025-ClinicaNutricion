@@ -9,20 +9,25 @@ import java.util.List;
 
 @Repository
 public interface NutritionistRepository extends JpaRepository<Nutritionist, String> {
-    List<Nutritionist> findByUserNameContainingIgnoreCase(String name);
-    long countByIdUser(String idUser);
+        List<Nutritionist> findByUserNameContainingIgnoreCase(String name);
+        long countByIdUser(String idUser);
 
+        // Lower hace que la busqueda sea insensible a mayusculas y minusculas
+        @Query("SELECT n FROM Nutritionist n WHERE " +
+                        "(:name IS NULL OR LOWER(n.user.name) LIKE LOWER(CONCAT('%', :name, '%'))) " +
+                        "AND (:surname IS NULL OR LOWER(n.user.surname) LIKE LOWER(CONCAT('%', :surname, '%'))) " +
+                        "AND (:phone IS NULL OR n.user.phone LIKE CONCAT('%', :phone, '%')) " +
+                        "AND (:email IS NULL OR LOWER(n.user.mail) LIKE LOWER(CONCAT('%', :email, '%')))")
+        List<Nutritionist> findByUserFilters(@Param("name") String name, 
+                                             @Param("surname") String surname, 
+                                             @Param("phone") String phone, 
+                                             @Param("email") String email);
 
-    //Lower hace que la busqueda sea insensible a mayusculas y minusculas
-    @Query("SELECT n FROM Nutritionist n WHERE " +
-            "(:name IS NULL OR LOWER(n.user.name) LIKE LOWER(CONCAT('%', :name, '%'))) " +
-            "AND (:surname IS NULL OR LOWER(n.user.surname) LIKE LOWER(CONCAT('%', :surname, '%'))) " +
-            "AND (:phone IS NULL OR n.user.phone LIKE CONCAT('%', :phone, '%')) " +
-            "AND (:email IS NULL OR LOWER(n.user.mail) LIKE LOWER(CONCAT('%', :email, '%')))")
-    List<Nutritionist> findByUserFilters(@Param("name") String name, 
-                                         @Param("surname") String surname, 
-                                         @Param("phone") String phone, 
-                                         @Param("email") String email);
+        @Query("SELECT n FROM Nutritionist n JOIN User u ON n.idUser = u.idUser " +
+                "WHERE LOWER(CONCAT(u.name, ' ', u.surname)) LIKE LOWER(CONCAT('%', :fullName, '%'))")
+        List<Nutritionist> findByFullName(@Param("fullName") String fullName);
+                                                           
 }
+
 
 

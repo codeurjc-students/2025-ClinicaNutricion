@@ -1,5 +1,8 @@
 package com.jorgeleal.clinicanutricion.controller;
 
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken; 
 import com.jorgeleal.clinicanutricion.dto.AppointmentDTO;
 import com.jorgeleal.clinicanutricion.dto.NutritionistRequest;
 import com.jorgeleal.clinicanutricion.model.*;
@@ -7,12 +10,19 @@ import com.jorgeleal.clinicanutricion.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.http.HttpStatus;
+import java.util.Map;
+import java.util.HashMap;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin-auxiliary")
+@RequestMapping("/admin")
+@PreAuthorize("hasRole('ROLE_ADMIN')")
+@CrossOrigin(origins = "http://localhost:3000")
 public class AdminAuxiliaryController {
 
     @Autowired
@@ -30,12 +40,56 @@ public class AdminAuxiliaryController {
     @Autowired
     private PatientService patientService;
 
+    @Autowired
+    private UserService userService;
+
+    @GetMapping("/profile")
+    public ResponseEntity<Map<String, Object>> getProfile(@AuthenticationPrincipal Jwt jwt) {
+        try {
+            // Extrae el ID del usuario desde el JWT (Cognito usa "sub")
+            String id = jwt.getClaimAsString("sub");
+            if (id == null || id.isEmpty()) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("error", "ID de usuario no encontrado en el token"));
+            }
+    
+            // Busca al usuario en la base de datos
+            User user = userService.getUserByIdUser(id);
+            if (user == null) {
+                return ResponseEntity
+                        .status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "Usuario no encontrado"));
+            }
+    
+            // Construye la respuesta con los datos del usuario
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", user.getIdUser());
+            response.put("name", user.getName());
+            response.put("surname", user.getSurname());
+            response.put("email", user.getMail());
+            response.put("phone", user.getPhone());
+            response.put("gender", user.getGender().toString());
+            response.put("userType", user.getUserType().toString());
+    
+            return ResponseEntity.ok(response);
+    
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error interno: " + e.getMessage()));
+        }
+    }
+    
+
     /** 
      * Métodos para gestionar nutricionistas.
      */
 
     // Crear un nuevo nutricionista.
     @PostMapping("/nutritionists")
+    @Transactional
     public ResponseEntity<Nutritionist> createNutritionist(@RequestBody NutritionistRequest request) {
         return ResponseEntity.ok(nutritionistService.createNutritionist(request));
     }
@@ -46,10 +100,11 @@ public class AdminAuxiliaryController {
     public ResponseEntity<List<Nutritionist>> getAllNutritionists(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String surname,
+            @RequestParam(required = false) String fullName,
             @RequestParam(required = false) String phone,
             @RequestParam(required = false) String email) {
-
-        List<Nutritionist> nutritionists = nutritionistService.getNutritionistsByFilters(name, surname, phone, email);
+        
+        List<Nutritionist> nutritionists = nutritionistService.getNutritionistsByFilters(name, surname, fullName, phone, email);
         return ResponseEntity.ok(nutritionists);
     }
  

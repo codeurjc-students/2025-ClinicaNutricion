@@ -25,7 +25,6 @@ public class NutritionistService {
         user.setName(request.getName());
         user.setSurname(request.getSurname());
         user.setBirthDate(request.getBirthDate());
-        user.setDni(request.getDni());
         user.setMail(request.getEmail());
         user.setPhone(request.getPhone());
         user.setGender(request.getGender());
@@ -60,7 +59,6 @@ public class NutritionistService {
         dto.setName(user.getName());
         dto.setSurname(user.getSurname());
         dto.setBirthDate(user.getBirthDate());
-        dto.setDni(user.getDni());
         dto.setEmail(user.getMail());
         dto.setPhone(user.getPhone());
         dto.setGender(user.getGender());
@@ -71,20 +69,22 @@ public class NutritionistService {
         dto.setMinDaysBetweenAppointments(nutritionist.getMinDaysBetweenAppointments());
         
         return dto;
-    }
+        }
 
-    public List<Nutritionist> getNutritionistsByFilters(String name, String surname, String phone, String email) {
-        return nutritionistRepository.findByUserFilters(name, surname, phone, email);
-    }
+        public List<Nutritionist> getNutritionistsByFilters(String name, String surname, String fullName, String phone, String email) {
+            if (fullName != null && !fullName.trim().isEmpty()) {
+                return nutritionistRepository.findByFullName(fullName);
+            }
+            return nutritionistRepository.findByUserFilters(name, surname, phone, email);
+        }
 
-    public Nutritionist updateNutritionist(String id, NutritionistRequest request) {
+        public Nutritionist updateNutritionist(String id, NutritionistRequest request) {
         Nutritionist nutritionist = getNutritionistById(id);
         User user = nutritionist.getUser();
 
         if (request.getName() != null) user.setName(request.getName());
         if (request.getSurname() != null) user.setSurname(request.getSurname());
         if (request.getBirthDate() != null) user.setBirthDate(request.getBirthDate());
-        if (request.getDni() != null) user.setDni(request.getDni());
         if (request.getEmail() != null) user.setMail(request.getEmail());
         if (request.getPhone() != null) user.setPhone(request.getPhone());
         if (request.getGender() != null) user.setGender(request.getGender());
