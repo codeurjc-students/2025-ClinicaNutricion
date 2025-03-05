@@ -1,14 +1,13 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom"; // Para obtener el ID desde la URL
-import axios from "axios";
+import { useParams } from "react-router-dom";
 
 const NutritionistForm = ({ isEditMode = false }) => {
+    const BASE_URL = process.env.REACT_APP_BASE_URL;
     const { id } = useParams(); // Obtiene el ID desde la URL si está en modo edición
     const [formData, setFormData] = useState({
         name: "",
         surname: "",
         birthDate: "",
-        dni: "",
         email: "",
         phone: "",
         gender: "MASCULINO",
@@ -19,14 +18,31 @@ const NutritionistForm = ({ isEditMode = false }) => {
         minDaysBetweenAppointments: 15
     });
 
-    // 🔍 Cargar los datos solo si está en modo edición
+    // Obtener token desde localStorage para autenticar la petición
+    const token = localStorage.getItem("token");
+
+    // Cargar los datos solo si está en modo edición
     useEffect(() => {
         if (isEditMode && id) {
-            axios.get(`http://localhost:8080/admin-auxiliary/nutritionists/${id}`)
-                .then(response => setFormData(response.data))
+            fetch(`${BASE_URL}/admin/nutritionists/${id}`, {
+                method: "GET",
+                withCredentials: true,
+                credentials: "include",
+                headers: {
+                    "Authorization": `Bearer ${token}`, // Enviar token en la cabecera
+                    "Content-Type": "application/json"
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Error al obtener el nutricionista");
+                    }
+                    return response.json();
+                })
+                .then(data => setFormData(data))
                 .catch(error => console.error("Error obteniendo nutricionista:", error));
         }
-    }, [isEditMode, id]);
+    }, [isEditMode, id, token, BASE_URL]);
 
     // Manejar cambios en los campos del formulario
     const handleChange = (e) => {
@@ -36,23 +52,37 @@ const NutritionistForm = ({ isEditMode = false }) => {
     // Enviar datos al backend
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const formattedData = {
+            ...formData,
+            birthDate: new Date(formData.birthDate).toISOString().split("T")[0], // Convertir a YYYY-MM-DD
+            startTime: formData.startTime, 
+            endTime: formData.endTime,
+        };
+        
         try {
             const url = isEditMode
-                ? `http://localhost:8080/admin-auxiliary/nutritionists/${id}`
-                : "http://localhost:8080/admin-auxiliary/nutritionists";
+                ? `${BASE_URL}/admin/nutritionists/${id}`
+                : `${BASE_URL}/admin/nutritionists`;
 
             const method = isEditMode ? "PUT" : "POST";
 
             const response = await fetch(url, {
                 method: method,
-                headers: { "Content-Type": "application/json" },
+                withCredentials: true,
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
                 body: JSON.stringify(formData),
             });
 
             if (response.ok) {
                 alert(isEditMode ? "Nutricionista actualizado con éxito" : "Nutricionista registrado con éxito");
             } else {
-                alert("Error al procesar la solicitud");
+                const errorText = await response.text();
+                alert(`Error al procesar la solicitud: ${errorText}`);
             }
         } catch (error) {
             console.error("Error:", error);
@@ -70,9 +100,6 @@ const NutritionistForm = ({ isEditMode = false }) => {
 
                 <label>Fecha de nacimiento:</label>
                 <input type="date" name="birthDate" value={formData.birthDate} onChange={handleChange} required />
-
-                <label>DNI:</label>
-                <input type="text" name="dni" value={formData.dni} onChange={handleChange} required />
 
                 <label>Email:</label>
                 <input type="email" name="email" value={formData.email} onChange={handleChange} required />

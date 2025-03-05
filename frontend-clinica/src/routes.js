@@ -16,6 +16,7 @@ import AuxiliarDashboard from "./pages/auxiliary/AuxiliarDashboard";
 import AppointmentConfirmation from "./pages/patient/AppointmentConfirmation";
 import ManageUsers from "./pages/admin/ManageUsers";
 import AdminAgenda from "./pages/admin/AdminAgenda";
+import SearchNutritionists from "./pages/admin/SearchNutritionists";
 
 const AppRoutes = () => {
     const auth = useAuth();
@@ -98,6 +99,16 @@ const AppRoutes = () => {
                 </ProtectedRoute>
               } 
             />
+
+            <Route
+              path="/admin/manage-users/nutritionists/search"
+              element={
+                <ProtectedRoute allowedRoles={["admin"]}>
+                  <SearchNutritionists />
+                </ProtectedRoute>
+              }
+            />
+
             <Route 
               path="/nutritionist" 
               element={

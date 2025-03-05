@@ -12,8 +12,8 @@ const ManageNutritionists = () => {
             <h2>Gestión de Nutricionistas</h2>
             <div className="buttons-container">
                 <button onClick={() => navigate("/admin/manage-users/nutritionists/create")}>Dar de alta</button>
-                <button onClick={() => console.log("Buscar nutricionista")}>Buscador</button>
-            </div>
+                <button onClick={() => navigate("/admin/manage-users/nutritionists/search")}>Buscador</button>
+            </div>    
         </div>
     );
 };
