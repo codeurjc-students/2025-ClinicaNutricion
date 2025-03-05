@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import java.util.List;
 import java.time.LocalDate;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/nutritionist")
 public class NutritionistController {
