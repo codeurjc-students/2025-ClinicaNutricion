@@ -16,7 +16,24 @@ public class UserService {
     }
 
     public User getUserByIdUser(String idUser) {
-        return userRepository.findByIdUser(idUser)
-            .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + idUser));
+        return userRepository.findByIdUser(idUser).orElse(null);
     }
+
+    public User updateUser(User updatedUser) {
+        User existingUser = userRepository.findById(updatedUser.getIdUser()).orElse(null);
+
+        if (existingUser == null) {
+            throw new RuntimeException("El usuario con ID " + updatedUser.getIdUser() + " no existe.");
+        }
+
+        existingUser.setName(updatedUser.getName());
+        existingUser.setSurname(updatedUser.getSurname());
+        existingUser.setBirthDate(updatedUser.getBirthDate());
+        existingUser.setMail(updatedUser.getMail());
+        existingUser.setPhone(updatedUser.getPhone());
+        existingUser.setGender(updatedUser.getGender());
+        
+        return userRepository.save(existingUser);
+    }
+
 }

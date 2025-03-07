@@ -3,8 +3,8 @@ package com.jorgeleal.clinicanutricion.controller;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken; 
-import com.jorgeleal.clinicanutricion.dto.AppointmentDTO;
-import com.jorgeleal.clinicanutricion.dto.NutritionistRequest;
+import com.jorgeleal.clinicanutricion.dto.*;
+import jakarta.validation.Valid;
 import com.jorgeleal.clinicanutricion.model.*;
 import com.jorgeleal.clinicanutricion.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.http.HttpStatus;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -43,6 +44,12 @@ public class AdminAuxiliaryController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private AdminAuxiliaryService adminAuxiliaryService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @GetMapping("/profile")
     public ResponseEntity<Map<String, Object>> getProfile(@AuthenticationPrincipal Jwt jwt) {
         try {
@@ -67,7 +74,8 @@ public class AdminAuxiliaryController {
             response.put("id", user.getIdUser());
             response.put("name", user.getName());
             response.put("surname", user.getSurname());
-            response.put("email", user.getMail());
+            response.put("birthDate", user.getBirthDate());
+            response.put("mail", user.getMail());
             response.put("phone", user.getPhone());
             response.put("gender", user.getGender().toString());
             response.put("userType", user.getUserType().toString());
@@ -81,8 +89,59 @@ public class AdminAuxiliaryController {
                     .body(Map.of("error", "Error interno: " + e.getMessage()));
         }
     }
-    
 
+    @PutMapping("/profile")
+    public ResponseEntity<?> updateProfile(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody Map<String, Object> updates) {
+        try {
+            // Extrae el ID del usuario desde el JWT (Cognito usa "sub")
+            String id = jwt.getClaimAsString("sub");
+            if (id == null || id.isEmpty()) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("error", "ID de usuario no encontrado en el token"));
+            }
+    
+            // Actualiza los datos del usuario
+            AdminAuxiliaryDTO adminAuxiliaryDTO = objectMapper.convertValue(updates, AdminAuxiliaryDTO.class);
+
+            return ResponseEntity.ok(adminAuxiliaryService.updateAdminAuxiliary(id, adminAuxiliaryDTO));
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error interno: " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/{userType}/{id}")
+    public ResponseEntity<?> getUserById(
+            @PathVariable String userType,
+            @PathVariable String id) {
+        return adminAuxiliaryService.getUserById(userType, id);
+    }
+    
+    @PutMapping("/{userType}/{id}")
+    public ResponseEntity<?> updateUser(
+            @PathVariable String userType,
+            @PathVariable String id,
+            @RequestBody Map<String, Object> updates) {
+        switch (userType.toLowerCase()) {
+            case "nutritionist":
+                NutritionistDTO nutritionistDTO = objectMapper.convertValue(updates, NutritionistDTO.class);
+                return ResponseEntity.ok(nutritionistService.updateNutritionist(id, nutritionistDTO));
+            case "patient":
+                PatientDTO patientDTO = objectMapper.convertValue(updates, PatientDTO.class);
+                return ResponseEntity.ok(patientService.updatePatient(id, patientDTO));
+            case "auxiliary":
+                AuxiliaryDTO auxiliaryDTO = objectMapper.convertValue(updates, AuxiliaryDTO.class);
+                return ResponseEntity.ok(auxiliaryService.updateAuxiliary(id, auxiliaryDTO));
+            default:
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Tipo de usuario no válido: " + userType);
+        }
+    }
+    
     /** 
      * Métodos para gestionar nutricionistas.
      */
@@ -90,8 +149,8 @@ public class AdminAuxiliaryController {
     // Crear un nuevo nutricionista.
     @PostMapping("/nutritionists")
     @Transactional
-    public ResponseEntity<Nutritionist> createNutritionist(@RequestBody NutritionistRequest request) {
-        return ResponseEntity.ok(nutritionistService.createNutritionist(request));
+    public ResponseEntity<Nutritionist> createNutritionist(@RequestBody NutritionistDTO dto) {
+        return ResponseEntity.ok(nutritionistService.createNutritionist(dto));
     }
     
 
@@ -106,18 +165,6 @@ public class AdminAuxiliaryController {
         
         List<Nutritionist> nutritionists = nutritionistService.getNutritionistsByFilters(name, surname, fullName, phone, email);
         return ResponseEntity.ok(nutritionists);
-    }
- 
-    // Obtener un nutricionista por su ID.
-    @GetMapping("/nutritionists/{id}")
-    public ResponseEntity<NutritionistRequest> getNutritionistById(@PathVariable String id) {
-        return ResponseEntity.ok(nutritionistService.getNutritionistDTOById(id));
-    }
-
-    // Actualizar la información de un nutricionista.
-    @PutMapping("/nutritionists/{id}")
-    public ResponseEntity<Nutritionist> updateNutritionist(@PathVariable String id, @RequestBody NutritionistRequest request) {
-        return ResponseEntity.ok(nutritionistService.updateNutritionist(id, request));
     }
 
     // Obtener la agenda de un nutricionista específico.
@@ -148,8 +195,8 @@ public class AdminAuxiliaryController {
 
      // Crear un nuevo auxiliar.
     @PostMapping("/auxiliaries")
-    public ResponseEntity<Auxiliary> createAuxiliary(@RequestBody Auxiliary auxiliary) {
-        return ResponseEntity.ok(auxiliaryService.createAuxiliary(auxiliary));
+    public ResponseEntity<Auxiliary> createAuxiliary(@RequestBody AuxiliaryDTO dto) {
+        return ResponseEntity.ok(auxiliaryService.createAuxiliary(dto));
     }
 
     // Obtener todos los auxiliares o filtrarlos por criterios opcionales.
@@ -162,19 +209,6 @@ public class AdminAuxiliaryController {
         
         List<Auxiliary> auxiliaries = auxiliaryService.getAuxiliariesByFilters(name, surname, phone, email);
         return ResponseEntity.ok(auxiliaries);
-    }
-
-
-    // Obtener un auxiliar por su ID.
-    @GetMapping("/auxiliaries/{id}")
-    public ResponseEntity<Auxiliary> getAuxiliaryById(@PathVariable String id) {
-        return ResponseEntity.ok(auxiliaryService.getAuxiliaryById(id));
-    }
-
-    // Actualizar la información de un auxiliar.
-    @PutMapping("/auxiliaries/{id}")
-    public ResponseEntity<Auxiliary> updateAuxiliary(@PathVariable String id, @RequestBody Auxiliary updatedAuxiliary) {
-        return ResponseEntity.ok(auxiliaryService.updateAuxiliary(id, updatedAuxiliary));
     }
 
     // Eliminar un auxiliar.
@@ -190,8 +224,8 @@ public class AdminAuxiliaryController {
 
      // Crear un nuevo paciente.
     @PostMapping("/patients")
-    public ResponseEntity<Patient> createPatient(@RequestBody Patient patient) {
-        return ResponseEntity.ok(patientService.createPatient(patient));
+    public ResponseEntity<Patient> createPatient(@RequestBody PatientDTO dto) {
+        return ResponseEntity.ok(patientService.createPatient(dto));
     }
 
     // Obtener todos los pacientes o filtrarlos por criterios opcionales.
@@ -204,13 +238,6 @@ public class AdminAuxiliaryController {
         
         List<Patient> patients = patientService.getPatientsByFilters(name, surname, phone, email);
         return ResponseEntity.ok(patients);
-    }
-
-
-    // Obtener un paciente por su ID.
-    @PutMapping("/patients/{patientId}")
-    public ResponseEntity<Patient> updatePatient(@PathVariable String patientId, @RequestBody Patient updatedPatient) {
-        return ResponseEntity.ok(patientService.updatePatient(patientId, updatedPatient));
     }
 
     // Eliminar un paciente.

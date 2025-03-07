@@ -2,6 +2,8 @@ package com.jorgeleal.clinicanutricion.controller;
 
 import com.jorgeleal.clinicanutricion.model.Patient;
 import com.jorgeleal.clinicanutricion.model.Appointment;
+import com.jorgeleal.clinicanutricion.dto.PatientDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import com.jorgeleal.clinicanutricion.service.PatientService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,11 +15,9 @@ import java.util.Optional;
 @RequestMapping("/patients")
 @CrossOrigin(origins = "http://localhost:3000")
 public class PatientController {
-    private final PatientService patientService;
 
-    public PatientController(PatientService patientService) {
-        this.patientService = patientService;
-    }
+    @Autowired
+    private PatientService patientService;
 
     @GetMapping("/{patientId}")
     public ResponseEntity<Patient> getPatient(@PathVariable String patientId) {
@@ -26,8 +26,8 @@ public class PatientController {
     }
 
     @PutMapping("/{patientId}")
-    public ResponseEntity<Patient> updatePatient(@PathVariable String patientId, @RequestBody Patient updatedPatient) {
-        Patient patient = patientService.updatePatient(patientId, updatedPatient);
+    public ResponseEntity<Patient> updatePatient(@PathVariable String patientId, @RequestBody PatientDTO dto) {
+        Patient patient = patientService.updatePatient(patientId, dto);
         return patient != null ? ResponseEntity.ok(patient) : ResponseEntity.notFound().build();
     }
 
