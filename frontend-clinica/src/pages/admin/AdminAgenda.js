@@ -1,100 +1,106 @@
 import React, { useState, useEffect } from "react";
+import { Container, Form, Button, Row, Col, Card, Spinner } from "react-bootstrap";
 import NutritionistCalendar from "../../components/NutritionistCalendar";
-import "../../styles/AdminAgenda.css";
+import "../../styles/components/AdminAgenda.css";
 
 const AdminAgenda = () => {
     const BASE_URL = process.env.REACT_APP_BASE_URL;
     const [nutritionists, setNutritionists] = useState([]);
     const [selectedNutritionist, setSelectedNutritionist] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    // Cargar la lista de nutricionistas con búsqueda por "nombre apellido" concatenados
-     useEffect(() => {
+    useEffect(() => {
         const fetchNutritionists = async () => {
             try {
-
                 if (!searchTerm.trim()) {
                     setNutritionists([]); // No cargar datos si el campo está vacío
                     return;
                 }
-                
+
+                setLoading(true);
                 let url = `${BASE_URL}/admin/nutritionists`;
-                
-                // Si hay búsqueda, pasamos todo el término en fullName
+
                 if (searchTerm.trim() !== "") {
                     url += `?fullName=${encodeURIComponent(searchTerm)}`;
                 }
 
-                const token = localStorage.getItem("token"); 
-
+                const token = localStorage.getItem("token");
                 const response = await fetch(url, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}` 
+                        "Authorization": `Bearer ${token}`
                     }
                 });
-    
+
                 if (!response.ok) throw new Error("Error en la respuesta del servidor");
 
                 const data = await response.json();
-
                 setNutritionists(data);
             } catch (error) {
                 console.error("Error cargando nutricionistas:", error);
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchNutritionists();
-    }, [searchTerm, BASE_URL]); // Se ejecuta cuando cambia el término de búsqueda o la URL base
+    }, [searchTerm, BASE_URL]);
 
-    // Manejar el cambio en el input de búsqueda
     const handleSearchChange = (e) => {
         const value = e.target.value;
-
         if (selectedNutritionist) {
-            setSelectedNutritionist(null); // ✅ Deselecciona el nutricionista
-            setSearchTerm(""); // ✅ Resetea el input a vacío
+            setSelectedNutritionist(null);
+            setSearchTerm("");
         } else {
-            setSearchTerm(value); // ✅ Actualiza el término de búsqueda normalmente
+            setSearchTerm(value);
         }
     };
 
     return (
-        <div className="content">
-            <h2>{selectedNutritionist ? `Agenda de ${selectedNutritionist.user?.name} ${selectedNutritionist.user?.surname}` : "Agenda"}</h2>
+        <Container className="admin-agenda-container">
+            <h2 className="text-center">
+                {selectedNutritionist
+                    ? `Agenda de ${selectedNutritionist.user?.name} ${selectedNutritionist.user?.surname}`
+                    : "Agenda de Nutricionistas"}
+            </h2>
 
             {/* Buscador de nutricionistas */}
-            <input
-                type="text"
-                placeholder="Buscar nutricionista..."
-                value={selectedNutritionist ? `${selectedNutritionist.user?.name} ${selectedNutritionist.user?.surname}` : searchTerm}
-                onChange={handleSearchChange}
-                style={{ fontWeight: selectedNutritionist ? "bold" : "normal" }}
-            />
+            <Form.Group className="mb-3">
+                <Form.Control
+                    type="text"
+                    placeholder="Buscar nutricionista..."
+                    value={selectedNutritionist
+                        ? `${selectedNutritionist.user?.name} ${selectedNutritionist.user?.surname}`
+                        : searchTerm}
+                    onChange={handleSearchChange}
+                    className="search-input"
+                />
+            </Form.Group>
 
-            {/* Mostrar sugerencias de nutricionistas solo si hay búsqueda */}
+            {/* Indicador de carga */}
+            {loading && <Spinner animation="border" variant="success" className="d-block mx-auto" />}
+
+            {/* Sugerencias de nutricionistas */}
             {!selectedNutritionist && searchTerm.trim() && nutritionists.length > 0 && (
-                <div className="nutritionists-container">
+                <Row className="justify-content-center nutritionists-container">
                     {nutritionists.slice(0, 4).map(nutri => (
-                        <button 
-                            key={nutri.idUser} 
-                            onClick={() => setSelectedNutritionist(nutri)}
-                            className="nutritionist-button"
-                        >
-                            {nutri.user?.name} {nutri.user?.surname}
-                        </button>
+                        <Col key={nutri.idUser} xs={12} sm={6} md={4} lg={3} className="d-flex justify-content-center">
+                            <Card className="nutritionist-card" onClick={() => setSelectedNutritionist(nutri)}>
+                                <Card.Body className="text-center">
+                                    <Card.Title>{nutri.user?.name} {nutri.user?.surname}</Card.Title>
+                                </Card.Body>
+                            </Card>
+                        </Col>
                     ))}
-                    {nutritionists.length > 4 && (
-                        <span className="more-options">...</span>
-                    )}
-                </div>
+                    {nutritionists.length > 4 && <p className="more-options">Más resultados...</p>}
+                </Row>
             )}
 
-
-            {/* Mostrar calendario solo si hay un nutricionista seleccionado */}
+            {/* Mostrar calendario si hay un nutricionista seleccionado */}
             {selectedNutritionist && <NutritionistCalendar nutritionistId={selectedNutritionist.idUser} />}
-        </div>
+        </Container>
     );
 };
 

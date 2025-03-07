@@ -1,0 +1,29 @@
+.success-notification {
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #f9fcf9; /* Verde muy claro */
+    border: 2px solid black; 
+    padding: 20px;
+    text-align: center;
+    z-index: 1050;
+    opacity: 1;
+    transition: opacity 2.5s ease-in-out, transform 2.5s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 300px;
+    min-width: 200px;
+}
+
+.success-notification.fade-out {
+    opacity: 0;
+}
+
+.success-icon {
+    width: 100px;
+    height: 100px;
+    margin-top: 10px;
+}

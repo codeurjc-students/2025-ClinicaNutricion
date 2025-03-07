@@ -1,13 +1,17 @@
 import { useNavigate } from "react-router-dom";
+import BackButton from "../../components/BackButton";
 
 const ManageAuxiliaries = () => {
     const navigate = useNavigate();
 
     return (
-        <div className="content">
-            <h2>Gestión de Auxiliares</h2>
-            <button onClick={() => console.log("Registrar nuevo auxiliar")}>Dar de alta</button>
-            <button onClick={() => console.log("Buscar auxiliar")}>Buscador</button>
+        <div>
+            <BackButton text="Gestión de Usuarios" to="/admin/manage-users" />
+            <h2 className="text-center">Gestión de Auxiliares</h2>
+            <div className="manage-users-buttons">
+                <button className="btn btn-primary"onClick={() => navigate("/admin/manage-users/auxiliaries/create")}>Dar de alta</button>
+                <button className="btn btn-primary" onClick={() => navigate("/admin/manage-users/auxiliaries/search")}>Buscar Auxiliar</button>
+            </div>
         </div>
     );
 };

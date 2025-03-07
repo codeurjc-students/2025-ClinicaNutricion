@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../styles/SearchComponent.css";
+import "../styles/components/SearchComponent.css";
 
 const SearchComponent = ({ entityType }) => {
     const BASE_URL = process.env.REACT_APP_BASE_URL;
@@ -27,7 +27,7 @@ const SearchComponent = ({ entityType }) => {
     return (
         <div className="content">
         <div className="search-container">
-            <h2>Buscador de {entityType === "nutritionists" ? "Nutricionistas" : entityType === "patients" ? "Pacientes" : "Auxiliares"}</h2>
+            <h2>Buscar {entityType === "nutritionists" ? "Nutricionistas" : entityType === "patients" ? "Pacientes" : "Auxiliares"}</h2>
 
             {/* Formulario de búsqueda */}
             <div className="search-form">

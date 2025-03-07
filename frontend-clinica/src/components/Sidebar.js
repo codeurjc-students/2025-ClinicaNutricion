@@ -1,7 +1,7 @@
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "react-oidc-context";
-import "../styles/Sidebar.css";
+import "../styles/components/Sidebar.css";
 import logOutIcon from "../assets/sidebar/LogoLogOut.png";
 import ProfileIcon from "../assets/sidebar/LogoPerfil.png";
 import CalendarIcon from "../assets/sidebar/LogoCalendario.png";

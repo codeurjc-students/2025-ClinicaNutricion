@@ -1,6 +1,8 @@
 import React from "react";
 import { useAuth } from "react-oidc-context";
 import AppRoutes from "./routes";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./styles/global.css";
 
 const App = () => {
     const auth = useAuth();
@@ -15,5 +17,4 @@ const App = () => {
         </div>
     );
 };
-
 export default App;
