@@ -1,8 +1,7 @@
 package com.jorgeleal.clinicanutricion.service;
 
-import com.jorgeleal.clinicanutricion.model.Patient;
-import com.jorgeleal.clinicanutricion.model.Nutritionist;
-import com.jorgeleal.clinicanutricion.model.Appointment;
+import com.jorgeleal.clinicanutricion.model.*;
+import com.jorgeleal.clinicanutricion.dto.*;
 import com.jorgeleal.clinicanutricion.repository.PatientRepository;
 import com.jorgeleal.clinicanutricion.repository.AppointmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,28 +19,65 @@ public class PatientService {
     @Autowired
     private AppointmentRepository appointmentRepository;
 
+    @Autowired
+    private UserService userService;
+
+    private PatientDTO convertToDTO(Patient patient) {
+        PatientDTO dto = new PatientDTO();
+        User user = patient.getUser();
+
+        dto.setIdUser(user.getIdUser());
+        dto.setName(user.getName());
+        dto.setSurname(user.getSurname());
+        dto.setBirthDate(user.getBirthDate());
+        dto.setMail(user.getMail());
+        dto.setPhone(user.getPhone());
+        dto.setGender(user.getGender());
+
+        return dto;
+    }
+
+    private Patient convertToDomain(PatientDTO dto) {
+        Patient patient = new Patient();
+        User user = new User();
+
+        user.setIdUser(dto.getIdUser());
+        user.setName(dto.getName());
+        user.setSurname(dto.getSurname());
+        user.setBirthDate(dto.getBirthDate());
+        user.setMail(dto.getMail());
+        user.setPhone(dto.getPhone());
+        user.setGender(dto.getGender());
+        user.setUserType(UserType.PATIENT);
+
+        patient.setUser(user);
+
+        return patient;
+    }
+
+    public Patient createPatient(PatientDTO dto) {
+        Patient patient = convertToDomain(dto);
+        patient.setUser(userService.saveUser(patient.getUser())); 
+        return patientRepository.save(patient);
+    }
+
     public Patient getPatientById(String id) {
-        return patientRepository.findById(id).orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
+        return patientRepository.findById(id).orElse(null);
     }
 
     public List<Patient> getAllPatients() {
         return patientRepository.findAll();
     }    
 
-    public Patient updatePatient(String id, Patient updatedPatient) {
-        if (!patientRepository.existsById(id)) {
-            return null;
-        }
-        updatedPatient.setIdUser(id);
-        return patientRepository.save(updatedPatient);
+    public Patient updatePatient(String id, PatientDTO dto) {
+        Patient patient = convertToDomain(dto);
+        patient.setIdUser(id);
+        userService.saveUser(patient.getUser());
+        return patientRepository.save(patient);
     }
 
     public List<Patient> getPatientsByFilters(String name, String surname, String phone, String email) {
         return patientRepository.findByUserFilters(name, surname, phone, email);
-    }
-
-    public Patient createPatient(Patient patient) {
-        return patientRepository.save(patient);
     }
 
     public void deletePatient(String id) {

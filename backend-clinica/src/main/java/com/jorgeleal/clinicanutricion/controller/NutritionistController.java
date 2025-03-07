@@ -3,6 +3,7 @@ package com.jorgeleal.clinicanutricion.controller;
 import com.jorgeleal.clinicanutricion.dto.AppointmentDTO;
 import com.jorgeleal.clinicanutricion.service.*;
 import com.jorgeleal.clinicanutricion.model.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import com.jorgeleal.clinicanutricion.repository.NutritionistRepository;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
@@ -14,17 +15,18 @@ import java.time.LocalDate;
 @RestController
 @RequestMapping("/nutritionist")
 public class NutritionistController {
-    private final AvailabilityService availabilityService;
-    private final AppointmentService appointmentService;
-    private final PatientService patientService;
-    private final NutritionistService nutritionistService;
+    @Autowired
+    private NutritionistService nutritionistService;
 
-    public NutritionistController(AvailabilityService availabilityService, AppointmentService appointmentService, PatientService patientService, NutritionistService nutritionistService) {
-        this.availabilityService = availabilityService;
-        this.appointmentService = appointmentService;
-        this.patientService = patientService;
-        this.nutritionistService = nutritionistService;
-    }
+    @Autowired
+    private AvailabilityService availabilityService;
+
+    @Autowired
+    private AppointmentService appointmentService;
+
+    @Autowired
+    private PatientService patientService;
+
 
     @GetMapping("/{id}/agenda")
     public ResponseEntity<List<AppointmentDTO>> getNutritionistAgenda(@PathVariable String id, @RequestParam LocalDate date) {
@@ -46,12 +48,6 @@ public class NutritionistController {
     @GetMapping("/{id}/patients")
     public ResponseEntity<List<Patient>> searchPatients(@PathVariable String id, @RequestParam String query) {
         return ResponseEntity.ok(patientService.getAllPatients());
-    }
-
-    @GetMapping("/{id}/statistics")
-    public ResponseEntity<String> getStatistics(@PathVariable String id) {
-        long totalPatients = nutritionistService.getTotalPatientsByNutritionist(id);
-        return ResponseEntity.ok("Total pacientes atendidos: " + totalPatients);
     }
 
     @PostMapping("/{id}/appointments")

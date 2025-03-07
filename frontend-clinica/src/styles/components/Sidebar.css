@@ -8,6 +8,7 @@
     padding-top: 20px;
     transition: all 0.3s ease-in-out;
     position: fixed;
+    z-index: 10;
 }
 
 

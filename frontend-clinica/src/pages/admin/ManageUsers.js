@@ -1,15 +1,30 @@
-import { useNavigate } from "react-router-dom";
-import "../../styles/global.css";
+import { Link, Outlet, useLocation } from "react-router-dom";
+import "../../styles/pages/ManageUsers.css";
 
 const ManageUsers = () => {
-    const navigate = useNavigate();
+    const location = useLocation();
+    const isBasePath = location.pathname === "/admin/manage-users";
 
     return (
-        <div className="content">
-            <h1>Gestión de Usuarios</h1>
-                <button className="global-button" onClick={() => navigate("/admin/manage-users/patients")}>Pacientes</button>
-                <button className="global-button" onClick={() => navigate("/admin/manage-users/nutritionists")}>Nutricionistas</button>
-                <button className="global-button" onClick={() => navigate("/admin/manage-users/auxiliaries")}>Auxiliares</button>
+        <div className="manage-users-container"> 
+            {isBasePath && <h2 className="text-center">Gestión de Usuarios</h2>}
+
+            {isBasePath && (
+                <div className="manage-users-buttons">
+                    <Link to="patients" state={{ prevTitle: "Gestión de Usuarios" }}>
+                        <button className="btn btn-primary">Pacientes</button>
+                    </Link>
+
+                    <Link to="nutritionists" state={{ prevTitle: "Gestión de Usuarios" }}>
+                        <button className="btn btn-primary">Nutricionistas</button>
+                    </Link>
+                    <Link to="auxiliaries" state={{ prevTitle: "Gestión de Usuarios" }}>
+                        <button className="btn btn-primary">Auxiliares</button>
+                    </Link>
+                </div>
+            )}
+
+            <Outlet />
         </div>
     );
 };

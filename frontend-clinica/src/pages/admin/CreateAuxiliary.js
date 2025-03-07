@@ -1,15 +1,15 @@
 import UserForm from "../../components/UserForm";
 import "../../styles/components/Form.css";
 
-const CreateNutritionist = () => {
+const CreateAuxiliary = () => {
     return (
         <div className="content">
             <div className="Form">
-                <h2>Registrar Nutricionista</h2>
-                <UserForm userType="nutritionist" />
+                <h2>Registrar Auxiliar</h2>
+                <UserForm userType="auxiliary" />
             </div>
         </div>
     );
 };
 
-export default CreateNutritionist;
+export default CreateAuxiliary;

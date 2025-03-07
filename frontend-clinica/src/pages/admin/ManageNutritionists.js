@@ -6,13 +6,12 @@ const ManageNutritionists = () => {
 
 
     return (           
-        <div className="content">
+        <div>
             <BackButton text="Gestión de Usuarios" to="/admin/manage-users" />
-            
-            <h2>Gestión de Nutricionistas</h2>
-            <div className="buttons-container">
-                <button onClick={() => navigate("/admin/manage-users/nutritionists/create")}>Dar de alta</button>
-                <button onClick={() => navigate("/admin/manage-users/nutritionists/search")}>Buscador</button>
+            <h2 className="text-center">Gestión de Nutricionistas</h2>
+            <div className="manage-users-buttons">
+                <button className="btn btn-primary" onClick={() => navigate("/admin/manage-users/nutritionists/create")}>Dar de alta</button>
+                <button className="btn btn-primary" onClick={() => navigate("/admin/manage-users/nutritionists/search")}>Buscar Nutricionista</button>
             </div>    
         </div>
     );
