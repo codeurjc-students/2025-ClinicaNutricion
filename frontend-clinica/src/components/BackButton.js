@@ -1,11 +1,13 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import backIcon from "../assets/BackLogo.png";
+import backIcon from "../assets/icons/back-icon.png";
 
-const BackButton = ({ defaultText = "Volver" }) => {
+const BackButton = ({ defaultText }) => {
     const navigate = useNavigate();
     const location = useLocation();
-    
-    const prevTitle = location.state?.prevTitle || defaultText;
+
+    const prevTitle = location.state?.prevTitle?.trim() || defaultText?.trim();
+
+    if (!prevTitle) return null;
 
     return (
         <button className="back-button" onClick={() => navigate(-1)}>

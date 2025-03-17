@@ -25,14 +25,15 @@ const Sidebar = () => {
             ];
         } else if (roles.includes("nutritionist")) {
             return [
-                { path: "/nutritionist/profile", icon: ProfileIcon, label: "Perfil" },
-                { path: "/nutritionist/agenda", icon: CalendarIcon, label: "Agenda" }
+                { path: "/nutritionists/profile", icon: ProfileIcon, label: "Perfil" },
+                { path: "/nutritionists/agenda", icon: CalendarIcon, label: "Agenda" },
+                { path: "/nutritionists/patients", icon: ManageUsersIcon, label: "Gestión de Pacientes" }
             ];
         } else if (roles.includes("auxiliary")) {
             return [
-                { path: "/auxiliary/profile", icon: ProfileIcon, label: "Perfil" },
-                { path: "/auxiliary/agenda", icon: CalendarIcon, label: "Agenda" },
-                { path: "/auxiliary/manage-users", icon: ManageUsersIcon, label: "Gestión de Pacientes" }
+                { path: "/auxiliaries/profile", icon: ProfileIcon, label: "Perfil" },
+                { path: "/auxiliaries/agenda", icon: CalendarIcon, label: "Agenda" },
+                { path: "/auxiliaries/patients", icon: ManageUsersIcon, label: "Gestión de Pacientes" }
             ];
         } else {
             return [];

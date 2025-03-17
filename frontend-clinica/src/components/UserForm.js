@@ -11,20 +11,10 @@ const UserForm = ({ isEditMode = false, userType }) => {
     const token = localStorage.getItem("token");
     const location = useLocation();
 
-    const isProfilePage = location.pathname.includes("/profile");
+    const [errorMessage, setErrorMessage] = useState("");
+    const [validationErrors, setValidationErrors] = useState({});
 
-    const getPluralEndpoint = (userType) => {
-        switch (userType) {
-            case "auxiliary":
-                return "auxiliaries";
-            case "patient":
-                return "patients";
-            case "nutritionist":
-                return "nutritionists";
-            default:
-                return userType + "s";
-        }
-    };
+    const isProfilePage = location.pathname.includes("/profile");
 
     // Estado para la notificación de éxito
     const [showSuccess, setShowSuccess] = useState(false);
@@ -39,7 +29,7 @@ const UserForm = ({ isEditMode = false, userType }) => {
         gender: "MASCULINO",
     };
 
-    if (userType === "nutritionist") {
+    if (userType === "nutritionists") {
         Object.assign(initialFormData, {
             appointmentDuration: 20,
             startTime: "",
@@ -54,8 +44,10 @@ const UserForm = ({ isEditMode = false, userType }) => {
     //Cargar datos del usuario autenticado o del usuario con ID específico
     useEffect(() => {
         if (isEditMode) {
-            const url = id ? `${BASE_URL}/admin/${getPluralEndpoint(userType)}/${id}` : 
-                             `${BASE_URL}/${userType}/profile`;
+            const isProfileUrl = location.pathname.includes("/profile");
+            const url = isProfileUrl
+                ? `${BASE_URL}/${userType}/profile`
+                : `${BASE_URL}/${userType}/${id}`;
 
             fetch(url, {
                 method: "GET",
@@ -66,72 +58,78 @@ const UserForm = ({ isEditMode = false, userType }) => {
             })
             .then(response => response.json())
             .then(data => {
-                setFormData(data);
+                let formattedData;
+    
+                if (isProfileUrl) {
+                    formattedData = { ...data };
+                } else {
+                    formattedData = { ...data.user };
+    
+                    if (userType === "nutritionists") {
+                        formattedData = {
+                            ...formattedData,
+                            appointmentDuration: data.appointmentDuration || "",
+                            startTime: data.startTime || "",
+                            endTime: data.endTime || "",
+                            maxActiveAppointments: data.maxActiveAppointments || "",
+                            minDaysBetweenAppointments: data.minDaysBetweenAppointments || ""
+                        };
+                    }
+                }
+    
+                setFormData(formattedData);
             })
             .catch(error => console.error("Error obteniendo usuario:", error));
         }
-    }, [isEditMode, id, userType, token, BASE_URL]);
+    }, [isEditMode, id, userType, token, BASE_URL, location.pathname]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+        setValidationErrors({ ...validationErrors, [e.target.name]: "" });
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const validateForm = () => {
+        const errors = {};
+
+        // Validación de nombre y apellidos (permitir guiones en apellidos)
+        const nameRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\- ]{2,50}$/;
+        if (!nameRegex.test(formData.name)) errors.name = "El nombre solo puede contener letras y espacios (2-50 caracteres).";
+        if (!nameRegex.test(formData.surname)) errors.surname = "Los apellidos solo pueden contener letras, guiones y espacios (2-50 caracteres).";
 
         // Validación de fecha de nacimiento
         const birthDate = new Date(formData.birthDate);
         const minDate = new Date("1900-01-01");
         const maxDate = new Date();
+        if (birthDate < minDate || birthDate > maxDate) errors.birthDate = "La fecha debe estar entre 1900 y hoy.";
+
+        // Validación de email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.mail)) errors.mail = "Formato de email no válido.";
+
+        // Validación de teléfono
+        const phoneRegex = /^\+\d{1,3} \d{6,14}$/;
+        if (!phoneRegex.test(formData.phone)) errors.phone = "Formato no válido. Incluye código de país y espacio antes del número.";
+
+        setValidationErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!validateForm()) return;
 
         const formattedData = { 
             ...formData, 
             birthDate: new Date(formData.birthDate).toISOString().split("T")[0] 
         };
 
-        if (birthDate < minDate || birthDate > maxDate) {
-            alert("La fecha de nacimiento no es válida. Debe estar entre 1900 y la fecha actual.");
-            return;
-        }
-
-        // Validación de teléfono
-        const phoneRegex = /^\+\d{1,3} \d{6,14}$/;
-        if (!phoneRegex.test(formData.phone)) {
-            alert("Formato de teléfono no válido. Debe incluir código de país y un espacio antes del número.");
-            return;
-        }
-
-        // Validación de email
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(formData.mail)) {
-            alert("Formato de email no válido.");
-            return;
-        }
-
-        const nameRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ ]{2,50}$/;
-        if (!nameRegex.test(formData.name) || !nameRegex.test(formData.surname)) {
-            alert("Nombre y Apellidos solo pueden contener letras y espacios, con una longitud entre 2 y 50 caracteres.");
-            return;
-        }
-
         try {
-            let url = "";
-            let method = "";
-            if (isEditMode) {
-                if (id) {
-                    // Edición de otro usuario (admin editando a un paciente, nutricionista o auxiliar)
-                    url = `${BASE_URL}/admin/${userType}/${id}`;
-                    method = "PUT";
-                } else {
-                    // Edición del perfil propio
-                    url = `${BASE_URL}/${userType}/profile`;
-                    method = "PUT";
-                }
-            } else {
-                // Creación de un nuevo usuario
-                url = `${BASE_URL}/admin/${getPluralEndpoint(userType)}`;
-                method = "POST";
-            }
+            let url = isEditMode 
+                ? (id ? `${BASE_URL}/${userType}/${id}` : `${BASE_URL}/${userType}/profile`) 
+                : `${BASE_URL}/${userType}`;
+
+            let method = isEditMode ? "PUT" : "POST";
 
             const response = await fetch(url, {
                 method,
@@ -146,11 +144,16 @@ const UserForm = ({ isEditMode = false, userType }) => {
                 setShowSuccess(true);
                 setTimeout(() => setShowSuccess(false), 1000);
             } else {
-                const errorText = await response.text();
-                alert(`Error: ${errorText}`);
+                const errorData = await response.json();
+                if (errorData.error && errorData.error.includes("Duplicate entry")) {
+                    setErrorMessage("Ya existe un usuario con este correo electrónico.");
+                } else {
+                    setErrorMessage("Error al procesar la solicitud. Inténtelo de nuevo.");
+                }
             }
         } catch (error) {
             console.error("Error:", error);
+            setErrorMessage("Ocurrió un error inesperado.");
         }
     };
 
@@ -162,79 +165,93 @@ const UserForm = ({ isEditMode = false, userType }) => {
     };
 
     return (
-        <Container className={`form-container ${isProfilePage ? "profile-form-container" : ""}`}>
-            <h2>{titles[userType]}</h2>
-            <Form onSubmit={handleSubmit}>
-                <Form.Group className="form-group">
-                    <Form.Label>Nombre:</Form.Label>
-                    <Form.Control type="text" name="name" value={formData.name} onChange={handleChange} required />
-                </Form.Group>
+        <>
+            <Container className={`form-container ${isProfilePage ? "profile-form-container" : ""}`}>
+                <h2>{titles[userType]}</h2>
+                {errorMessage && <div className="error-message">{errorMessage}</div>}
 
-                <Form.Group className="form-group">
-                    <Form.Label>Apellidos:</Form.Label>
-                    <Form.Control type="text" name="surname" value={formData.surname} onChange={handleChange} required />
-                </Form.Group>
+                <Form noValidate onSubmit={handleSubmit}>
+                    <Form.Group className="form-group">
+                        <Form.Label>Nombre:</Form.Label>
+                        <Form.Control type="text" name="name" value={formData.name} onChange={handleChange} isInvalid={!!validationErrors.name} required />
+                        <Form.Control.Feedback type="invalid">{validationErrors.name}</Form.Control.Feedback>
+                    </Form.Group>
 
-                <Form.Group className="form-group">
-                    <Form.Label>Fecha de nacimiento:</Form.Label>
-                    <Form.Control type="date" name="birthDate" value={formData.birthDate} onChange={handleChange} required />
-                </Form.Group>
+                    <Form.Group className="form-group">
+                        <Form.Label>Apellidos:</Form.Label>
+                        <Form.Control type="text" name="surname" value={formData.surname} onChange={handleChange} isInvalid={!!validationErrors.surname} required />
+                        <Form.Control.Feedback type="invalid">{validationErrors.surname}</Form.Control.Feedback>
+                    </Form.Group>
 
-                <Form.Group className="form-group">
-                    <Form.Label>Email:</Form.Label>
-                    <Form.Control type="mail" name="mail" value={formData.mail} onChange={handleChange} required />
-                </Form.Group>
+                    <Form.Group className="form-group">
+                        <Form.Label>Fecha de nacimiento:</Form.Label>
+                        <Form.Control type="date" name="birthDate" value={formData.birthDate} onChange={handleChange} isInvalid={!!validationErrors.birthDate} required />
+                        <Form.Control.Feedback type="invalid">{validationErrors.birthDate}</Form.Control.Feedback>
+                    </Form.Group>
 
-                <Form.Group className="form-group">
-                    <Form.Label>Teléfono:</Form.Label>
-                    <Form.Control type="text" name="phone" value={formData.phone} onChange={handleChange} required />
-                </Form.Group>
+                    <Form.Group className="form-group">
+                        <Form.Label>Email:</Form.Label>
+                        <Form.Control type="mail" name="mail" value={formData.mail} onChange={handleChange} isInvalid={!!validationErrors.mail}  required />
+                        <Form.Control.Feedback type="invalid">{validationErrors.mail}</Form.Control.Feedback>
+                    </Form.Group>
 
-                <Form.Group className="form-group">
-                    <Form.Label>Género:</Form.Label>
-                    <Form.Select name="gender" value={formData.gender} onChange={handleChange}>
-                        <option value="MASCULINO">Masculino</option>
-                        <option value="FEMENINO">Femenino</option>
-                        <option value="OTRO">Otro</option>
-                    </Form.Select>
-                </Form.Group>
+                    <Form.Group className="form-group">
+                        <Form.Label>Teléfono:</Form.Label>
+                        <Form.Control type="text" name="phone" value={formData.phone} onChange={handleChange} isInvalid={!!validationErrors.phone} required />
+                        <Form.Control.Feedback type="invalid">{validationErrors.phone}</Form.Control.Feedback>
+                    </Form.Group>
 
-                {userType === "nutritionist" && (
-                    <>
-                        <Form.Group className="form-group">
-                            <Form.Label>Duración de cita (minutos):</Form.Label>
-                            <Form.Control type="number" name="appointmentDuration" value={formData.appointmentDuration} onChange={handleChange} required />
-                        </Form.Group>
+                    <Form.Group className="form-group">
+                        <Form.Label>Género:</Form.Label>
+                        <Form.Select name="gender" value={formData.gender} onChange={handleChange}>
+                            <option value="MASCULINO">Masculino</option>
+                            <option value="FEMENINO">Femenino</option>
+                            <option value="OTRO">Otro</option>
+                        </Form.Select>
+                    </Form.Group>
 
-                        <Form.Group className="form-group">
-                            <Form.Label>Hora de inicio:</Form.Label>
-                            <Form.Control type="time" name="startTime" value={formData.startTime} onChange={handleChange} required />
-                        </Form.Group>
+                    {userType === "nutritionists" && (
+                        <>
+                            <Form.Group className="form-group">
+                                <Form.Label>Duración de cita (minutos):</Form.Label>
+                                <Form.Select name="appointmentDuration" value={formData.appointmentDuration} onChange={handleChange} required>
+                                    <option value="10">10 minutos</option>
+                                    <option value="20">20 minutos</option>
+                                    <option value="30">30 minutos</option>
+                                    <option value="60">60 minutos</option>
+                                </Form.Select>
+                            </Form.Group>
 
-                        <Form.Group className="form-group">
-                            <Form.Label>Hora de fin:</Form.Label>
-                            <Form.Control type="time" name="endTime" value={formData.endTime} onChange={handleChange} required />
-                        </Form.Group>
+                            <Form.Group className="form-group">
+                                <Form.Label>Hora de inicio:</Form.Label>
+                                <Form.Control type="time" name="startTime" value={formData.startTime} onChange={handleChange} required />
+                            </Form.Group>
 
-                        <Form.Group className="form-group">
-                            <Form.Label>Máximo citas activas:</Form.Label>
-                            <Form.Control type="number" name="maxActiveAppointments" value={formData.maxActiveAppointments} onChange={handleChange} required />
-                        </Form.Group>
+                            <Form.Group className="form-group">
+                                <Form.Label>Hora de fin:</Form.Label>
+                                <Form.Control type="time" name="endTime" value={formData.endTime} onChange={handleChange} required />
+                            </Form.Group>
 
-                        <Form.Group className="form-group">
-                            <Form.Label>Mínimo días entre citas:</Form.Label>
-                            <Form.Control type="number" name="minDaysBetweenAppointments" value={formData.minDaysBetweenAppointments} onChange={handleChange} required />
-                        </Form.Group>
-                    </>
-                )}
+                            <Form.Group className="form-group">
+                                <Form.Label>Máximo citas activas:</Form.Label>
+                                <Form.Control type="number" name="maxActiveAppointments" value={formData.maxActiveAppointments} onChange={handleChange} required />
+                            </Form.Group>
 
-                <Button className="btn-submit" type="submit">
-                    {isEditMode ? "Guardar" : "Registrar"}
-                </Button>
-            </Form>
+                            <Form.Group className="form-group">
+                                <Form.Label>Mínimo días entre citas:</Form.Label>
+                                <Form.Control type="number" name="minDaysBetweenAppointments" value={formData.minDaysBetweenAppointments} onChange={handleChange} required />
+                            </Form.Group>
+                        </>
+                    )}
+
+                    <Button className="btn-submit" type="submit">
+                        {isEditMode ? "Guardar" : "Registrar"}
+                    </Button>
+                </Form>
+            </Container>
 
             {showSuccess && <SuccessNotification message="¡Guardado con éxito!" onClose={() => setShowSuccess(false)} />}
-        </Container>
+        </>
     );
 };
 
