@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Container, Form, Button, Row, Col, Card, Spinner } from "react-bootstrap";
+import { Container, Form, Spinner } from "react-bootstrap";
 import NutritionistCalendar from "../../components/NutritionistCalendar";
-import "../../styles/components/AdminAgenda.css";
+import "../../styles/pages/AdminAgenda.css";
 
 const AdminAgenda = () => {
     const BASE_URL = process.env.REACT_APP_BASE_URL;
@@ -9,17 +9,19 @@ const AdminAgenda = () => {
     const [selectedNutritionist, setSelectedNutritionist] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [loading, setLoading] = useState(false);
+    const [showDropdown, setShowDropdown] = useState(false);
 
     useEffect(() => {
         const fetchNutritionists = async () => {
             try {
                 if (!searchTerm.trim()) {
-                    setNutritionists([]); // No cargar datos si el campo está vacío
+                    setNutritionists([]);
+                    setShowDropdown(false);
                     return;
                 }
 
                 setLoading(true);
-                let url = `${BASE_URL}/admin/nutritionists`;
+                let url = `${BASE_URL}/nutritionists`;
 
                 if (searchTerm.trim() !== "") {
                     url += `?fullName=${encodeURIComponent(searchTerm)}`;
@@ -35,16 +37,15 @@ const AdminAgenda = () => {
                 });
 
                 if (!response.ok) throw new Error("Error en la respuesta del servidor");
-
                 const data = await response.json();
                 setNutritionists(data);
+                setShowDropdown(true);
             } catch (error) {
                 console.error("Error cargando nutricionistas:", error);
             } finally {
                 setLoading(false);
             }
         };
-
         fetchNutritionists();
     }, [searchTerm, BASE_URL]);
 
@@ -62,44 +63,46 @@ const AdminAgenda = () => {
         <Container className="admin-agenda-container">
             <h2 className="text-center">
                 {selectedNutritionist
-                    ? `Agenda de ${selectedNutritionist.user?.name} ${selectedNutritionist.user?.surname}`
+                    ? `Agenda de ${selectedNutritionist.name} ${selectedNutritionist.surname}`
                     : "Agenda de Nutricionistas"}
             </h2>
 
             {/* Buscador de nutricionistas */}
-            <Form.Group className="mb-3">
+            <Form.Group className="search-box">
                 <Form.Control
                     type="text"
                     placeholder="Buscar nutricionista..."
                     value={selectedNutritionist
-                        ? `${selectedNutritionist.user?.name} ${selectedNutritionist.user?.surname}`
+                        ? `${selectedNutritionist.name} ${selectedNutritionist.surname}`
                         : searchTerm}
                     onChange={handleSearchChange}
                     className="search-input"
+                    onFocus={() => !selectedNutritionist && setShowDropdown(true)}
+                    onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
                 />
+                {loading && <Spinner animation="border" variant="success" className="spinner" />}
+                {showDropdown && searchTerm.trim() && nutritionists.length > 0 && (
+                    <div className="dropdown-suggestions">
+                        {nutritionists.slice(0, 6).map(nutri => (
+                            <div key={nutri.idUser} className="suggestion-item" onClick={() => setSelectedNutritionist(nutri)}>
+                                {nutri.name} {nutri.surname}
+                            </div>
+                        ))}
+                        {nutritionists.length > 6 && (
+                            <div className="suggestion-item more-results">...</div>
+                        )}
+                    </div>
+                )}
             </Form.Group>
 
-            {/* Indicador de carga */}
-            {loading && <Spinner animation="border" variant="success" className="d-block mx-auto" />}
-
-            {/* Sugerencias de nutricionistas */}
-            {!selectedNutritionist && searchTerm.trim() && nutritionists.length > 0 && (
-                <Row className="justify-content-center nutritionists-container">
-                    {nutritionists.slice(0, 4).map(nutri => (
-                        <Col key={nutri.idUser} xs={12} sm={6} md={4} lg={3} className="d-flex justify-content-center">
-                            <Card className="nutritionist-card" onClick={() => setSelectedNutritionist(nutri)}>
-                                <Card.Body className="text-center">
-                                    <Card.Title>{nutri.user?.name} {nutri.user?.surname}</Card.Title>
-                                </Card.Body>
-                            </Card>
-                        </Col>
-                    ))}
-                    {nutritionists.length > 4 && <p className="more-options">Más resultados...</p>}
-                </Row>
+            {selectedNutritionist && (
+            <NutritionistCalendar
+                    nutritionistId={selectedNutritionist.idUser}
+                    appointmentDuration={selectedNutritionist.appointmentDuration}
+                    startTime={selectedNutritionist.startTime} 
+                    endTime={selectedNutritionist.endTime} 
+                />
             )}
-
-            {/* Mostrar calendario si hay un nutricionista seleccionado */}
-            {selectedNutritionist && <NutritionistCalendar nutritionistId={selectedNutritionist.idUser} />}
         </Container>
     );
 };
