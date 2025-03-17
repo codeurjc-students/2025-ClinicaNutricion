@@ -1,11 +1,12 @@
-.manage-users-container {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    max-width: 800px;
+.manage-users-container { 
+    height: 100vh; 
+    width: calc(100% - 190px);
+    background: var(--background-color);
+    padding: 30px;
     margin: auto;
 }
+
+
 
 .manage-users-buttons {
     display: flex;

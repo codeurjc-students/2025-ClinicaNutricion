@@ -30,11 +30,11 @@ const AuthRedirect = () => {
         if (roles.includes("admin")) {
           navigate("/admin");
         } else if (roles.includes("nutritionist")) {
-          navigate("/nutritionist");
+          navigate("/nutritionists");
         } else if (roles.includes("patient")) {
-          navigate("/patient");
+          navigate("/patients");
         } else if (roles.includes("auxiliary")) {
-          navigate("/auxiliary");
+          navigate("/auxiliaries");
         } else {
           navigate("/unauthorized");
         }

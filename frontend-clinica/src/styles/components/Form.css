@@ -2,16 +2,18 @@
     max-width: 600px;
     margin: 40px auto;
     padding: 20px;
-    background-color: var(--secondary-color); /* Verde pastel claro */
+    background-color: var(--secondary-color); 
     border-radius: 8px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     font-family: Arial, sans-serif;
+    overflow-y: auto;
+    max-height: 80vh;
 }
 
 /* Estilizar el título */
 .form-container h2 {
     text-align: center;
-    color: var(--text-color); /* Verde oscuro */
+    color: var(--text-color);
     font-size: 24px;
     margin-bottom: 20px;
 }
@@ -24,21 +26,21 @@
 /* Etiquetas */
 label {
     font-weight: bold;
-    color: var(--text-color); /* Verde oscuro */
+    color: var(--text-color); 
 }
 
 /* Inputs y selects */
 input, select {
     width: 100%;
     padding: 10px;
-    border: 1px solid var(--secondary-color); /* Verde claro */
+    border: 1px solid var(--secondary-color); 
     border-radius: 5px;
     font-size: 14px;
 }
 
 /* Mejora en la selección de inputs */
 input:focus, select:focus {
-    border-color: var(--primary-color); /* Verde pastel más oscuro */
+    border-color: var(--primary-color); 
     outline: none;
     box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
 }
@@ -47,7 +49,7 @@ input:focus, select:focus {
 .btn-submit {
     width: 100%;
     padding: 10px;
-    background-color: var(--primary-color); /* Verde principal */
+    background-color: var(--primary-color); 
     color: white;
     font-size: 16px;
     font-weight: bold;
@@ -59,7 +61,13 @@ input:focus, select:focus {
 }
 
 .btn-submit:hover {
-    background-color: #388E3C; /* Verde más oscuro */
+    background-color: #388E3C;
+}
+
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
 }
 
 /* Diseño Responsive */

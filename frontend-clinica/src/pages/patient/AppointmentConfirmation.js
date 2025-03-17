@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 const AppointmentConfirmation = () => {
   const navigate = useNavigate();
-  const { nutritionistId, date, time } = useParams();
+  const { date, time } = useParams();
 
   // Suponiendo que el nombre del paciente y del nutricionista se pueden obtener de un estado global o API
   const patientName = 'Juan Pérez';
