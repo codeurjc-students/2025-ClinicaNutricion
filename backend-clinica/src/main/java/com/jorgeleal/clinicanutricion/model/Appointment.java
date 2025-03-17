@@ -18,16 +18,23 @@ public class Appointment {
     private String idAppointment;
 
     @ManyToOne
-    @JoinColumn(name = "id_nutritionist")
-    private Nutritionist nutritionist;
+    @JoinColumn(name = "id_nutritionist", referencedColumnName = "id_user", nullable = false)
+    private Nutritionist nutritionist;    
 
     @ManyToOne
-    @JoinColumn(name = "id_patient")
+    @JoinColumn(name = "id_patient", referencedColumnName = "id_user", nullable = true) 
     private Patient patient;
 
     @Column(name = "date", nullable = false)
     private LocalDate date;
 
-    @Column(name = "time", nullable = false)
-    private LocalTime time;
+    @Column(name = "startTime", nullable = false)
+    private LocalTime startTime;
+
+    @Column(name = "endTime", nullable = false)
+    private LocalTime endTime;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", nullable = false)
+    private AppointmentType type;
 }

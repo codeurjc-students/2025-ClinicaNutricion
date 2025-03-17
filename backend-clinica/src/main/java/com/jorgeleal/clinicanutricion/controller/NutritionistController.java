@@ -1,25 +1,32 @@
 package com.jorgeleal.clinicanutricion.controller;
 
+import com.jorgeleal.clinicanutricion.dto.NutritionistDTO;
 import com.jorgeleal.clinicanutricion.dto.AppointmentDTO;
 import com.jorgeleal.clinicanutricion.service.*;
 import com.jorgeleal.clinicanutricion.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jorgeleal.clinicanutricion.repository.NutritionistRepository;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken; 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import java.util.stream.Collectors;
+import org.springframework.http.HttpStatus;
+import java.util.HashMap;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.time.LocalDate;
+import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/nutritionist")
+@RequestMapping("/nutritionists")
 public class NutritionistController {
     @Autowired
     private NutritionistService nutritionistService;
-
-    @Autowired
-    private AvailabilityService availabilityService;
 
     @Autowired
     private AppointmentService appointmentService;
@@ -27,43 +34,123 @@ public class NutritionistController {
     @Autowired
     private PatientService patientService;
 
+    @Autowired
+    private AuxiliaryService auxiliaryService;
 
-    @GetMapping("/{id}/agenda")
-    public ResponseEntity<List<AppointmentDTO>> getNutritionistAgenda(@PathVariable String id, @RequestParam LocalDate date) {
-        List<AppointmentDTO> appointments = appointmentService.getAppointmentsByNutritionistAndDate(id, date);
-        return ResponseEntity.ok(appointments);
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @GetMapping("/profile")
+    public ResponseEntity<Map<String, Object>> getProfile(@AuthenticationPrincipal Jwt jwt) {
+        try {
+            // Extrae el ID del usuario desde el JWT (Cognito usa "sub")
+            String id = jwt.getClaimAsString("sub");
+            if (id == null || id.isEmpty()) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("error", "ID de usuario no encontrado en el token"));
+            }
+
+            Nutritionist nutritionist = nutritionistService.getNutritionistById(id);
+            if (nutritionist == null) {
+                return ResponseEntity
+                        .status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "Usuario no encontrado"));
+            }
+
+            User user = nutritionist.getUser();
+            if (user == null) {
+                return ResponseEntity
+                        .status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "No se encontraron datos del usuario asociado"));
+            }
+    
+            // Construye la respuesta con los datos del usuario
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", nutritionist.getIdUser());
+            response.put("name", user.getName());
+            response.put("surname", user.getSurname());
+            response.put("birthDate", user.getBirthDate());
+            response.put("mail", user.getMail());
+            response.put("phone", user.getPhone());
+            response.put("gender", user.getGender().toString());
+            response.put("userType", user.getUserType().toString());
+            response.put("startTime", nutritionist.getStartTime());
+            response.put("endTime", nutritionist.getEndTime());
+            response.put("appointmentDuration", nutritionist.getAppointmentDuration());
+            response.put("minDaysBetweenAppointments", nutritionist.getMinDaysBetweenAppointments());
+            response.put("maxActiveAppointments", nutritionist.getMaxActiveAppointments());
+    
+            return ResponseEntity.ok(response);
+    
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error interno: " + e.getMessage()));
+        }
     }
 
+    @PutMapping("/profile")
+    public ResponseEntity<?> updateProfile(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody Map<String, Object> updates) {
+        //Extrae el ID del usuario desde el JWT
+        String id = jwt.getClaimAsString("sub");
+        if (id == null || id.isEmpty()) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "ID de usuario no encontrado en el token"));
+        }
 
-    @PostMapping("/{id}/block")
-    public ResponseEntity<Availability> blockDate(@PathVariable String id, @RequestBody Availability availability) {
-        return ResponseEntity.ok(availabilityService.saveAvailability(availability));
+        // Actualiza los datos del usuario
+        NutritionistDTO nutritionistDTO = objectMapper.convertValue(updates, NutritionistDTO.class);
+
+        return ResponseEntity.ok(nutritionistService.updateNutritionist(id, nutritionistDTO));
     }
 
-    @GetMapping("/{id}/history")
-    public ResponseEntity<List<AppointmentDTO>> getAppointmentHistory(@PathVariable String id, @RequestParam int year, @RequestParam int month) {
-        return ResponseEntity.ok(appointmentService.getAppointmentsByNutritionistAndDate(id, LocalDate.of(year, month, 1)));
+    @GetMapping
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_PATIENT', 'ROLE_AUXILIARY')")
+    public ResponseEntity<List<NutritionistDTO>> getAllNutritionists(
+        @RequestParam(required = false) String name,
+        @RequestParam(required = false) String surname,
+        @RequestParam(required = false) String fullName,
+        @RequestParam(required = false) String phone,
+        @RequestParam(required = false) String email,
+        @RequestParam(required = false) Boolean active) {
+
+        List<NutritionistDTO> nutritionists = nutritionistService.getNutritionistsByFilters(name, surname, fullName, phone, email, active);
+        return ResponseEntity.ok(nutritionists);
     }
 
-    @GetMapping("/{id}/patients")
-    public ResponseEntity<List<Patient>> searchPatients(@PathVariable String id, @RequestParam String query) {
-        return ResponseEntity.ok(patientService.getAllPatients());
+    @GetMapping("/{id}")
+    public ResponseEntity<Nutritionist> getNutritionistById(@PathVariable String id) {
+        return ResponseEntity.ok(nutritionistService.getNutritionistById(id));
     }
 
-    @PostMapping("/{id}/appointments")
-    public ResponseEntity<Appointment> createAppointment(@PathVariable String id, @RequestBody Appointment appointment) {
-        return ResponseEntity.ok(appointmentService.createAppointment(appointment));
+    @PostMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<NutritionistDTO> createNutritionist(@RequestBody NutritionistDTO dto) {
+        return ResponseEntity.ok(nutritionistService.createNutritionist(dto));
     }
 
-    @PutMapping("/appointments/{id}")
-    public ResponseEntity<Appointment> updateAppointment(@PathVariable String id, @RequestBody Appointment updatedAppointment) {
-        Appointment appointment = appointmentService.updateAppointment(id, updatedAppointment);
-        return appointment != null ? ResponseEntity.ok(appointment) : ResponseEntity.notFound().build();
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<NutritionistDTO> updateNutritionist(@PathVariable String id, @RequestBody NutritionistDTO dto) {
+        return ResponseEntity.ok(nutritionistService.updateNutritionist(id, dto));
     }
 
-    @DeleteMapping("/appointments/{id}")
-    public ResponseEntity<Void> deleteAppointment(@PathVariable String id) {
-        appointmentService.deleteAppointment(id);
-        return ResponseEntity.noContent().build();
+    @PutMapping("/{id}/status")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Void> changeNutritionistStatus(@PathVariable String id, @RequestBody Boolean active) {
+        if (active == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        nutritionistService.changeNutritionistStatus(id, active);
+        return ResponseEntity.ok().build();
+    }    
+
+    @GetMapping("/{id}/appointments")
+    @PreAuthorize("hasAnyRole('ROLE_PATIENT', 'ROLE_ADMIN', 'ROLE_NUTRITIONIST')")
+    public ResponseEntity<List<AppointmentDTO>> getNutritionistAppointments(@PathVariable String id) {
+        return ResponseEntity.ok(appointmentService.getAppointmentsByNutritionist(id));
     }
 }

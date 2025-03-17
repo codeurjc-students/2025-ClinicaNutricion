@@ -16,11 +16,12 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 @AllArgsConstructor
 public class Nutritionist {
     @Id
+    @Column(name = "id_user")
     private String idUser;
 
     @OneToOne
     @MapsId
-    @JoinColumn(name = "id_user")
+    @JoinColumn(name = "id_user", referencedColumnName = "idUser")
     private User user;
 
     @Column(name = "start_time", nullable = false)
@@ -37,6 +38,9 @@ public class Nutritionist {
 
     @Column(name = "max_active_appointments", nullable = false)
     private int maxActiveAppointments;
+
+    @Column(name = "active", columnDefinition = "TINYINT(1)", nullable = false)
+    private boolean active = true;
 
     public int getAppointmentDuration() {
         return appointmentDuration;

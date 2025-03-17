@@ -6,6 +6,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -39,11 +40,38 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
+                // Permisos para autenticación
                 .requestMatchers("/auth/**", "/").permitAll()
+
+                // Permisos para obtener información de administradores
                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
-                .requestMatchers("/nutritionist/**").hasAuthority("ROLE_NUTRITIONIST")
-                .requestMatchers("/patient/**").hasAuthority("ROLE_PATIENT")
-                .requestMatchers("/auxiliary/**").hasAuthority("ROLE_AUXILIARY")
+
+                // Permisos para obtener información de nutricionistas
+                .requestMatchers("/nutritionists/profile").hasAuthority("ROLE_NUTRITIONIST")
+                .requestMatchers(HttpMethod.GET, "/nutritionists").authenticated()
+                .requestMatchers(HttpMethod.GET, "/nutritionists/{id}").authenticated()
+                .requestMatchers(HttpMethod.POST, "/nutritionists").hasAuthority("ROLE_ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/nutritionists/{id}").hasAuthority("ROLE_ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/nutritionists/{id}").hasAuthority("ROLE_ADMIN")
+
+                // Permisos para obtener información de auxiliares
+                .requestMatchers("/auxiliaries/profile").hasAuthority("ROLE_AUXILIARY")
+                .requestMatchers(HttpMethod.GET, "/auxiliaries/{id}").hasAuthority("ROLE_ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/auxiliaries/{id}").hasAuthority("ROLE_ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/auxiliaries/{id}").hasAuthority("ROLE_ADMIN")
+
+                // Permisos para obtener información de pacientes
+                .requestMatchers("/patients/{id}").hasAnyAuthority("ROLE_ADMIN", "ROLE_NUTRITIONIST", "ROLE_AUXILIARY")
+                .requestMatchers(HttpMethod.DELETE, "/patients/{id}").hasAnyAuthority("ROLE_ADMIN", "ROLE_NUTRITIONIST", "ROLE_AUXILIARY")
+
+                // Permisos para obtener citas
+                .requestMatchers(HttpMethod.GET, "/appointments/{id}").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/appointments/{id}").authenticated()
+                .requestMatchers(HttpMethod.GET, "/appointments/nutritionist/{id}").hasAnyAuthority("ROLE_NUTRITIONIST", "ROLE_ADMIN", "ROLE_AUXILIARY")
+                .requestMatchers(HttpMethod.POST, "/appointments").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/appointments/{id}").hasAnyAuthority("ROLE_AUXILIARY", "ROLE_NUTRITIONIST", "ROLE_ADMIN")
+
+
                 .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                 .anyRequest().authenticated()
             )

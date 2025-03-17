@@ -1,48 +1,35 @@
 package com.jorgeleal.clinicanutricion.controller;
 
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken; 
-import com.jorgeleal.clinicanutricion.dto.*;
-import jakarta.validation.Valid;
-import com.jorgeleal.clinicanutricion.model.*;
-import com.jorgeleal.clinicanutricion.service.*;
+import com.jorgeleal.clinicanutricion.dto.AuxiliaryDTO;
+import com.jorgeleal.clinicanutricion.model.Auxiliary;
+import com.jorgeleal.clinicanutricion.service.AuxiliaryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import com.jorgeleal.clinicanutricion.model.User;
+import com.jorgeleal.clinicanutricion.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.http.HttpStatus;
+import org.springframework.security.oauth2.jwt.Jwt;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.access.prepost.PreAuthorize;
+import jakarta.validation.Valid;
+
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-import java.time.LocalDate;
-import java.util.List;
 
 @RestController
-@RequestMapping("/admin")
-@PreAuthorize("hasRole('ROLE_ADMIN')")
+@RequestMapping("/auxiliaries")
 @CrossOrigin(origins = "http://localhost:3000")
-public class AdminAuxiliaryController {
-
-    @Autowired
-    private NutritionistService nutritionistService;
+public class AuxiliaryController {
 
     @Autowired
     private AuxiliaryService auxiliaryService;
 
     @Autowired
-    private AppointmentService appointmentService;
-
-    @Autowired
-    private PatientService patientService;
-
-    @Autowired
     private UserService userService;
-
-    @Autowired
-    private AdminAuxiliaryService adminAuxiliaryService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -50,7 +37,6 @@ public class AdminAuxiliaryController {
     @GetMapping("/profile")
     public ResponseEntity<Map<String, Object>> getProfile(@AuthenticationPrincipal Jwt jwt) {
         try {
-            // Extrae el ID del usuario desde el JWT (Cognito usa "sub")
             String id = jwt.getClaimAsString("sub");
             if (id == null || id.isEmpty()) {
                 return ResponseEntity
@@ -58,15 +44,13 @@ public class AdminAuxiliaryController {
                         .body(Map.of("error", "ID de usuario no encontrado en el token"));
             }
     
-            // Busca al usuario en la base de datos
             User user = userService.getUserByIdUser(id);
             if (user == null) {
                 return ResponseEntity
                         .status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", "Usuario no encontrado"));
             }
-    
-            // Construye la respuesta con los datos del usuario
+
             Map<String, Object> response = new HashMap<>();
             response.put("id", user.getIdUser());
             response.put("name", user.getName());
@@ -90,7 +74,6 @@ public class AdminAuxiliaryController {
     @PutMapping("/profile")
     public ResponseEntity<?> updateProfile(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody Map<String, Object> updates) {
         try {
-            // Extrae el ID del usuario desde el JWT (Cognito usa "sub")
             String id = jwt.getClaimAsString("sub");
             if (id == null || id.isEmpty()) {
                 return ResponseEntity
@@ -98,10 +81,9 @@ public class AdminAuxiliaryController {
                         .body(Map.of("error", "ID de usuario no encontrado en el token"));
             }
     
-            // Actualiza los datos del usuario
-            AdminAuxiliaryDTO adminAuxiliaryDTO = objectMapper.convertValue(updates, AdminAuxiliaryDTO.class);
+            AuxiliaryDTO auxiliaryDTO = objectMapper.convertValue(updates, AuxiliaryDTO.class);
 
-            return ResponseEntity.ok(adminAuxiliaryService.updateAdminAuxiliary(id, adminAuxiliaryDTO));
+            return ResponseEntity.ok(auxiliaryService.updateAuxiliary(id, auxiliaryDTO));
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -109,5 +91,42 @@ public class AdminAuxiliaryController {
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Error interno: " + e.getMessage()));
         }
+    }
+
+    @GetMapping
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    public ResponseEntity<List<AuxiliaryDTO>> getAllAuxiliaries(
+        @RequestParam(required = false) String name,
+        @RequestParam(required = false) String surname,
+        @RequestParam(required = false) String phone,
+        @RequestParam(required = false) String email) {
+
+        List<AuxiliaryDTO> auxiliaries = auxiliaryService.getAuxiliariesByFilters(name, surname, phone, email);
+        return ResponseEntity.ok(auxiliaries);
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<AuxiliaryDTO> getAuxiliaryById(@PathVariable String id) {
+        return ResponseEntity.ok(auxiliaryService.getAuxiliaryById(id));
+    }
+
+    @PostMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Auxiliary> createAuxiliary(@RequestBody AuxiliaryDTO dto) {
+        return ResponseEntity.ok(auxiliaryService.createAuxiliary(dto));
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Auxiliary> updateAuxiliary(@PathVariable String id, @RequestBody AuxiliaryDTO dto) {
+        return ResponseEntity.ok(auxiliaryService.updateAuxiliary(id, dto));
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Void> deleteAuxiliary(@PathVariable String id) {
+        auxiliaryService.deleteAuxiliary(id);
+        return ResponseEntity.noContent().build();
     }
 }
