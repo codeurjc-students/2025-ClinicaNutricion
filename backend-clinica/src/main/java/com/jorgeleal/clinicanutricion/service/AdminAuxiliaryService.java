@@ -64,46 +64,9 @@ public class AdminAuxiliaryService {
     
         return adminAuxiliary;
     }
-    
-
-    public ResponseEntity<?> getUserById(String userType, String id) {
-        switch (userType.toLowerCase()) {
-            case "nutritionist":
-                Nutritionist nutritionist = nutritionistService.getNutritionistById(id);
-                if (nutritionist == null) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nutricionista no encontrado");
-                }
-                return ResponseEntity.ok(nutritionist);
-    
-            case "patient":
-                Patient patient = patientService.getPatientById(id);
-                if (patient == null) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Paciente no encontrado");
-                }
-                return ResponseEntity.ok(patient);
-    
-            case "auxiliary":
-                Auxiliary auxiliary = auxiliaryService.getAuxiliaryById(id);
-                if (auxiliary == null) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Auxiliar no encontrado");
-                }
-                return ResponseEntity.ok(auxiliary);
-    
-            case "admin_auxiliary":
-                AdminAuxiliary adminAuxiliary = getAdminAuxiliaryById(id);
-                if (adminAuxiliary == null) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Administrador auxiliar no encontrado");
-                }
-                return ResponseEntity.ok(adminAuxiliary);
-    
-            default:
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Tipo de usuario no válido");
-        }
-    }
 
     public AdminAuxiliary updateAdminAuxiliary(String id, AdminAuxiliaryDTO dto) {
         AdminAuxiliary admin = adminAuxiliaryRepository.findById(id).orElse(null);
-    
         if (admin == null) {
             throw new RuntimeException("El AdminAuxiliary con ID " + id + " no existe.");
         }
@@ -122,8 +85,8 @@ public class AdminAuxiliaryService {
     }
 
     public AdminAuxiliary getAdminAuxiliaryById(String id) {
-        AdminAuxiliary admin = adminAuxiliaryRepository.findById(id).orElse(null);
-        return admin;
+        return adminAuxiliaryRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Administrador auxiliar no encontrado"));
     }
     
 }

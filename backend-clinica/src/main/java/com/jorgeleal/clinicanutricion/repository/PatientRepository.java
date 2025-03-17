@@ -10,12 +10,14 @@ import java.util.List;
 @Repository
 public interface PatientRepository extends JpaRepository<Patient, String> {
     @Query("SELECT n FROM Patient n WHERE " +
-            "(:name IS NULL OR LOWER(n.user.name) LIKE LOWER(CONCAT('%', :name, '%'))) " +
-            "AND (:surname IS NULL OR LOWER(n.user.surname) LIKE LOWER(CONCAT('%', :surname, '%'))) " +
-            "AND (:phone IS NULL OR n.user.phone LIKE CONCAT('%', :phone, '%')) " +
-            "AND (:email IS NULL OR LOWER(n.user.mail) LIKE LOWER(CONCAT('%', :email, '%')))")
+        "(:name IS NULL OR LOWER(n.user.name) LIKE LOWER(CONCAT('%', :name, '%'))) " +
+        "AND (:surname IS NULL OR LOWER(n.user.surname) LIKE LOWER(CONCAT('%', :surname, '%'))) " +
+        "AND (:phone IS NULL OR n.user.phone LIKE CONCAT('%', :phone, '%')) " +
+        "AND (:email IS NULL OR LOWER(n.user.mail) LIKE LOWER(CONCAT('%', :email, '%'))) " +
+        "AND (:active IS NULL OR n.active = :active)")
     List<Patient> findByUserFilters(@Param("name") String name, 
-                                    @Param("surname") String surname, 
-                                    @Param("phone") String phone, 
-                                    @Param("email") String email);
+                            @Param("surname") String surname, 
+                            @Param("phone") String phone, 
+                            @Param("email") String email,
+                            @Param("active") Boolean active);
 }

@@ -7,6 +7,7 @@ import com.jorgeleal.clinicanutricion.repository.NutritionistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class NutritionistService {
@@ -33,6 +34,7 @@ public class NutritionistService {
         dto.setEndTime(nutritionist.getEndTime());
         dto.setMaxActiveAppointments(nutritionist.getMaxActiveAppointments());
         dto.setMinDaysBetweenAppointments(nutritionist.getMinDaysBetweenAppointments());
+        dto.setActive(nutritionist.isActive());
     
         return dto;
     }
@@ -56,37 +58,70 @@ public class NutritionistService {
         nutritionist.setEndTime(dto.getEndTime());
         nutritionist.setMaxActiveAppointments(dto.getMaxActiveAppointments());
         nutritionist.setMinDaysBetweenAppointments(dto.getMinDaysBetweenAppointments());
+        nutritionist.setActive(dto.isActive());
     
         return nutritionist;
     }
     
     
-    public Nutritionist createNutritionist(NutritionistDTO dto) {
+    public NutritionistDTO createNutritionist(NutritionistDTO dto) {
         Nutritionist nutritionist = convertToDomain(dto);
+        nutritionist.setActive(true);
         userService.saveUser(nutritionist.getUser());
-        return nutritionistRepository.save(nutritionist);
+        return convertToDTO(nutritionistRepository.save(nutritionist));
     }
 
     public Nutritionist getNutritionistById(String id) {
-        return nutritionistRepository.findById(id).orElse(null);
-    }
+        Nutritionist nutritionist = nutritionistRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Nutricionista no encontrado"));
+        return nutritionist;
+    }    
 
-    public Nutritionist updateNutritionist(String id, NutritionistDTO dto) {
-        Nutritionist nutritionist = nutritionistRepository.findById(id).orElse(null);
-        nutritionist = convertToDomain(dto);
-        nutritionist.setIdUser(id);
-        userService.saveUser(nutritionist.getUser());
-        return nutritionistRepository.save(nutritionist);
-    }
-
-    public List<Nutritionist> getNutritionistsByFilters(String name, String surname, String fullName, String phone, String email) {
-        if (fullName != null && !fullName.trim().isEmpty()) {
-            return nutritionistRepository.findByFullName(fullName);
+    public NutritionistDTO updateNutritionist(String id, NutritionistDTO dto) {
+        Nutritionist existingNutritionist = nutritionistRepository.findById(id).orElse(null);
+        if (existingNutritionist == null) {
+            throw new RuntimeException("Nutricionista no encontrado");
         }
-        return nutritionistRepository.findByUserFilters(name, surname, phone, email);
+    
+        User updatedUser = existingNutritionist.getUser();
+        updatedUser.setName(dto.getName());
+        updatedUser.setSurname(dto.getSurname());
+        updatedUser.setBirthDate(dto.getBirthDate());
+        updatedUser.setMail(dto.getMail());
+        updatedUser.setPhone(dto.getPhone());
+        updatedUser.setGender(dto.getGender());
+    
+        userService.updateUser(updatedUser);
+    
+        existingNutritionist.setActive(dto.isActive());
+        existingNutritionist.setAppointmentDuration(dto.getAppointmentDuration());
+        existingNutritionist.setStartTime(dto.getStartTime());
+        existingNutritionist.setEndTime(dto.getEndTime());
+        existingNutritionist.setMaxActiveAppointments(dto.getMaxActiveAppointments());
+        existingNutritionist.setMinDaysBetweenAppointments(dto.getMinDaysBetweenAppointments());
+    
+        Nutritionist savedNutritionist = nutritionistRepository.save(existingNutritionist);
+    
+        return convertToDTO(savedNutritionist);
+    }
+    
+    public List<NutritionistDTO> getNutritionistsByFilters(String name, String surname, String fullName, String phone, String email, Boolean active) {
+        List<Nutritionist> nutritionists;
+    
+        if (fullName != null && !fullName.trim().isEmpty()) {
+            nutritionists = nutritionistRepository.findByFullName(fullName);
+        } else { 
+            nutritionists = nutritionistRepository.findByUserFilters(name, surname, phone, email, active);
+        }
+    
+        return nutritionists.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
-    public void deleteNutritionist(String id) {
-        nutritionistRepository.deleteById(id);
+    public void changeNutritionistStatus(String id, boolean status) {
+        Nutritionist nutritionist = nutritionistRepository.findById(id).orElseThrow(() -> new RuntimeException("Nutricionista no encontrado"));
+        nutritionist.setActive(status);
+        nutritionistRepository.save(nutritionist);
     }
 }

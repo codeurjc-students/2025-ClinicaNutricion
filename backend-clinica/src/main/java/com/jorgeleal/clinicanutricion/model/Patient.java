@@ -14,10 +14,14 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 @AllArgsConstructor
 public class Patient {
     @Id
+    @Column(name = "id_user")
     private String idUser;
 
     @OneToOne
     @MapsId
-    @JoinColumn(name = "id_user")
+    @JoinColumn(name = "id_user", referencedColumnName = "idUser")
     private User user;
+
+    @Column(name = "active", nullable = false)
+    private boolean active = true;
 }

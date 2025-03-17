@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AuxiliaryService {
@@ -51,16 +52,19 @@ public class AuxiliaryService {
         return auxiliary;
     }
 
-    public List<Auxiliary> getAllAuxiliaries() {
-        return auxiliaryRepository.findAll();
+    public List<AuxiliaryDTO> getAuxiliariesByFilters(String name, String surname, String phone, String email) {
+        List<Auxiliary> auxiliaries = auxiliaryRepository.findByUserFilters(name, surname, phone, email);
+        
+        if (auxiliaries.isEmpty()) {
+            throw new RuntimeException("No se encontraron auxiliares");
+        }
+        return auxiliaries.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
-    public List<Auxiliary> getAuxiliariesByFilters(String name, String surname, String phone, String email) {
-        return auxiliaryRepository.findByUserFilters(name, surname, phone, email);
-    }
-
-    public Auxiliary getAuxiliaryById(String id) {
-        return auxiliaryRepository.findById(id).orElse(null);
+    public AuxiliaryDTO getAuxiliaryById(String id) {
+        Auxiliary auxiliary = auxiliaryRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Auxiliar no encontrado"));
+        return convertToDTO(auxiliary);  
     }
 
     public Auxiliary createAuxiliary(AuxiliaryDTO dto) {
@@ -70,10 +74,22 @@ public class AuxiliaryService {
     }
 
     public Auxiliary updateAuxiliary(String id, AuxiliaryDTO dto) {
-        Auxiliary auxiliary = convertToDomain(dto);
-        auxiliary.setIdUser(id);
-        userService.saveUser(auxiliary.getUser());
-        return auxiliaryRepository.save(auxiliary);
+        Auxiliary existingAuxiliary = auxiliaryRepository.findById(id).orElse(null);
+        if (existingAuxiliary == null) {
+            throw new RuntimeException("El Auxiliar con ID " + id + " no existe.");
+        }
+    
+        User updatedUser = existingAuxiliary.getUser();
+        updatedUser.setName(dto.getName());
+        updatedUser.setSurname(dto.getSurname());
+        updatedUser.setBirthDate(dto.getBirthDate());
+        updatedUser.setMail(dto.getMail());
+        updatedUser.setPhone(dto.getPhone());
+        updatedUser.setGender(dto.getGender());
+    
+        userService.updateUser(updatedUser);
+    
+        return auxiliaryRepository.save(existingAuxiliary);
     }
 
     public void deleteAuxiliary(String id) {

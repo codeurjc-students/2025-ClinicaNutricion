@@ -38,4 +38,7 @@ public class PatientDTO {
     
     @NotNull
     private Gender gender;
+
+    @NotNull
+    private boolean active;
 }

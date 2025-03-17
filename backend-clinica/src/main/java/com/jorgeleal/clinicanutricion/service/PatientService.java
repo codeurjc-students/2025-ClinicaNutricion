@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PatientService {
@@ -33,6 +34,7 @@ public class PatientService {
         dto.setMail(user.getMail());
         dto.setPhone(user.getPhone());
         dto.setGender(user.getGender());
+        dto.setActive(patient.isActive());
 
         return dto;
     }
@@ -51,12 +53,14 @@ public class PatientService {
         user.setUserType(UserType.PATIENT);
 
         patient.setUser(user);
+        patient.setActive(dto.isActive());
 
         return patient;
     }
 
     public Patient createPatient(PatientDTO dto) {
         Patient patient = convertToDomain(dto);
+        patient.setActive(true);
         patient.setUser(userService.saveUser(patient.getUser())); 
         return patientRepository.save(patient);
     }
@@ -76,12 +80,16 @@ public class PatientService {
         return patientRepository.save(patient);
     }
 
-    public List<Patient> getPatientsByFilters(String name, String surname, String phone, String email) {
-        return patientRepository.findByUserFilters(name, surname, phone, email);
+    public List<PatientDTO> getPatientsByFilters(String name, String surname, String phone, String email, Boolean active) {
+        return patientRepository.findByUserFilters(name, surname, phone, email, active).stream()
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
     }
 
-    public void deletePatient(String id) {
-        patientRepository.deleteById(id);
+    public void changePatientStatus(String id, boolean status) {
+        Patient patient = patientRepository.findById(id).orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
+        patient.setActive(status);
+        patientRepository.save(patient);
     }
 
     public List<Appointment> getAppointmentsByPatient(String id) {

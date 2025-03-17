@@ -36,6 +36,9 @@ public class NutritionistDTO {
     @NotNull
     @Pattern(regexp = "^\\+\\d{1,3} \\d{6,14}$", message = "El teléfono debe incluir código de país y un espacio antes del número.")
     private String phone;
+
+    @NotNull
+    private boolean active;
     
     @NotNull
     private Gender gender;
