@@ -1,8 +1,10 @@
 /* Contenedor principal */
 .search-container {
-    max-width: 900px;
+    width: 100vw; 
+    height: 100vh;
+    max-width: 100%;
     margin: auto;
-    padding: 20px;
+    min-height: auto;
     margin-top: -20px;
 }
 
@@ -17,19 +19,20 @@
     font-weight: bold;
 }
 
-/* Formulario de búsqueda */
-.search-form {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
-}
-
-.search-form input {
+.search-form input, 
+.search-form select {
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    width: 200px;
+    width: 200px; 
+}
+
+.search-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center; 
+    padding: 8px;
 }
 
 .search-form button {
@@ -45,34 +48,134 @@
     background-color: #45a049;
 }
 
-/* Tabla de resultados */
-.results-table {
-    width: 100%;
-    border-collapse: collapse;
+.table-responsive {
+    max-height: 65vh;
+    overflow-y: auto;
+    display: block;
 }
 
 .results-table th, .results-table td {
-    padding: 10px;
     border: 1px solid #ddd;
     text-align: center;
+    white-space: nowrap;
+    padding: 4px; 
+    font-size: 14px;
 }
 
-.results-table th {
-    background-color: #f2f2f2;
+/* Estilos para las celdas de acción */
+.action-cell {
+    text-align: center;
+    vertical-align: middle;
 }
 
-/* Botones de acción */
-.edit-btn, .delete-btn {
-    padding: 5px;
+/* Botones de acción sin fondo y con icono centrado */
+.action-btn {
+    background: none; 
+    border: none; 
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Iconos dentro de los botones */
+.action-icon {
+    width: 18px; 
+    height: 18px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.action-btn:hover .action-icon {
+    transform: scale(1.1); 
+}
+
+.empty-row td {
+    height: 50px; 
+    background-color: #f9f9f9; 
+}
+
+/* Botón de buscar */
+.search-btn {
+    padding: 8px 15px;
+    background-color: #4CAF50;
+    color: white;
     border: none;
     cursor: pointer;
+    border-radius: 4px;
+}
+
+.search-btn:hover {
+    background-color: #45a049;
+}
+
+/* Botón de limpiar */
+.clear-btn {
+    padding: 8px 15px;
+    background-color: #d9534f;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-left: 10px;
+}
+
+.clear-btn:hover {
+    background-color: #c9302c;
+}
+
+.toggle-container {
+    display: flex;
+    justify-content: center; /* Centra el toggle en la celda */
+    align-items: center;
+    height: 100%;
+}
+
+/* Contenedor de la paginación */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    gap: 15px;
+}
+
+/* Botones de paginación */
+.pagination-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 4px;
     font-size: 16px;
 }
 
-.edit-btn {
-    color: blue;
+.pagination-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
 }
 
-.delete-btn {
-    color: red;
+.pagination span {
+    font-weight: bold;
+}
+
+.clear-selection-btn {
+    background-color: transparent;
+    color: #28a745; 
+    border: 1px solid #28a745; 
+    border-radius: 50%; 
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-left: 8px; 
+}
+
+.clear-selection-btn:hover {
+    background-color: #e8f5e9;
+    color: #155724; 
+}
+
+.clear-selection-btn .icon {
+    font-size: 10px; 
 }

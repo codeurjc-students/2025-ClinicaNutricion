@@ -1,0 +1,118 @@
+/* NewAppointmentModal.css */
+.modal {
+    z-index: 4000 !important; /* Bootstrap usa 1050 por defecto, lo subimos un nivel */
+}
+/* Reducir el tamaño del modal */
+.modal-dialog {
+    max-width: 90vw;  /* Ajusta el ancho del modal al 90% del viewport */
+    width: auto;
+}
+
+/* Reducir el tamaño de la tabla */
+.modal-body .table-responsive {
+    max-height: 60vh;
+    overflow-y: auto;
+    overflow-x: auto;  
+}
+
+/* Ajustar tamaño de las celdas */
+.modal-body table {
+    font-size: 14px; /* Reduce el tamaño de la fuente */
+}
+
+/* Ajustar el tamaño de las columnas */
+.modal-body th,
+.modal-body td {
+    padding: 6px;  /* Reduce el espacio interno de las celdas */
+    white-space: nowrap; /* Evita que el contenido de las celdas se expanda */
+}
+
+/* Limitar el ancho de las columnas específicas */
+.modal-body th:nth-child(1), 
+.modal-body td:nth-child(1) {
+    width: 120px; /* Nombre */
+}
+
+.modal-body th:nth-child(2), 
+.modal-body td:nth-child(2) {
+    width: 150px; /* Apellidos */
+}
+
+.modal-body th:nth-child(3),
+.modal-body td:nth-child(3) {
+    width: 110px; /* Fecha de nacimiento */
+}
+
+.modal-body th:nth-child(4),
+.modal-body td:nth-child(4) {
+    width: 160px; /* Email */
+}
+
+.modal-body th:nth-child(5),
+.modal-body td:nth-child(5) {
+    width: 100px; /* Teléfono */
+}
+
+.modal-body th:nth-child(6),
+.modal-body td:nth-child(6) {
+    width: 80px; /* Género */
+}
+
+.modal-body th:nth-child(7),
+.modal-body td:nth-child(7) {
+    width: 90px; /* Botón seleccionar */
+    text-align: center;
+}
+
+.appointment-text {
+    color: black;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+/* Botón de cancelar en rojo */
+.cancel-button {
+    background-color: #dc3545 !important; /* Rojo Bootstrap */
+    color: white !important;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: background 0.3s ease-in-out;
+}
+
+.cancel-button:hover {
+    background-color: #c82333 !important; /* Rojo más oscuro */
+}
+
+/* Botón de confirmar en gris cuando está deshabilitado */
+.confirm-button {
+    background-color: #6c757d !important; /* Gris Bootstrap */
+    color: white !important;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-size: 16px;
+    opacity: 0.5; /* Opacidad cuando está deshabilitado */
+    transition: background 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.confirm-button.disabled {
+    cursor: not-allowed;
+}
+
+/* Botón de confirmar en verde cuando hay un paciente seleccionado */
+.confirm-button.active {
+    background-color: #28a745 !important; /* Verde Bootstrap */
+    opacity: 1;
+}
+
+.confirm-button.active:hover {
+    background-color: #218838 !important; /* Verde más oscuro */
+}
+
+/* Estilo para la fila seleccionada */
+.selected-row {
+    background-color: #d4edda !important;  /* Verde pastel */
+    font-weight: bold;
+}
