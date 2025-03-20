@@ -16,9 +16,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '22.11.0'
+          working-directory: frontend-clinica
 
       - name: Instalar Dependencias
         run: npm install --legacy-peer-deps
+        working-directory: frontend-clinica
 
       - name: Crear Build
         run: npm run build
@@ -29,6 +31,7 @@ jobs:
           REACT_APP_COGNITO_CLIENT_ID: ${{ secrets.REACT_APP_COGNITO_CLIENT_ID }}
           REACT_APP_COGNITO_REDIRECT_URI: ${{ secrets.REACT_APP_COGNITO_REDIRECT_URI }}
           REACT_APP_COGNITO_LOGOUT_URI: ${{ secrets.REACT_APP_COGNITO_LOGOUT_URI }}
+        working-directory: frontend-clinica
 
       - name: Configurar Credenciales AWS
         uses: aws-actions/configure-aws-credentials@v2
@@ -38,7 +41,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Desplegar en S3
-        run: aws s3 sync build/ s3://react-nurition-clinic-app --delete
+        run: aws s3 sync frontend-clinica/build/ s3://react-nurition-clinic-app --delete
 
       - name: Invalidar Caché de CloudFront (Refrescar cambios)
         run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
