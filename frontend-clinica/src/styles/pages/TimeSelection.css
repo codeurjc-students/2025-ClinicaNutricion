@@ -1,0 +1,221 @@
+/* Estilo general para la página */
+.time-selection {
+  background-color: #f5f9f7;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  text-align: center;
+  position: relative; 
+}
+
+/* Estilo de los botones de las citas */
+.time-selection .time-buttons-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.time-selection .time-button-container {
+  background-color:  #e6f2e6;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 400px;
+  border: 1px solid #333;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+/* Botones de las citas */
+.time-selection .time-button {
+  background-color: #77d9b2;
+  border: none;
+  color: white;
+  padding: 8px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: background-color 0.3s ease;
+  width: 80px; 
+  height: 40px;
+}
+
+.time-selection .time-button.selected {
+  background-color: #518f72;
+  color: white;
+  border: 2px solid #49665b;
+}
+
+.time-selection .time-button:disabled {
+  background-color: #d3d3d3;
+  cursor: not-allowed;
+}
+
+.time-selection .time-list p {
+  margin-top: 20px; /* Separar del calendario */
+  font-size: 16px;
+  color: #555;
+}
+
+/* Estilo para el botón "Más..." */
+.time-selection .show-more {
+  border: 2px solid #388365;
+  background-color: #77d9b2;
+  color: white;
+  padding: 8px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: background-color 0.3s ease;
+  width: 80px; 
+  height: 40px;
+}
+
+/* Diseño del header */
+.time-selection header {
+  width: 100%;
+  position: absolute;
+  top: 20px; 
+  left: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.time-selection .back-button {
+  background-color: transparent; 
+  border: none;
+}
+
+/* Estilo de la información del nutricionista */
+.nutritionist-info {
+  margin-top: 40px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.nutritionist-info h5 {
+  font-size: 20px;
+  color: #333;
+}
+
+.nutritionist-info p {
+  font-size: 18px;
+  color: #555;
+}
+
+/* Personalización del calendario dentro del contenedor 'time-selection' */
+.time-selection .react-calendar {
+  width: 100%;
+  max-width: 400px;  /* Establece un ancho máximo para pantallas pequeñas */
+  margin: 0 auto;
+  border-radius: 10px;
+  font-size: 14px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.time-selection .react-calendar__tile {
+  border-radius: 5px;
+  background-color: #f0f0f0;
+  transition: background-color 0.3s ease;
+}
+
+.time-selection .react-calendar__tile--selected {
+  background-color: #518f72;
+  color: white;
+  border: 2px solid #49665b;
+}
+
+.time-selection .react-calendar__tile--disabled {
+  background-color: #f0f0f0 !important;
+  color: #d3d3d3 !important;
+  cursor: not-allowed !important;
+}
+
+.time-selection .react-calendar__tile--active {
+  background-color: #518f72;
+  color: white;
+  border: 2px solid #49665b;
+}
+
+.react-calendar__tile--hasActive {
+  background-color: transparent !important;
+}
+
+/*Confirmar cita*/
+.time-selection .confirm-btn {
+  background-color: #d3d3d3;
+  color: #8a8a8a;
+  padding: 15px;
+  font-size: 18px;
+  width: 100%;
+  border-radius: 10px;
+  cursor: not-allowed;
+  transition: background-color 0.3s ease;
+}
+
+.time-selection .confirm-btn.enabled {
+  background-color: #68dda6;
+  color: white;
+  cursor: pointer;
+}
+
+/* Estilo para el modal */
+.modal-time-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: center; 
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+
+.modal-time-buttons .time-button {
+  background-color: #77d9b2;
+  border: none;
+  color: white;
+  padding: 8px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: background-color 0.3s ease;
+  width: 80px; 
+  height: 40px;
+}
+
+.modal-time-buttons .time-button.selected {
+  background-color: #518f72;
+  color: white;
+  border: 2px solid #49665b;
+}
+
+
+/* Asegurar que el diseño sea responsivo */
+@media (max-width: 768px) {
+  .time-selection .react-calendar {
+    max-width: 100%;
+  }
+
+  .time-selection .time-button {
+    font-size: 14px;
+  }
+
+  .time-selection .btn {
+    font-size: 16px;
+  }
+
+  /* Asegurarse de que los elementos estén bien centrados */
+  .time-selection .time-buttons-container {
+    max-height: 60vh;
+  }
+}

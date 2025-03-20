@@ -1,0 +1,131 @@
+/* Estilo general de la página */
+.nutritionist-selection {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+  align-items: center; 
+  background-color: #eaf6f0; /* Fondo suave verde pastel */
+  min-height: 100vh;
+  padding: 20px;
+  text-align: center;
+  box-sizing: border-box; 
+  overflow: hidden;
+}
+
+/* Estilo para el encabezado */
+.nutritionist-selection header {
+  width: 100%;
+  text-align: left;
+  position: absolute;
+  top: 20px; 
+  left: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.nutritionist-selection header .back-button {
+  font-size: 18px;
+  color: #5bb28a;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.nutritionist-selection header .back-button:hover {
+  color: #388e3c; /* Verde más oscuro al pasar el ratón */
+}
+
+/* Estilo de los selectores */
+.nutritionist-selection .select-time, 
+.nutritionist-selection .select-nutritionist {
+  width: 100%;
+  max-width: 480px; 
+  margin-bottom: 20px;
+  box-sizing: border-box;
+}
+
+.nutritionist-selection .select-time label, 
+.nutritionist-selection .select-nutritionist label {
+  font-size: 18px;
+  color: #388e3c; /* Verde */
+  margin-bottom: 10px;
+  display: block;
+}
+
+.nutritionist-selection .select-time select, 
+.nutritionist-selection .select-nutritionist select {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #77d9b2;
+  border-radius: 5px;
+  background-color: white;
+  color: #388e3c;
+  transition: border-color 0.3s ease;
+}
+
+.nutritionist-selection .select-time select:hover, 
+.nutritionist-selection .select-nutritionist select:hover {
+  border-color: #5bb28a;
+}
+
+/* Estilo del botón "Seleccionar" */
+.nutritionist-selection .select-button {
+  padding: 12px 20px;
+  font-size: 18px;
+  width: 100%;
+  max-width: 480px;
+  margin-top: 20px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border-radius: 5px;
+  background-color: #5bb28a; /* Verde */
+  color: white;
+}
+
+.nutritionist-selection .select-button.inactive {
+  background-color: #d3d3d3; /* Gris cuando está inactivo */
+  color: #fff;
+  cursor: not-allowed;
+}
+
+.nutritionist-selection .select-button:disabled {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* Estilo cuando está cargando nutricionistas */
+.nutritionist-selection select:disabled {
+  cursor: not-allowed;
+  background-color: #f5f5f5;
+}
+
+/* Estilo en pantallas pequeñas */
+@media (max-width: 768px) {
+  .nutritionist-selection .select-time label, 
+  .nutritionist-selection .select-nutritionist label {
+    font-size: 16px;
+  }
+
+  .nutritionist-selection .select-button {
+    font-size: 16px;
+    padding: 10px 20px;
+  }
+
+  .nutritionist-selection {
+    padding: 10px;
+  }
+
+  .nutritionist-selection .select-time, 
+  .nutritionist-selection .select-nutritionist {
+    margin-bottom: 15px;
+    width: 100%;
+  }
+
+  .nutritionist-selection .select-button {
+    margin-top: 15px;
+  }
+}
