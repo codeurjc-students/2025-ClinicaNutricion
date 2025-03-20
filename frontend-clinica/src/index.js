@@ -5,10 +5,10 @@ import { BrowserRouter as Router, useNavigate, useLocation } from "react-router-
 import App from "./App";
 
 const cognitoAuthConfig = {
-  authority: "https://cognito-idp.eu-west-3.amazonaws.com/eu-west-3_akIyCC7tP",
-  client_id: "38902ociv96ik2ih3p9446ela2",
-  redirect_uri: "http://localhost:3000/",
-  post_logout_redirect_uri: "http://localhost:3000/",
+  authority: process.env.REACT_APP_COGNITO_AUTHORITY,
+  client_id: process.env.REACT_APP_COGNITO_CLIENT_ID,
+  redirect_uri: process.env.REACT_APP_COGNITO_REDIRECT_URI,
+  post_logout_redirect_uri: process.env.REACT_APP_COGNITO_LOGOUT_URI,
   response_type: "code",
   scope: "email openid phone",
 };

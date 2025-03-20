@@ -3,17 +3,17 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: https://cognito-idp.eu-west-3.amazonaws.com/eu-west-3_akIyCC7tP
-          jwk-set-uri: https://cognito-idp.eu-west-3.amazonaws.com/eu-west-3_akIyCC7tP/.well-known/jwks.json
+          issuer-uri: ${COGNITO_ISSUER_URI}
+          jwk-set-uri: ${COGNITO_JWK_SET_URI}
 
 server:
-  port: 8081
+  port: ${SERVER_PORT}
 
 # Configuración de la base de datos MySQL
 spring.datasource:
-  url: jdbc:mysql://localhost:3306/db_clinica_nutricion
-  username: root
-  password: '#2-gestionCitas'
+  url: ${DB_URL}
+  username: ${DB_USERNAME}
+  password: ${DB_PASSWORD}
   driver-class-name: com.mysql.cj.jdbc.Driver
 
 spring.jpa:
