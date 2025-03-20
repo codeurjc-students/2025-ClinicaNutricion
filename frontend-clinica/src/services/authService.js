@@ -1,7 +1,9 @@
 import { useAuth } from "react-oidc-context";
 
+
+
 export const login = () => {
-    window.location.href = "http://localhost:3000";
+    window.location.href = process.env.REACT_APP_FRONTEND_BASE_URL;
 };
 
 export const useAuthService = () => {
@@ -9,7 +11,6 @@ export const useAuthService = () => {
 
     const logout = () => {
         if (!auth) {
-            console.error("🔴 Error: auth no está disponible en logout()");
             return;
         }
 
