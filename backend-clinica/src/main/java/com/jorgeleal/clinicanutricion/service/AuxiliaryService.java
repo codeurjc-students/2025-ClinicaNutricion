@@ -19,6 +19,9 @@ public class AuxiliaryService {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private CognitoService cognitoService;
+
     private AuxiliaryDTO convertToDTO(Auxiliary auxiliary) {
         AuxiliaryDTO dto = new AuxiliaryDTO();
         User user = auxiliary.getUser();
@@ -52,6 +55,20 @@ public class AuxiliaryService {
         return auxiliary;
     }
 
+    private UserDTO convertToUserDTO(AuxiliaryDTO dto) {
+        UserDTO userDTO = new UserDTO();
+
+        userDTO.setName(dto.getName());
+        userDTO.setSurname(dto.getSurname());
+        userDTO.setBirthDate(dto.getBirthDate());
+        userDTO.setMail(dto.getMail());
+        userDTO.setPhone(dto.getPhone());
+        userDTO.setGender(dto.getGender().toString());
+        userDTO.setUserType("auxiliary");
+
+        return userDTO;
+    }
+
     public List<AuxiliaryDTO> getAuxiliariesByFilters(String name, String surname, String phone, String email) {
         List<Auxiliary> auxiliaries = auxiliaryRepository.findByUserFilters(name, surname, phone, email);
         
@@ -61,15 +78,18 @@ public class AuxiliaryService {
         return auxiliaries.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
-    public AuxiliaryDTO getAuxiliaryById(String id) {
+    public Auxiliary getAuxiliaryById(String id) {
         Auxiliary auxiliary = auxiliaryRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Auxiliar no encontrado"));
-        return convertToDTO(auxiliary);  
+        return auxiliary;
     }
 
     public Auxiliary createAuxiliary(AuxiliaryDTO dto) {
         Auxiliary auxiliary = convertToDomain(dto);
-        auxiliary.setUser(userService.saveUser(auxiliary.getUser())); 
+        String idCognito = cognitoService.createCognitoUser(convertToUserDTO(dto));
+        User user = auxiliary.getUser();
+        user.setCognitoId(idCognito);
+        auxiliary.setUser(userService.saveUser(user));
         return auxiliaryRepository.save(auxiliary);
     }
 
@@ -88,7 +108,7 @@ public class AuxiliaryService {
         updatedUser.setGender(dto.getGender());
     
         userService.updateUser(updatedUser);
-    
+        cognitoService.updateCognitoUser(convertToUserDTO(dto));
         return auxiliaryRepository.save(existingAuxiliary);
     }
 

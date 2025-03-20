@@ -24,7 +24,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000"));
+
+        String frontendUrl = System.getenv("REACT_APP_FRONTEND_BASE_URL") != null 
+            ? System.getenv("REACT_APP_FRONTEND_BASE_URL") 
+            : "http://localhost:3000";
+
+        config.setAllowedOrigins(List.of(frontendUrl));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowCredentials(true);
@@ -61,6 +66,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/auxiliaries/{id}").hasAuthority("ROLE_ADMIN")
 
                 // Permisos para obtener información de pacientes
+                .requestMatchers("/patients/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_NUTRITIONIST", "ROLE_AUXILIARY", "ROLE_PATIENT")
                 .requestMatchers("/patients/{id}").hasAnyAuthority("ROLE_ADMIN", "ROLE_NUTRITIONIST", "ROLE_AUXILIARY")
                 .requestMatchers(HttpMethod.DELETE, "/patients/{id}").hasAnyAuthority("ROLE_ADMIN", "ROLE_NUTRITIONIST", "ROLE_AUXILIARY")
 

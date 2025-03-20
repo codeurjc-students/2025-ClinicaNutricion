@@ -23,7 +23,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin")
 @PreAuthorize("hasRole('ROLE_ADMIN')")
-@CrossOrigin(origins = "http://localhost:3000")
 public class AdminAuxiliaryController {
 
     @Autowired
@@ -51,15 +50,15 @@ public class AdminAuxiliaryController {
     public ResponseEntity<Map<String, Object>> getProfile(@AuthenticationPrincipal Jwt jwt) {
         try {
             // Extrae el ID del usuario desde el JWT (Cognito usa "sub")
-            String id = jwt.getClaimAsString("sub");
-            if (id == null || id.isEmpty()) {
+            String idCognito = jwt.getClaimAsString("sub");
+            if (idCognito == null || idCognito.isEmpty()) {
                 return ResponseEntity
                         .status(HttpStatus.BAD_REQUEST)
                         .body(Map.of("error", "ID de usuario no encontrado en el token"));
             }
     
             // Busca al usuario en la base de datos
-            User user = userService.getUserByIdUser(id);
+            User user = userService.getUserByCognitoId(idCognito);
             if (user == null) {
                 return ResponseEntity
                         .status(HttpStatus.NOT_FOUND)
@@ -91,8 +90,8 @@ public class AdminAuxiliaryController {
     public ResponseEntity<?> updateProfile(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody Map<String, Object> updates) {
         try {
             // Extrae el ID del usuario desde el JWT (Cognito usa "sub")
-            String id = jwt.getClaimAsString("sub");
-            if (id == null || id.isEmpty()) {
+            String idCognito = jwt.getClaimAsString("sub");
+            if (idCognito == null || idCognito.isEmpty()) {
                 return ResponseEntity
                         .status(HttpStatus.BAD_REQUEST)
                         .body(Map.of("error", "ID de usuario no encontrado en el token"));
@@ -100,7 +99,7 @@ public class AdminAuxiliaryController {
     
             // Actualiza los datos del usuario
             AdminAuxiliaryDTO adminAuxiliaryDTO = objectMapper.convertValue(updates, AdminAuxiliaryDTO.class);
-
+            String id = userService.getUserByCognitoId(idCognito).getIdUser();
             return ResponseEntity.ok(adminAuxiliaryService.updateAdminAuxiliary(id, adminAuxiliaryDTO));
             
         } catch (Exception e) {

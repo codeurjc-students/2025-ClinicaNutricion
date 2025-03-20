@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken; 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import java.util.HashMap;
@@ -21,7 +22,6 @@ import java.util.List;
 import java.time.LocalDate;
 import java.util.Map;
 
-@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/nutritionists")
 public class NutritionistController {
@@ -38,28 +38,31 @@ public class NutritionistController {
     private AuxiliaryService auxiliaryService;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     @GetMapping("/profile")
     public ResponseEntity<Map<String, Object>> getProfile(@AuthenticationPrincipal Jwt jwt) {
         try {
             // Extrae el ID del usuario desde el JWT (Cognito usa "sub")
-            String id = jwt.getClaimAsString("sub");
-            if (id == null || id.isEmpty()) {
+            String idCognito = jwt.getClaimAsString("sub");
+            if (idCognito == null || idCognito.isEmpty()) {
                 return ResponseEntity
                         .status(HttpStatus.BAD_REQUEST)
                         .body(Map.of("error", "ID de usuario no encontrado en el token"));
             }
 
-            Nutritionist nutritionist = nutritionistService.getNutritionistById(id);
-            if (nutritionist == null) {
+            User user = userService.getUserByCognitoId(idCognito);
+            if (user == null) {
                 return ResponseEntity
                         .status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", "Usuario no encontrado"));
             }
 
-            User user = nutritionist.getUser();
-            if (user == null) {
+            Nutritionist nutritionist = nutritionistService.getNutritionistById(user.getIdUser());
+            if (nutritionist == null) {
                 return ResponseEntity
                         .status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", "No se encontraron datos del usuario asociado"));
@@ -94,17 +97,16 @@ public class NutritionistController {
     @PutMapping("/profile")
     public ResponseEntity<?> updateProfile(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody Map<String, Object> updates) {
         //Extrae el ID del usuario desde el JWT
-        String id = jwt.getClaimAsString("sub");
-        if (id == null || id.isEmpty()) {
+        String idCognito = jwt.getClaimAsString("sub");
+        if (idCognito == null || idCognito.isEmpty()) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("error", "ID de usuario no encontrado en el token"));
         }
 
-        // Actualiza los datos del usuario
         NutritionistDTO nutritionistDTO = objectMapper.convertValue(updates, NutritionistDTO.class);
-
-        return ResponseEntity.ok(nutritionistService.updateNutritionist(id, nutritionistDTO));
+        String idUser = userService.getUserByCognitoId(idCognito).getIdUser();
+        return ResponseEntity.ok(nutritionistService.updateNutritionist(idUser, nutritionistDTO));
     }
 
     @GetMapping
@@ -121,6 +123,19 @@ public class NutritionistController {
         return ResponseEntity.ok(nutritionists);
     }
 
+    @GetMapping("/filter")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public ResponseEntity<List<NutritionistDTO>> getNutritionistsByTimeRange(@RequestParam String timeRange) {
+        List<NutritionistDTO> nutritionists;
+        try {
+            nutritionists = nutritionistService.getNutritionistsByTimeRange(timeRange);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+        return ResponseEntity.ok(nutritionists);
+    }
+    
     @GetMapping("/{id}")
     public ResponseEntity<Nutritionist> getNutritionistById(@PathVariable String id) {
         return ResponseEntity.ok(nutritionistService.getNutritionistById(id));
@@ -152,5 +167,20 @@ public class NutritionistController {
     @PreAuthorize("hasAnyRole('ROLE_PATIENT', 'ROLE_ADMIN', 'ROLE_NUTRITIONIST')")
     public ResponseEntity<List<AppointmentDTO>> getNutritionistAppointments(@PathVariable String id) {
         return ResponseEntity.ok(appointmentService.getAppointmentsByNutritionist(id));
+    }
+
+    @GetMapping("/{id}/available-slots")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public ResponseEntity<List<String>> getAvailableSlots(
+            @PathVariable String id,
+            @RequestParam String timeRange,
+            @RequestParam LocalDate selectedDate) {
+        try {
+            List<String> availableSlots = appointmentService.getAvailableSlots(id, timeRange, selectedDate);
+            return ResponseEntity.ok(availableSlots);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 }

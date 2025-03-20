@@ -25,7 +25,6 @@ import java.util.HashMap;
 
 @RestController
 @RequestMapping("/patients")
-@CrossOrigin(origins = "http://localhost:3000")
 public class PatientController {
 
     @Autowired
@@ -47,14 +46,14 @@ public class PatientController {
     @PreAuthorize("hasRole('ROLE_PATIENT')")
     public ResponseEntity<Map<String, Object>> getProfile(@AuthenticationPrincipal Jwt jwt) {
         try {
-            String id = jwt.getClaimAsString("sub");
-            if (id == null || id.isEmpty()) {
+            String idCognito = jwt.getClaimAsString("sub");
+            if (idCognito == null || idCognito.isEmpty()) {
                 return ResponseEntity
                         .status(HttpStatus.BAD_REQUEST)
                         .body(Map.of("error", "ID de usuario no encontrado en el token"));
             }
     
-            User user = userService.getUserByIdUser(id);
+            User user = userService.getUserByCognitoId(idCognito);
             if (user == null) {
                 return ResponseEntity
                         .status(HttpStatus.NOT_FOUND)
@@ -85,16 +84,16 @@ public class PatientController {
     @PreAuthorize("hasRole('ROLE_PATIENT')")
     public ResponseEntity<?> updateProfile(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody Map<String, Object> updates) {
         try {
-            String id = jwt.getClaimAsString("sub");
-            if (id == null || id.isEmpty()) {
+            String idCognito = jwt.getClaimAsString("sub");
+            if (idCognito == null || idCognito.isEmpty()) {
                 return ResponseEntity
                         .status(HttpStatus.BAD_REQUEST)
                         .body(Map.of("error", "ID de usuario no encontrado en el token"));
             }
     
             PatientDTO patientDTO = objectMapper.convertValue(updates, PatientDTO.class);
-
-            return ResponseEntity.ok(patientService.updatePatient(id, patientDTO));
+            String idUser = userService.getUserByCognitoId(idCognito).getIdUser();
+            return ResponseEntity.ok(patientService.updatePatient(idUser, patientDTO));
             
         } catch (Exception e) {
             e.printStackTrace();

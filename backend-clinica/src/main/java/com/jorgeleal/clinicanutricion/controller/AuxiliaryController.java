@@ -22,7 +22,6 @@ import java.util.HashMap;
 
 @RestController
 @RequestMapping("/auxiliaries")
-@CrossOrigin(origins = "http://localhost:3000")
 public class AuxiliaryController {
 
     @Autowired
@@ -37,14 +36,14 @@ public class AuxiliaryController {
     @GetMapping("/profile")
     public ResponseEntity<Map<String, Object>> getProfile(@AuthenticationPrincipal Jwt jwt) {
         try {
-            String id = jwt.getClaimAsString("sub");
-            if (id == null || id.isEmpty()) {
+            String idCognito = jwt.getClaimAsString("sub");
+            if (idCognito == null || idCognito.isEmpty()) {
                 return ResponseEntity
                         .status(HttpStatus.BAD_REQUEST)
                         .body(Map.of("error", "ID de usuario no encontrado en el token"));
             }
     
-            User user = userService.getUserByIdUser(id);
+            User user = userService.getUserByCognitoId(idCognito);
             if (user == null) {
                 return ResponseEntity
                         .status(HttpStatus.NOT_FOUND)
@@ -74,15 +73,15 @@ public class AuxiliaryController {
     @PutMapping("/profile")
     public ResponseEntity<?> updateProfile(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody Map<String, Object> updates) {
         try {
-            String id = jwt.getClaimAsString("sub");
-            if (id == null || id.isEmpty()) {
+            String idCognito = jwt.getClaimAsString("sub");
+            if (idCognito == null || idCognito.isEmpty()) {
                 return ResponseEntity
                         .status(HttpStatus.BAD_REQUEST)
                         .body(Map.of("error", "ID de usuario no encontrado en el token"));
             }
     
             AuxiliaryDTO auxiliaryDTO = objectMapper.convertValue(updates, AuxiliaryDTO.class);
-
+            String id = userService.getUserByCognitoId(idCognito).getIdUser();
             return ResponseEntity.ok(auxiliaryService.updateAuxiliary(id, auxiliaryDTO));
             
         } catch (Exception e) {
@@ -107,7 +106,7 @@ public class AuxiliaryController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<AuxiliaryDTO> getAuxiliaryById(@PathVariable String id) {
+    public ResponseEntity<Auxiliary> getAuxiliaryById(@PathVariable String id) {
         return ResponseEntity.ok(auxiliaryService.getAuxiliaryById(id));
     }
 

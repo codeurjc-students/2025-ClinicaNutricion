@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.time.LocalTime;
+import java.time.LocalDate;
+import java.util.ArrayList;
 
 @Service
 public class NutritionistService {
@@ -17,6 +20,9 @@ public class NutritionistService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private CognitoService cognitoService;
 
     private NutritionistDTO convertToDTO(Nutritionist nutritionist) {
         NutritionistDTO dto = new NutritionistDTO();
@@ -62,12 +68,29 @@ public class NutritionistService {
     
         return nutritionist;
     }
+
+    private UserDTO convertToUserDTO(NutritionistDTO dto) {
+        UserDTO userDTO = new UserDTO();
+
+        userDTO.setName(dto.getName());
+        userDTO.setSurname(dto.getSurname());
+        userDTO.setBirthDate(dto.getBirthDate());
+        userDTO.setMail(dto.getMail());
+        userDTO.setPhone(dto.getPhone());
+        userDTO.setGender(dto.getGender().toString());
+        userDTO.setUserType("nutritionist");
+
+        return userDTO;
+    }
     
     
     public NutritionistDTO createNutritionist(NutritionistDTO dto) {
         Nutritionist nutritionist = convertToDomain(dto);
+        String idCognito = cognitoService.createCognitoUser(convertToUserDTO(dto));
         nutritionist.setActive(true);
-        userService.saveUser(nutritionist.getUser());
+        User user = nutritionist.getUser();
+        user.setCognitoId(idCognito);
+        nutritionist.setUser(userService.saveUser(user));
         return convertToDTO(nutritionistRepository.save(nutritionist));
     }
 
@@ -75,7 +98,7 @@ public class NutritionistService {
         Nutritionist nutritionist = nutritionistRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Nutricionista no encontrado"));
         return nutritionist;
-    }    
+    }
 
     public NutritionistDTO updateNutritionist(String id, NutritionistDTO dto) {
         Nutritionist existingNutritionist = nutritionistRepository.findById(id).orElse(null);
@@ -92,6 +115,7 @@ public class NutritionistService {
         updatedUser.setGender(dto.getGender());
     
         userService.updateUser(updatedUser);
+        cognitoService.updateCognitoUser(convertToUserDTO(dto));
     
         existingNutritionist.setActive(dto.isActive());
         existingNutritionist.setAppointmentDuration(dto.getAppointmentDuration());
@@ -123,5 +147,40 @@ public class NutritionistService {
         Nutritionist nutritionist = nutritionistRepository.findById(id).orElseThrow(() -> new RuntimeException("Nutricionista no encontrado"));
         nutritionist.setActive(status);
         nutritionistRepository.save(nutritionist);
+    }
+
+    public List<NutritionistDTO> getNutritionistsByTimeRange(String timeRange) {
+        System.out.println("timeRange recibido: " + timeRange); 
+        List<Nutritionist> nutritionists;
+    
+        if ("a cualquier hora".equals(timeRange)) {
+            nutritionists = nutritionistRepository.findAll(); 
+        } else {
+            LocalTime startHour = LocalTime.of(0, 0);
+            LocalTime endHour = LocalTime.of(23, 59);
+    
+            switch (timeRange) {
+                case "mañana":
+                    startHour = LocalTime.of(9, 0);
+                    endHour = LocalTime.of(12, 0);
+                    break;
+                case "mediodía":
+                    startHour = LocalTime.of(12, 0);
+                    endHour = LocalTime.of(14, 0);
+                    break;
+                case "tarde":
+                    startHour = LocalTime.of(14, 0);
+                    endHour = LocalTime.of(20, 0);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Franja horaria no válida");
+            }
+    
+            nutritionists = nutritionistRepository.findByAvailableTimeRange(startHour, endHour);
+        }
+    
+        return nutritionists.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 }
