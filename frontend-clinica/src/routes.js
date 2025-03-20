@@ -6,7 +6,7 @@ import UserForm from "./components/UserForm";
 import BackButton from "./components/BackButton";
 import SearchComponent from "./components/SearchComponent";
 import Login from "./pages/Login";
-import ManagePatients from "./pages/admin/ManagePatients";
+import ManagePatients from "./pages/ManagePatients";
 import ManageNutritionists from "./pages/admin/ManageNutritionists";
 import ManageAuxiliaries from "./pages/admin/ManageAuxiliaries";
 import MainPatientScreen from "./pages/patient/MainPatientScreen";
@@ -16,8 +16,6 @@ import AppointmentConfirmation from "./pages/patient/AppointmentConfirmation";
 import ManageUsers from "./pages/admin/ManageUsers";
 import AdminAgenda from "./pages/admin/AdminAgenda";
 import NutritionistAgenda from "./pages/nutritionist/NutritionistAgenda";
-
-
 
 const AppRoutes = () => {
     const auth = useAuth();
@@ -85,12 +83,10 @@ const AppRoutes = () => {
                 <Route path="auxiliaries/search" element={<><BackButton defaultText="Gestión de Auxiliares" /><SearchComponent entityType="auxiliaries" userType="admin"/></>} />
             </Route>
 
-            {/* Rutas de paciente anidadas */}
-            <Route path="/patient" element={<ProtectedRoute allowedRoles={["patient"]}><MainPatientScreen /></ProtectedRoute>}>
-                <Route path="select-nutritionist" element={<NutritionistSelection />} />
-                <Route path="select-time/:id" element={<TimeSelection />} />
-                <Route path="selected-time/:nutritionistId/:date/:time" element={<AppointmentConfirmation />} />
-            </Route>
+            <Route path="/patients" element={<ProtectedRoute allowedRoles={["patient"]}><MainPatientScreen /></ProtectedRoute>} />
+            <Route path="/patients/nutritionist-selection" element={<ProtectedRoute allowedRoles={["patient"]}><NutritionistSelection /></ProtectedRoute>} />
+            <Route path="/patients/time-selection" element={<ProtectedRoute allowedRoles={["patient"]}><TimeSelection /></ProtectedRoute>} />
+            <Route path="/patients/appointment-confirmation" element={<ProtectedRoute allowedRoles={["patient"]}><AppointmentConfirmation /></ProtectedRoute>} />
 
             {/* Redirección por defecto */}
             <Route path="*" element={<Navigate to="/" />} />

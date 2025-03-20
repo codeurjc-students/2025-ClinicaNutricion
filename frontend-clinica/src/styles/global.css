@@ -58,3 +58,9 @@ body {
     overflow: hidden; 
 }
 
+@media (max-width: 768px) {
+    .btn {
+      font-size: 14px;
+    }
+  }
+  

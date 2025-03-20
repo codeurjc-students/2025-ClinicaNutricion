@@ -4,7 +4,7 @@ import NutritionistCalendar from "../../components/NutritionistCalendar";
 import "../../styles/pages/AdminAgenda.css";
 
 const AdminAgenda = () => {
-    const BASE_URL = process.env.REACT_APP_BASE_URL;
+    const BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const [nutritionists, setNutritionists] = useState([]);
     const [selectedNutritionist, setSelectedNutritionist] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
