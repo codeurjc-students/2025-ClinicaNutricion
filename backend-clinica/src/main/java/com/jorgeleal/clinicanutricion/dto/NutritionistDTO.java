@@ -34,7 +34,7 @@ public class NutritionistDTO {
     private String mail;
     
     @NotNull
-    @Pattern(regexp = "^\\+\\d{1,3} \\d{6,14}$", message = "El teléfono debe incluir código de país y un espacio antes del número.")
+    @Pattern(regexp = "^\\+\\d{1,3}\\d{6,14}$", message = "El teléfono debe incluir código de país seguido del número, sin espacios ni guiones.")
     private String phone;
 
     @NotNull

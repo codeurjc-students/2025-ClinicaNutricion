@@ -6,8 +6,9 @@ import com.jorgeleal.clinicanutricion.repository.AppointmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.time.LocalTime;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -149,5 +150,58 @@ public class AppointmentService {
         return appointments.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+
+    public List<String> getAvailableSlots(String nutritionistId, String timeRange, LocalDate selectedDate) {
+        Nutritionist nutritionist = nutritionistService.getNutritionistById(nutritionistId);
+        int appointmentDuration = nutritionist.getAppointmentDuration();
+
+        LocalTime startHour = LocalTime.of(0, 0);
+        LocalTime endHour = LocalTime.of(23, 59);
+
+        switch (timeRange) {
+            case "mañana":
+                startHour = LocalTime.of(9, 0);
+                endHour = LocalTime.of(12, 0);
+                break;
+            case "mediodía":
+                startHour = LocalTime.of(12, 0);
+                endHour = LocalTime.of(14, 0);
+                break;
+            case "tarde":
+                startHour = LocalTime.of(14, 0);
+                endHour = LocalTime.of(20, 0);
+                break;
+            case "a cualquier hora":
+                startHour = LocalTime.of(0, 0);
+                endHour = LocalTime.of(23, 59);
+                break;
+            default:
+                throw new IllegalArgumentException("Franja horaria no válida");
+        }
+
+        List<AppointmentDTO> appointments = getAppointmentsByNutritionistAndDate(nutritionistId, selectedDate);
+
+        List<String> availableSlots = new ArrayList<>();
+        LocalTime currentTime = startHour;
+
+        while (currentTime.isBefore(endHour)) {
+            boolean isOccupied = false;
+
+            for (AppointmentDTO appointment : appointments) {
+                if (!currentTime.isBefore(appointment.getStartTime()) && currentTime.isBefore(appointment.getEndTime())) {
+                    isOccupied = true;
+                    break;
+                }
+            }
+
+            if (!isOccupied) {
+                availableSlots.add(currentTime.toString());
+            }
+
+            currentTime = currentTime.plusMinutes(appointmentDuration);
+        }
+
+        return availableSlots;
     }
 }

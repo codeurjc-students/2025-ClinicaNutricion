@@ -19,6 +19,9 @@ public class User {
     @Column(name = "id_user")
     private String idUser;
 
+    @Column(name = "cognito_id", unique = true, nullable = false)
+    private String cognitoId;
+
     @Column(name = "name", nullable = false)
     private String name;
 

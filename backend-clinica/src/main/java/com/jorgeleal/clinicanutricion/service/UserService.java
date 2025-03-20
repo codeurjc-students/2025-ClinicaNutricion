@@ -19,6 +19,10 @@ public class UserService {
         return userRepository.findByIdUser(idUser).orElse(null);
     }
 
+    public User getUserByCognitoId(String cognitoId) {
+        return userRepository.findByCognitoId(cognitoId);
+    }
+
     public User updateUser(User updatedUser) {
         User existingUser = userRepository.findById(updatedUser.getIdUser()).orElse(null);
 

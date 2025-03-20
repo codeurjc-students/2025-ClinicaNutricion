@@ -4,8 +4,11 @@ import com.jorgeleal.clinicanutricion.model.*;
 import com.jorgeleal.clinicanutricion.dto.*;
 import com.jorgeleal.clinicanutricion.repository.PatientRepository;
 import com.jorgeleal.clinicanutricion.repository.AppointmentRepository;
+import com.jorgeleal.clinicanutricion.service.UserService;
+import com.jorgeleal.clinicanutricion.service.CognitoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +26,9 @@ public class PatientService {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private CognitoService cognitoService;
+
     private PatientDTO convertToDTO(Patient patient) {
         PatientDTO dto = new PatientDTO();
         User user = patient.getUser();
@@ -37,6 +43,20 @@ public class PatientService {
         dto.setActive(patient.isActive());
 
         return dto;
+    }
+
+    private UserDTO convertToUserDTO(PatientDTO dto) {
+        UserDTO userDTO = new UserDTO();
+
+        userDTO.setName(dto.getName());
+        userDTO.setSurname(dto.getSurname());
+        userDTO.setBirthDate(dto.getBirthDate());
+        userDTO.setMail(dto.getMail());
+        userDTO.setPhone(dto.getPhone());
+        userDTO.setGender(dto.getGender().toString());
+        userDTO.setUserType("patient");
+
+        return userDTO;
     }
 
     private Patient convertToDomain(PatientDTO dto) {
@@ -60,8 +80,11 @@ public class PatientService {
 
     public Patient createPatient(PatientDTO dto) {
         Patient patient = convertToDomain(dto);
+        String idCognito = cognitoService.createCognitoUser(convertToUserDTO(dto));
         patient.setActive(true);
-        patient.setUser(userService.saveUser(patient.getUser())); 
+        User user = patient.getUser();
+        user.setCognitoId(idCognito);
+        patient.setUser(userService.saveUser(user));
         return patientRepository.save(patient);
     }
 
@@ -74,10 +97,22 @@ public class PatientService {
     }    
 
     public Patient updatePatient(String id, PatientDTO dto) {
-        Patient patient = convertToDomain(dto);
-        patient.setIdUser(id);
-        userService.saveUser(patient.getUser());
-        return patientRepository.save(patient);
+        Patient existingPatient = patientRepository.findById(id).orElse(null);
+        if (existingPatient == null) {
+            throw new RuntimeException("El Paciente con ID " + id + " no existe.");
+        }
+    
+        User updatedUser = existingPatient.getUser();
+        updatedUser.setName(dto.getName());
+        updatedUser.setSurname(dto.getSurname());
+        updatedUser.setBirthDate(dto.getBirthDate());
+        updatedUser.setMail(dto.getMail());
+        updatedUser.setPhone(dto.getPhone());
+        updatedUser.setGender(dto.getGender());
+    
+        userService.updateUser(updatedUser);
+        cognitoService.updateCognitoUser(convertToUserDTO(dto));
+        return patientRepository.save(existingPatient);
     }
 
     public List<PatientDTO> getPatientsByFilters(String name, String surname, String phone, String email, Boolean active) {
