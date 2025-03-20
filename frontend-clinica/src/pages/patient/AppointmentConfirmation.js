@@ -1,50 +1,79 @@
-import React from 'react';
-import { Container, Row, Col, Button, Card } from 'react-bootstrap';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import moment from 'moment';
+import '../../styles/pages/AppointmentConfirmation.css';
 
 const AppointmentConfirmation = () => {
+  const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+  const { state } = useLocation();
+  const { patient, nutritionist, selectedDate, selectedTime } = state || {};
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { date, time } = useParams();
+  const token = localStorage.getItem('token');
 
-  // Suponiendo que el nombre del paciente y del nutricionista se pueden obtener de un estado global o API
-  const patientName = 'Juan Pérez';
-  const nutritionistName = 'Ana García';
+  const createAppointment = async () => {
+    if (!selectedTime || !selectedDate || !patient) {
+      return;
+    }
 
-  const handleConfirm = () => {
-    // Aquí iría la llamada a la API para confirmar la cita
-    // Tras la confirmación, redirige a la pantalla principal y muestra el popup de éxito.
-    navigate('/', { state: { appointmentSuccess: true } });
+    const start = new Date(`${selectedDate}T${selectedTime}:00`);
+    const end = new Date(start.getTime() + nutritionist.appointmentDuration * 60000);
+
+    const newAppointment = {
+      idNutritionist: nutritionist.idUser,
+      idPatient: patient.idUser,
+      date: moment(start).format("YYYY-MM-DD"),
+      startTime: moment(start).format("HH:mm"),
+      endTime: moment(end).format("HH:mm"),
+      type: "APPOINTMENT",
+    };
+
+    console.log("Datos del nuevo evento de cita:", newAppointment);
+    setLoading(true);
+
+    try {
+      const response = await fetch(`${BASE_URL}/appointments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(newAppointment),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();  // Capturamos el cuerpo del error
+        console.error('Error en la respuesta del servidor:', errorText);
+        throw new Error('Error al crear la cita');
+      }
+      
+      // Redirigir al usuario a la página de citas después de crear la cita
+      navigate('/patient/main'); 
+    } catch (error) {
+      console.error('Error al crear la cita:', error);
+      alert('Hubo un problema al crear la cita.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <Container className="py-4">
-      <Row className="mb-3">
-        <Col xs="auto">
-          {/* navigate(-1) simula el "goBack" */}
-          <Button variant="outline-success" onClick={() => navigate(-1)}>
-            &larr; Seleccionar fecha
-          </Button>
-        </Col>
-      </Row>
-      <Card className="mb-3">
-        <Card.Body>
-          <Card.Title>Confirmación de Cita</Card.Title>
-          <Card.Text>
-            <strong>Paciente:</strong> {patientName} <br />
-            <strong>Nutricionista:</strong> {nutritionistName} <br />
-            <strong>Fecha:</strong> {new Date(date).toLocaleDateString()} <br />
-            <strong>Hora:</strong> {time}
-          </Card.Text>
-        </Card.Body>
-      </Card>
-      <Row>
-        <Col>
-          <Button variant="success" size="lg" onClick={handleConfirm}>
-            Continuar
-          </Button>
-        </Col>
-      </Row>
-    </Container>
+    <div className="appointment-confirmation">
+      <h2>Confirmar cita</h2>
+      <div>
+        <p><strong>Paciente:</strong> {nutritionist ? `${patient.name} ${patient.surname}` : 'No seleccionado'}</p>
+        <p><strong>Nutricionista:</strong> {nutritionist ? `${nutritionist.name} ${nutritionist.surname}` : 'No seleccionado'}</p>
+        <p><strong>Fecha:</strong> {selectedDate ? moment(selectedDate).format('YYYY-MM-DD') : 'No seleccionada'}</p>
+        <p><strong>Hora:</strong> {selectedTime || 'No seleccionada'}</p>
+      </div>
+      <button 
+        className="btn btn-success w-100" 
+        onClick={createAppointment} 
+        disabled={loading || !selectedDate || !selectedTime || !patient}
+      >
+        {loading ? 'Creando cita...' : 'Continuar'}
+      </button>
+    </div>
   );
 };
 

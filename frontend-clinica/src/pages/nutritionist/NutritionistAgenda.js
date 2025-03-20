@@ -3,7 +3,7 @@ import NutritionistCalendar from "../../components/NutritionistCalendar";
 import "../../styles/pages/NutritionistAgenda.css";
 
 const NutritionistAgenda = () => {
-    const BASE_URL = process.env.REACT_APP_BASE_URL;
+    const BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const [nutritionist, setNutritionist] = useState(null);
     const token = localStorage.getItem("token");
 
@@ -37,6 +37,10 @@ const NutritionistAgenda = () => {
 
         fetchProfile();
     }, [BASE_URL, token]);
+
+    if (!nutritionist) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <div className="nutritionist-agenda-container">

@@ -1,130 +1,205 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Button, Form, Modal } from 'react-bootstrap';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
+import { Modal } from 'react-bootstrap';
+import '../../styles/pages/TimeSelection.css';
+import BackButton from '../../components/BackButton';
 
 const TimeSelection = () => {
+  const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+  const location = useLocation();
   const navigate = useNavigate();
-  const { id: nutritionistId } = useParams();
+  const { nutritionist, timeRange } = location.state || {}; 
+  const [patient, setPatient] = useState({});
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [timeFilter, setTimeFilter] = useState('any');
-  const [showModal, setShowModal] = useState(false);
   const [selectedTime, setSelectedTime] = useState(null);
+  const [availableSlots, setAvailableSlots] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [showMore, setShowMore] = useState(false); 
+  const [showModal, setShowModal] = useState(false); // Modal state
+  const token = localStorage.getItem('token');
+  const today = new Date();
 
-  // Simula un conjunto de horas disponibles según el filtro
-  const allTimes = [
-    '09:00', '09:30', '10:00', '10:30',
-    '11:00', '11:30', '12:00', '12:30',
-    '13:00', '13:30', '14:00', '14:30',
-    '15:00', '15:30', '16:00', '16:30',
-    '17:00', '17:30', '18:00', '18:30',
-    '19:00', '19:30', '20:00'
-  ];
+  useEffect(() => {
+    const fetchPatientData = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}/patients/profile`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+        });
 
-  // Función para filtrar horas según el filtro seleccionado
-  const filterTimes = () => {
-    if (timeFilter === 'morning') {
-      return allTimes.filter(t => t >= '09:00' && t < '12:00');
+        if (!response.ok) throw new Error("Error obteniendo el perfil del paciente");
+
+        const data = await response.json();
+
+        setPatient({
+            idUser: data.id,
+            name: data.name,
+            surname: data.surname,
+        });
+      } catch (error) {
+        console.error('Error al obtener los datos del paciente:', error);
+      }
+    };
+
+    fetchPatientData();
+  }, []);
+
+  const fetchAvailableSlots = async () => {
+    try {
+      const nutritionistId = nutritionist.idUser;
+      const encodedTimeRange = encodeURIComponent(timeRange);
+      const formattedDate = selectedDate.toLocaleDateString('en-CA');
+      const url = `${BASE_URL}/nutritionists/${nutritionistId}/available-slots?timeRange=${encodedTimeRange}&selectedDate=${formattedDate}`;
+  
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error('Error al obtener los huecos libres');
+      const data = await response.json();
+
+      const filteredSlots = data.filter(time => {
+        if (selectedDate.toDateString() === today.toDateString()) {
+          const currentTime = new Date();
+          const selectedTime = new Date(`${selectedDate.toLocaleDateString()}T${time}:00`);
+          return selectedTime > currentTime;
+        }
+        return true; 
+      });
+
+      setAvailableSlots(filteredSlots);
+    } catch (error) {
+      console.error('Error al obtener los huecos libres:', error);
+      setAvailableSlots([]);
     }
-    if (timeFilter === 'noon') {
-      return allTimes.filter(t => t >= '12:00' && t < '14:00');
-    }
-    if (timeFilter === 'afternoon') {
-      return allTimes.filter(t => t >= '14:00' && t <= '20:00');
-    }
-    return allTimes;
   };
 
-  const availableTimes = filterTimes();
+  useEffect(() => {
+    if (nutritionist && selectedDate) {
+      fetchAvailableSlots();
+    }
+  }, [nutritionist, selectedDate, timeRange]);
+
+  const handleDateChange = (date) => {
+    if (date !== selectedDate) {
+      setSelectedDate(date);
+      setSelectedTime(null);
+    }
+  };
+
+  const handleTimeSelection = (time) => {
+    if (selectedTime === time) {
+      setSelectedTime(null);
+    } else {
+      setSelectedTime(time);
+    }
+  };
+
+  const handleShowModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
+
+  const handleTimeSelectionInModal = (time) => {
+    const newAvailableSlots = [...availableSlots];
+    if (!newAvailableSlots.slice(0, 7).includes(time)) {
+      const selectedIndex = newAvailableSlots.indexOf(time);
+      const selectedTime = newAvailableSlots.splice(selectedIndex, 1);
+      newAvailableSlots.splice(6, 0, ...selectedTime);
+    }
+    setAvailableSlots(newAvailableSlots);
+    setSelectedTime(time);
+    handleCloseModal();
+  };
+
+  const formattedDate = selectedDate.toLocaleDateString('en-CA'); 
 
   return (
-    <Container className="py-3">
-      <Row className="mb-2">
-        <Col xs="auto">
-          <Button variant="outline-success" onClick={() => navigate('/select-nutritionist')}>
-            &larr; Volver
-          </Button>
-        </Col>
-      </Row>
-      <Row className="mb-3">
-        <Col>
-          <DatePicker
-            selected={selectedDate}
-            onChange={date => setSelectedDate(date)}
-            inline
-          />
-        </Col>
-      </Row>
-      <Row className="mb-3">
-        <Col xs={12} md={6}>
-          <Form.Select value={timeFilter} onChange={e => setTimeFilter(e.target.value)}>
-            <option value="any">A cualquier hora</option>
-            <option value="morning">Por la mañana</option>
-            <option value="noon">Al medio día</option>
-            <option value="afternoon">Por la tarde</option>
-          </Form.Select>
-        </Col>
-      </Row>
-      <Row className="mb-3">
-        {availableTimes.slice(0, 6).map(time => (
-          <Col xs={4} md={2} key={time} className="mb-2">
-            <Button
-              variant={selectedTime === time ? 'success' : 'outline-success'}
-              onClick={() => setSelectedTime(time)}
-              className="w-100"
-            >
-              {time}
-            </Button>
-          </Col>
-        ))}
-      </Row>
-      {availableTimes.length > 6 && (
-        <Row className="mb-3">
-          <Col>
-            <Button variant="outline-success" onClick={() => setShowModal(true)}>
-              Más ...
-            </Button>
-          </Col>
-        </Row>
-      )}
-      <Row>
-        <Col>
-          <Button
-            variant="success"
-            disabled={!selectedTime}
-            onClick={() => navigate(`selected-time/${nutritionistId}/${selectedDate.toISOString()}/${selectedTime}`)}
-          >
-            Seleccionar
-          </Button>
-        </Col>
-      </Row>
+    <div className="time-selection">
+      <header>
+        <BackButton defaultText="Selección de nutricionista" />
+      </header>
 
-      {/* Modal para ver todas las horas disponibles */}
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Selecciona una hora</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Row>
-            {availableTimes.map(time => (
-              <Col xs={4} className="mb-2" key={time}>
-                <Button
-                  variant={selectedTime === time ? 'success' : 'outline-success'}
-                  onClick={() => {
-                    setSelectedTime(time);
-                    setShowModal(false);
-                  }}
-                  className="w-100"
+      <div className="nutritionist-info">
+        <h5>Nutricionista seleccionado:</h5>
+        <p>{nutritionist ? `${nutritionist.name} ${nutritionist.surname}` : 'No seleccionado'}</p>
+      </div>
+
+      <div className="calendar-container">
+        <Calendar
+          onChange={handleDateChange}
+          value={selectedDate}
+          minDate={today}
+        />
+      </div>
+
+      <div className="time-list">
+        {loading ? (
+          <p>Cargando...</p>
+        ) : availableSlots.length > 0 ? (
+          <div className="time-buttons-container">
+            <div className="time-button-container">
+              {availableSlots.slice(0, showMore ? availableSlots.length : 7).map((time) => (
+                <button
+                  key={time}
+                  className={`time-button ${time === selectedTime ? 'selected' : ''}`}
+                  onClick={() => handleTimeSelection(time)}
                 >
                   {time}
-                </Button>
-              </Col>
+                </button>
+              ))}
+              {availableSlots.length > 7 && !showMore && (
+                <button className="show-more" onClick={handleShowModal}>
+                  Más...
+                </button>
+              )}
+            </div>
+          </div>
+        ) : (
+          <p>No hay huecos disponibles para esta fecha</p>
+        )}
+      </div>
+
+      <Modal show={showModal} onHide={handleCloseModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Seleccionar una hora</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="modal-time-buttons">
+            {availableSlots.map((time) => (
+              <button
+                key={time}
+                className={`time-button ${time === selectedTime ? 'selected' : ''}`}
+                onClick={() => handleTimeSelectionInModal(time)}
+              >
+                {time}
+              </button>
             ))}
-          </Row>
+          </div>
         </Modal.Body>
       </Modal>
-    </Container>
+
+      <Link to="/patients/appointment-confirmation" state={{
+        patient,
+        selectedDate: formattedDate,
+        selectedTime,
+        nutritionist,
+      }}>
+        <button 
+          className={`confirm-btn ${selectedDate && selectedTime ? 'enabled' : ''}`} 
+          disabled={!selectedDate || !selectedTime}
+        >
+          Confirmar cita
+        </button>
+      </Link>
+    </div>
   );
 };
 

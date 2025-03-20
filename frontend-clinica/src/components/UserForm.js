@@ -4,12 +4,15 @@ import SuccessNotification from "./SuccessNotification";
 import { Form, Button, Container } from "react-bootstrap"; 
 import "../styles/components/Form.css"; 
 import "../styles/pages/Profile.css";
+import { useAuth } from "react-oidc-context"; 
 
 const UserForm = ({ isEditMode = false, userType }) => {
-    const BASE_URL = process.env.REACT_APP_BASE_URL;
-    const { id } = useParams(); // Obtiene el ID en modo edición
-    const token = localStorage.getItem("token");
+    const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+    const { id } = useParams(); //Obtener el ID para el modo edición
     const location = useLocation();
+
+    const auth = useAuth(); 
+    const token = auth.user?.access_token;
 
     const [errorMessage, setErrorMessage] = useState("");
     const [validationErrors, setValidationErrors] = useState({});
@@ -107,8 +110,8 @@ const UserForm = ({ isEditMode = false, userType }) => {
         if (!emailRegex.test(formData.mail)) errors.mail = "Formato de email no válido.";
 
         // Validación de teléfono
-        const phoneRegex = /^\+\d{1,3} \d{6,14}$/;
-        if (!phoneRegex.test(formData.phone)) errors.phone = "Formato no válido. Incluye código de país y espacio antes del número.";
+        const phoneRegex = /^\+\d{1,3}\d{6,14}$/;
+        if (!phoneRegex.test(formData.phone)) errors.phone = "Formato no válido, no dejes espacios e incluye el código de país.";
 
         setValidationErrors(errors);
         return Object.keys(errors).length === 0;

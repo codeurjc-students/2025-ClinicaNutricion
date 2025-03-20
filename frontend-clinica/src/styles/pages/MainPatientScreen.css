@@ -1,0 +1,102 @@
+.main-patient-screen {
+  background-color: #f5f9f7;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  text-align: center;
+  position: relative; 
+}
+
+.header {
+  width: 100%;
+  position: absolute;
+  top: 20px; 
+  left: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.profile-button {
+  background: none;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.profile-button img {
+  width: 50px;
+  height: auto;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.logout-container {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.logout-button {
+  background-color: transparent;
+  border: none;
+  padding: 12px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.logout-icon {
+  width: 20px;
+  margin-right: 10px;
+}
+
+.buttons-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  align-items: center;
+}
+
+.buttons-container .btn {
+  background-color: #77d9b2; /* Verde suave */
+  color: white;
+  border: none;
+  padding: 15px;
+  font-size: 18px;
+  border-radius: 5px;
+  width: 100%;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.buttons-container .btn-primary {
+  background-color: #5bb28a; /* Verde más fuerte para "Pedir cita" */
+}
+
+.buttons-container .btn-primary:hover {
+  background-color: #4caf50; /* Verde más oscuro al pasar el ratón */
+}
+
+.buttons-container .btn-secondary {
+  background-color: #77d9b2; /* Verde suave para "Historial de citas" */
+}
+
+.buttons-container .btn-secondary:hover {
+  background-color: #66bb6a; /* Verde más oscuro al pasar el ratón */
+}
+
+/* Asegurando que los botones se vean bien en pantallas pequeñas */
+@media (max-width: 768px) {
+  .buttons-container .btn {
+    font-size: 16px;
+    padding: 12px;
+  }
+}

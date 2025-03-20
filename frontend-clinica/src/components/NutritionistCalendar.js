@@ -23,7 +23,7 @@ const localizer = momentLocalizer(moment);
 const DnDCalendar = withDragAndDrop(Calendar);
 
 const NutritionistCalendar = ({ nutritionistId, appointmentDuration, startTime, endTime }) => {
-    const BASE_URL = process.env.REACT_APP_BASE_URL;
+    const BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const [appointments, setAppointments] = useState([]);
     const [view, setView] = useState(Views.WEEK);
     const [blockouts, setBlockouts] = useState([]);

@@ -20,7 +20,7 @@ const ITEMS_PER_PAGE = 10;
 
 
 const SearchComponent = ({ entityType, userType, onSelect, selectedPatient, showSelectButton = false }) => {  
-    const BASE_URL = process.env.REACT_APP_BASE_URL;
+    const BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const [filters, setFilters] = useState({ name: "", surname: "", phone: "", email: "", active: ""});
     const [results, setResults] = useState([]);
     const [searched, setSearched] = useState(false);

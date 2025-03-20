@@ -1,0 +1,61 @@
+.appointment-confirmation {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    margin: 40px auto;
+    text-align: center;
+  }
+  
+  .appointment-confirmation h2 {
+    color: #343a40;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+  }
+  
+  .appointment-confirmation p {
+    font-size: 1rem;
+    margin: 10px 0;
+    color: #495057;
+  }
+  
+  .appointment-confirmation strong {
+    font-weight: 600;
+    color: #007bff;
+  }
+  
+  .appointment-confirmation button {
+    padding: 12px 20px;
+    font-size: 1.1rem;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .appointment-confirmation button:hover {
+    background-color: #218838;
+  }
+  
+  @media (max-width: 768px) {
+    .appointment-confirmation {
+      padding: 15px;
+      margin: 20px;
+    }
+  
+    .appointment-confirmation h2 {
+      font-size: 1.6rem;
+    }
+  
+    .appointment-confirmation p {
+      font-size: 0.9rem;
+    }
+  
+    .appointment-confirmation button {
+      font-size: 1rem;
+    }
+  }
+  
