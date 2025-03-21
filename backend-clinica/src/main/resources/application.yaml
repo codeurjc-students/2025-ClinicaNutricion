@@ -7,7 +7,7 @@ spring:
           jwk-set-uri: ${COGNITO_JWK_SET_URI}
 
 server:
-  port: ${SERVER_PORT}
+  port: ${PORT:8081}
 
 # Configuración de la base de datos MySQL
 spring.datasource:
