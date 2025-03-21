@@ -31,7 +31,7 @@ jobs:
         run: mvn clean package -DskipTests
         working-directory: backend-clinica
         env:
-          SERVER_PORT: ${{ secrets.SERVER_PORT }}
+          SERVER_PORT: ${{ secrets.PORT }}
           DB_URL: ${{ secrets.DB_URL }}
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
@@ -42,9 +42,8 @@ jobs:
 
       - name: Crear y Subir el Paquete a Elastic Beanstalk
         run: |
-          zip -r backend.zip . -x "target/*" ".git/*" "node_modules/*"
-          aws s3 cp backend.zip s3://${{ secrets.EB_S3_BUCKET }}/backend.zip
-          aws elasticbeanstalk create-application-version --application-name ${{ secrets.EB_APPLICATION_NAME }} --version-label "v-${{ github.run_number }}" --source-bundle S3Bucket="${{ secrets.EB_S3_BUCKET }}",S3Key="backend.zip"
+           aws s3 cp target/clinicanutricion-0.0.1-SNAPSHOT.jar s3://${{ secrets.EB_S3_BUCKET }}/clinicanutricion-0.0.1-SNAPSHOT.jar
+           aws elasticbeanstalk create-application-version --application-name ${{ secrets.EB_APPLICATION_NAME }} --version-label "v-${{ github.run_number }}" --source-bundle S3Bucket="${{ secrets.EB_S3_BUCKET }}",S3Key="clinicanutricion-0.0.1-SNAPSHOT.jar"
         working-directory: backend-clinica
 
       - name: Desplegar en Elastic Beanstalk
