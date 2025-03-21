@@ -43,8 +43,8 @@ jobs:
       - name: Crear y Subir el Paquete a Elastic Beanstalk
         run: |
           zip -r backend.zip . -x "target/*" ".git/*" "node_modules/*"
-          aws s3 cp backend.zip s3://elasticbeanstalk-$(aws configure get region)-$(aws sts get-caller-identity --query Account --output text)/backend.zip
-          aws elasticbeanstalk create-application-version --application-name ${{ secrets.EB_APPLICATION_NAME }} --version-label "v-${{ github.run_number }}" --source-bundle S3Bucket="elasticbeanstalk-$(aws configure get region)-$(aws sts get-caller-identity --query Account --output text)",S3Key="backend.zip"
+          aws s3 cp backend.zip s3://${{ secrets.EB_S3_BUCKET }}/backend.zip
+          aws elasticbeanstalk create-application-version --application-name ${{ secrets.EB_APPLICATION_NAME }} --version-label "v-${{ github.run_number }}" --source-bundle S3Bucket="${{ secrets.EB_S3_BUCKET }}",S3Key="backend.zip"
         working-directory: backend-clinica
 
       - name: Desplegar en Elastic Beanstalk

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useLocation, Link } from 'react-router-dom';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { Modal } from 'react-bootstrap';
@@ -9,15 +9,15 @@ import BackButton from '../../components/BackButton';
 const TimeSelection = () => {
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const location = useLocation();
-  const navigate = useNavigate();
   const { nutritionist, timeRange } = location.state || {}; 
   const [patient, setPatient] = useState({});
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState(null);
   const [availableSlots, setAvailableSlots] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [showMore, setShowMore] = useState(false); 
-  const [showModal, setShowModal] = useState(false); // Modal state
+  const showMore = false;
+
+  const [showModal, setShowModal] = useState(false);
   const token = localStorage.getItem('token');
   const today = new Date();
 
@@ -47,10 +47,11 @@ const TimeSelection = () => {
     };
 
     fetchPatientData();
-  }, []);
+  }, [BASE_URL, token]);
 
-  const fetchAvailableSlots = async () => {
+  const fetchAvailableSlots = useCallback(async () => {
     try {
+      setLoading(true); 
       const nutritionistId = nutritionist.idUser;
       const encodedTimeRange = encodeURIComponent(timeRange);
       const formattedDate = selectedDate.toLocaleDateString('en-CA');
@@ -63,31 +64,23 @@ const TimeSelection = () => {
           'Authorization': `Bearer ${token}`,
         },
       });
-
+  
       if (!response.ok) throw new Error('Error al obtener los huecos libres');
       const data = await response.json();
-
-      const filteredSlots = data.filter(time => {
-        if (selectedDate.toDateString() === today.toDateString()) {
-          const currentTime = new Date();
-          const selectedTime = new Date(`${selectedDate.toLocaleDateString()}T${time}:00`);
-          return selectedTime > currentTime;
-        }
-        return true; 
-      });
-
-      setAvailableSlots(filteredSlots);
+      setAvailableSlots(data);
     } catch (error) {
       console.error('Error al obtener los huecos libres:', error);
       setAvailableSlots([]);
+    } finally {
+      setLoading(false);
     }
-  };
+  }, [nutritionist, selectedDate, timeRange, BASE_URL, token]);
 
   useEffect(() => {
     if (nutritionist && selectedDate) {
       fetchAvailableSlots();
     }
-  }, [nutritionist, selectedDate, timeRange]);
+  }, [nutritionist, selectedDate, timeRange, fetchAvailableSlots, BASE_URL, token]);
 
   const handleDateChange = (date) => {
     if (date !== selectedDate) {

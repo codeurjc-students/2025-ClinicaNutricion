@@ -5,11 +5,9 @@ import '../../styles/pages/NutritionistSelection.css';
 const NutritionistSelection = () => {
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const [selectedTime, setSelectedTime] = useState('a cualquier hora');
-  const [nutritionists, setNutritionists] = useState([]);
   const [filteredNutritionists, setFilteredNutritionists] = useState([]);
   const [selectedNutritionist, setSelectedNutritionist] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,7 +15,6 @@ const NutritionistSelection = () => {
       try {
         if (!selectedTime) {
           setFilteredNutritionists([]);
-          setShowDropdown(false);
           return;
         }
 
@@ -37,7 +34,6 @@ const NutritionistSelection = () => {
         if (!response.ok) throw new Error('Error en la respuesta del servidor');
         const data = await response.json();
         setFilteredNutritionists(data);
-        setShowDropdown(true);
       } catch (error) {
         console.error('Error cargando nutricionistas:', error);
         setFilteredNutritionists([]);
