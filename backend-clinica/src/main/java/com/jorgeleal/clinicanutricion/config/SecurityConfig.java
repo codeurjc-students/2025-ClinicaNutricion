@@ -37,7 +37,6 @@ public class SecurityConfig {
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
-        System.out.println("🟢 CORS configurado para origen: " + frontendUrl);
         return source;
     }
 
