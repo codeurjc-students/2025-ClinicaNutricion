@@ -25,10 +25,11 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        String frontendUrl = System.getenv("REACT_APP_FRONTEND_BASE_URL") != null 
+        /*String frontendUrl = System.getenv("REACT_APP_FRONTEND_BASE_URL") != null 
             ? System.getenv("REACT_APP_FRONTEND_BASE_URL") 
             : "http://localhost:3000";
-
+        */
+        String frontendUrl = "https://clinicanutricion.es";
         config.setAllowedOrigins(List.of(frontendUrl));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
