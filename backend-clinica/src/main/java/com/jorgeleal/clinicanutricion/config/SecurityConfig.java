@@ -34,9 +34,9 @@ public class SecurityConfig {
 
         log.info("Frontend URL: " + frontendUrl);
         config.setAllowedOrigins(List.of(frontendUrl));
-        config.setAllowedHeaders(List.of(                "Authorization",
+        config.setAllowedHeaders(List.of(                
+                "Authorization",
                 "Accept",
-                "X-Requested-With",
                 "Content-Type",
                 "Access-Control-Request-Method",
                 "Access-Control-Request-Headers"));
