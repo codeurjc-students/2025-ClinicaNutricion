@@ -12,6 +12,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -20,6 +22,7 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+    private Logger log = LoggerFactory.getLogger(SecurityConfig.class);
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -29,6 +32,7 @@ public class SecurityConfig {
             ? System.getenv("REACT_APP_FRONTEND_BASE_URL") 
             : "http://localhost:3000";
 
+        log.info("Frontend URL: " + frontendUrl);
         config.setAllowedOrigins(List.of(frontendUrl));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
