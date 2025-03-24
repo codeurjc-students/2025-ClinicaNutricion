@@ -1,0 +1,20 @@
+{
+  "files": {
+    "main.css": "/static/css/main.966abbe3.css",
+    "main.js": "/static/js/main.52d68f74.js",
+    "static/media/LogoClinica.png": "/static/media/LogoClinica.9f127a815c5f860abb91.png",
+    "static/media/LogoManageUsers.png": "/static/media/LogoManageUsers.e2eb26b977ca9fd38546.png",
+    "static/media/back-icon.png": "/static/media/back-icon.07d48735a4374036f194.png",
+    "static/media/LogoPerfil.png": "/static/media/LogoPerfil.9558c49c28b62db7faad.png",
+    "static/media/LogoLogOut.png": "/static/media/LogoLogOut.aa24308d4645f4124187.png",
+    "static/media/LogoCalendario.png": "/static/media/LogoCalendario.ea965ba2a477031849de.png",
+    "static/media/success-icon.png": "/static/media/success-icon.d4e6c5e920ddf2ef2dea.png",
+    "index.html": "/index.html",
+    "main.966abbe3.css.map": "/static/css/main.966abbe3.css.map",
+    "main.52d68f74.js.map": "/static/js/main.52d68f74.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.966abbe3.css",
+    "static/js/main.52d68f74.js"
+  ]
+}
