@@ -59,7 +59,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 // Permisos para autenticación
-                .requestMatchers("/auth/**", "/").permitAll()
+                .requestMatchers("/auth/**", "/**","/health").permitAll()
 
                 // Permisos para obtener información de administradores
                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
