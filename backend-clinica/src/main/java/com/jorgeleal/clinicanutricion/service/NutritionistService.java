@@ -94,14 +94,14 @@ public class NutritionistService {
         return convertToDTO(nutritionistRepository.save(nutritionist));
     }
 
-    public Nutritionist getNutritionistById(String id) {
-        Nutritionist nutritionist = nutritionistRepository.findById(id)
+    public Nutritionist getNutritionistById(Long id) {
+        Nutritionist nutritionist = nutritionistRepository.findByUserIdUser(id)
             .orElseThrow(() -> new RuntimeException("Nutricionista no encontrado"));
         return nutritionist;
     }
 
-    public NutritionistDTO updateNutritionist(String id, NutritionistDTO dto) {
-        Nutritionist existingNutritionist = nutritionistRepository.findById(id).orElse(null);
+    public NutritionistDTO updateNutritionist(Long id, NutritionistDTO dto) {
+        Nutritionist existingNutritionist = nutritionistRepository.findByUserIdUser(id).orElse(null);
         if (existingNutritionist == null) {
             throw new RuntimeException("Nutricionista no encontrado");
         }
@@ -143,8 +143,8 @@ public class NutritionistService {
                 .collect(Collectors.toList());
     }
 
-    public void changeNutritionistStatus(String id, boolean status) {
-        Nutritionist nutritionist = nutritionistRepository.findById(id).orElseThrow(() -> new RuntimeException("Nutricionista no encontrado"));
+    public void changeNutritionistStatus(Long id, boolean status) {
+        Nutritionist nutritionist = nutritionistRepository.findByUserIdUser(id).orElseThrow(() -> new RuntimeException("Nutricionista no encontrado"));
         nutritionist.setActive(status);
         nutritionistRepository.save(nutritionist);
     }

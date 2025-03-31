@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 public class Patient {
     @Id
     @Column(name = "id_user")
-    private String idUser;
+    private Long idUser;
 
     @OneToOne
     @MapsId

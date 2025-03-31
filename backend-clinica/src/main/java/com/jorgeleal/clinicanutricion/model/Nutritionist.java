@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 public class Nutritionist {
     @Id
     @Column(name = "id_user")
-    private String idUser;
+    private Long idUser;
 
     @OneToOne
     @MapsId

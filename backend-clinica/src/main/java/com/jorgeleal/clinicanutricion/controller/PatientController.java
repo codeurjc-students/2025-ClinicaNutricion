@@ -92,7 +92,7 @@ public class PatientController {
             }
     
             PatientDTO patientDTO = objectMapper.convertValue(updates, PatientDTO.class);
-            String idUser = userService.getUserByCognitoId(idCognito).getIdUser();
+            Long idUser = userService.getUserByCognitoId(idCognito).getIdUser();
             return ResponseEntity.ok(patientService.updatePatient(idUser, patientDTO));
             
         } catch (Exception e) {
@@ -118,15 +118,15 @@ public class PatientController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ROLE_NUTRITIONIST', 'ROLE_ADMIN', 'ROLE_AUXILIARY')")
-    public ResponseEntity<Patient> getPatientById(@PathVariable String id) {
+    public ResponseEntity<Patient> getPatientById(@PathVariable Long id) {
         return ResponseEntity.ok(patientService.getPatientById(id));
     }
 
     @GetMapping("/{id}/appointments")
     @PreAuthorize("hasRole('ROLE_PATIENT')")
-    public ResponseEntity<List<AppointmentDTO>> getPatientAppointments(@PathVariable String id, @AuthenticationPrincipal Jwt jwt) {
+    public ResponseEntity<List<AppointmentDTO>> getPatientAppointments(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
         String userId = jwt.getSubject();
-        if (!id.equals(userId)) {
+        if (!userId.equals(id.toString())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         return ResponseEntity.ok(appointmentService.getAppointmentsByPatient(id));
@@ -140,13 +140,13 @@ public class PatientController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ROLE_NUTRITIONIST', 'ROLE_ADMIN', 'ROLE_AUXILIARY')")
-    public ResponseEntity<Patient> updatePatient(@PathVariable String id, @RequestBody PatientDTO dto) {
+    public ResponseEntity<Patient> updatePatient(@PathVariable Long id, @RequestBody PatientDTO dto) {
         return ResponseEntity.ok(patientService.updatePatient(id, dto));
     }
 
     @PutMapping("/{id}/status")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_NUTRITIONIST', 'ROLE_AUXILIARY')")
-    public ResponseEntity<Void> changePatientStatus(@PathVariable String id, @RequestBody Boolean active) {
+    public ResponseEntity<Void> changePatientStatus(@PathVariable Long id, @RequestBody Boolean active) {
         if (active == null) {
             return ResponseEntity.badRequest().build();
         }

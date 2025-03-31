@@ -12,7 +12,7 @@ import java.time.LocalTime;
 @Setter 
 public class NutritionistDTO {
     @NotNull 
-    private String idUser;
+    private Long idUser;
 
     @NotNull
     @Size(min = 2, max = 50, message = "El nombre debe tener entre 2 y 50 caracteres.")

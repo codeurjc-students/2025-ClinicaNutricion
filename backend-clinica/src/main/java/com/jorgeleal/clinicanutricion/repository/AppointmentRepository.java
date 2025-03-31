@@ -11,17 +11,17 @@ import java.util.List;
 
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, String> {
-    List<Appointment> findByPatientIdUser(String patientId);
-    List<Appointment> findByNutritionistIdUser(String nutritionistId);
+    List<Appointment> findByPatientIdUser(Long patientId);
+    List<Appointment> findByNutritionistIdUser(Long nutritionistId);
     
-    List<Appointment> findByNutritionist_IdUserOrderByDateAscStartTimeAsc(String idUser);
-    boolean existsByNutritionistIdUserAndDateAndStartTime(String nutritionistId, LocalDate date, LocalTime startTime);
+    List<Appointment> findByNutritionist_IdUserOrderByDateAscStartTimeAsc(Long idUser);
+    boolean existsByNutritionistIdUserAndDateAndStartTime(Long nutritionistId, LocalDate date, LocalTime startTime);
 
     @Query("SELECT a FROM Appointment a WHERE a.nutritionist.idUser = :nutritionistId " +
     "AND a.date = :date " +
     "AND ((a.startTime < :endTime AND a.endTime > :startTime))")
         List<Appointment> findConflictAppointments(
-        @Param("nutritionistId") String nutritionistId,
+        @Param("nutritionistId") Long nutritionistId,
         @Param("date") LocalDate date,
         @Param("startTime") LocalTime startTime,
         @Param("endTime") LocalTime endTime
@@ -31,7 +31,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, String
     @Query("SELECT a FROM Appointment a WHERE a.nutritionist.idUser = :nutritionistId " +
     "AND a.date = :date ORDER BY a.startTime ASC")
         List<Appointment> findByNutritionist_IdUserAndDateOrderByStartTimeAsc(
-                @Param("nutritionistId") String nutritionistId,
+                @Param("nutritionistId") Long nutritionistId,
                 @Param("date") LocalDate date
         );
 
@@ -40,7 +40,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, String
     "AND a.id <> :appointmentId " + 
     "AND ((a.startTime < :endTime AND a.endTime > :startTime))") 
         boolean existsByNutritionistIdAndDateAndTimeRange(
-                @Param("nutritionistId") String nutritionistId,
+                @Param("nutritionistId") Long nutritionistId,
                 @Param("date") LocalDate  date,
                 @Param("startTime") LocalTime startTime,
                 @Param("endTime") LocalTime endTime,

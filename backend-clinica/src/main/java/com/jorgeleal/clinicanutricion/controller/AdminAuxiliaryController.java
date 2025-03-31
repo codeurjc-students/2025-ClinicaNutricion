@@ -99,7 +99,7 @@ public class AdminAuxiliaryController {
     
             // Actualiza los datos del usuario
             AdminAuxiliaryDTO adminAuxiliaryDTO = objectMapper.convertValue(updates, AdminAuxiliaryDTO.class);
-            String id = userService.getUserByCognitoId(idCognito).getIdUser();
+            Long id = userService.getUserByCognitoId(idCognito).getIdUser();
             return ResponseEntity.ok(adminAuxiliaryService.updateAdminAuxiliary(id, adminAuxiliaryDTO));
             
         } catch (Exception e) {

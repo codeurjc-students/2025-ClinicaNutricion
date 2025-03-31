@@ -131,28 +131,28 @@ public class AppointmentService {
         return convertToDTO(appointment);
     }
 
-    public List<AppointmentDTO> getAppointmentsByNutritionist(String idUser) {
+    public List<AppointmentDTO> getAppointmentsByNutritionist(Long idUser) {
         return appointmentRepository.findByNutritionist_IdUserOrderByDateAscStartTimeAsc(idUser)
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }    
 
-    public List<AppointmentDTO> getAppointmentsByPatient(String idUser) {
+    public List<AppointmentDTO> getAppointmentsByPatient(Long idUser) {
         return appointmentRepository.findByPatientIdUser(idUser)
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<AppointmentDTO> getAppointmentsByNutritionistAndDate(String idUser, LocalDate date) {
+    public List<AppointmentDTO> getAppointmentsByNutritionistAndDate(Long idUser, LocalDate date) {
         List<Appointment> appointments = appointmentRepository.findByNutritionist_IdUserAndDateOrderByStartTimeAsc(idUser, date);
         return appointments.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<String> getAvailableSlots(String nutritionistId, String timeRange, LocalDate selectedDate) {
+    public List<String> getAvailableSlots(Long nutritionistId, String timeRange, LocalDate selectedDate) {
         Nutritionist nutritionist = nutritionistService.getNutritionistById(nutritionistId);
         int appointmentDuration = nutritionist.getAppointmentDuration();
 

@@ -81,7 +81,7 @@ public class AuxiliaryController {
             }
     
             AuxiliaryDTO auxiliaryDTO = objectMapper.convertValue(updates, AuxiliaryDTO.class);
-            String id = userService.getUserByCognitoId(idCognito).getIdUser();
+            Long id = userService.getUserByCognitoId(idCognito).getIdUser();
             return ResponseEntity.ok(auxiliaryService.updateAuxiliary(id, auxiliaryDTO));
             
         } catch (Exception e) {
@@ -106,7 +106,7 @@ public class AuxiliaryController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Auxiliary> getAuxiliaryById(@PathVariable String id) {
+    public ResponseEntity<Auxiliary> getAuxiliaryById(@PathVariable Long id) {
         return ResponseEntity.ok(auxiliaryService.getAuxiliaryById(id));
     }
 
@@ -118,13 +118,13 @@ public class AuxiliaryController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Auxiliary> updateAuxiliary(@PathVariable String id, @RequestBody AuxiliaryDTO dto) {
+    public ResponseEntity<Auxiliary> updateAuxiliary(@PathVariable Long id, @RequestBody AuxiliaryDTO dto) {
         return ResponseEntity.ok(auxiliaryService.updateAuxiliary(id, dto));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Void> deleteAuxiliary(@PathVariable String id) {
+    public ResponseEntity<Void> deleteAuxiliary(@PathVariable Long id) {
         auxiliaryService.deleteAuxiliary(id);
         return ResponseEntity.noContent().build();
     }

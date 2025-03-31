@@ -6,12 +6,15 @@ import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.List;
+import java.lang.StackWalker.Option;
+import java.util.Optional;
 import java.time.LocalTime;
 
 @Repository
 public interface NutritionistRepository extends JpaRepository<Nutritionist, String> {
         List<Nutritionist> findByUserNameContainingIgnoreCase(String name);
-        long countByIdUser(String idUser);
+        Optional<Nutritionist> findByUserIdUser(Long idUser);
+        long countByIdUser(Long idUser);
         
         @Query("SELECT n FROM Nutritionist n WHERE " +
                 "(:name IS NULL OR LOWER(n.user.name) LIKE LOWER(CONCAT('%', :name, '%'))) " +

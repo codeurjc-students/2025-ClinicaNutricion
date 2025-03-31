@@ -32,7 +32,7 @@ public class AppointmentController {
     }    
 
     @GetMapping("/nutritionist/{idNutritionist}")
-    public ResponseEntity<List<AppointmentDTO>> getAppointmentsByNutritionist(@PathVariable String idNutritionist) {
+    public ResponseEntity<List<AppointmentDTO>> getAppointmentsByNutritionist(@PathVariable Long idNutritionist) {
         Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
 
         List<String> roles = authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());

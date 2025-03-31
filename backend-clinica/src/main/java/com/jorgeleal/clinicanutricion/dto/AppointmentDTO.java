@@ -11,8 +11,8 @@ import lombok.Setter;
 @Setter 
 public class AppointmentDTO {
     private String idAppointment;
-    private String idNutritionist;
-    private String idPatient;
+    private Long idNutritionist;
+    private Long idPatient;
     private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;

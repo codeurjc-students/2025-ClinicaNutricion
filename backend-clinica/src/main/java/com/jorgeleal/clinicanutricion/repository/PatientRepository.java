@@ -5,10 +5,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import java.util.Optional;
 import java.util.List;
 
 @Repository
 public interface PatientRepository extends JpaRepository<Patient, String> {
+    Optional<Patient> findByUserIdUser(Long idUser);
     @Query("SELECT n FROM Patient n WHERE " +
         "(:name IS NULL OR LOWER(n.user.name) LIKE LOWER(CONCAT('%', :name, '%'))) " +
         "AND (:surname IS NULL OR LOWER(n.user.surname) LIKE LOWER(CONCAT('%', :surname, '%'))) " +

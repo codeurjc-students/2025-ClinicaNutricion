@@ -105,7 +105,7 @@ public class NutritionistController {
         }
 
         NutritionistDTO nutritionistDTO = objectMapper.convertValue(updates, NutritionistDTO.class);
-        String idUser = userService.getUserByCognitoId(idCognito).getIdUser();
+        Long idUser = userService.getUserByCognitoId(idCognito).getIdUser();
         return ResponseEntity.ok(nutritionistService.updateNutritionist(idUser, nutritionistDTO));
     }
 
@@ -137,7 +137,7 @@ public class NutritionistController {
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<Nutritionist> getNutritionistById(@PathVariable String id) {
+    public ResponseEntity<Nutritionist> getNutritionistById(@PathVariable Long id) {
         return ResponseEntity.ok(nutritionistService.getNutritionistById(id));
     }
 
@@ -149,13 +149,13 @@ public class NutritionistController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<NutritionistDTO> updateNutritionist(@PathVariable String id, @RequestBody NutritionistDTO dto) {
+    public ResponseEntity<NutritionistDTO> updateNutritionist(@PathVariable Long id, @RequestBody NutritionistDTO dto) {
         return ResponseEntity.ok(nutritionistService.updateNutritionist(id, dto));
     }
 
     @PutMapping("/{id}/status")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Void> changeNutritionistStatus(@PathVariable String id, @RequestBody Boolean active) {
+    public ResponseEntity<Void> changeNutritionistStatus(@PathVariable Long id, @RequestBody Boolean active) {
         if (active == null) {
             return ResponseEntity.badRequest().build();
         }
@@ -165,14 +165,14 @@ public class NutritionistController {
 
     @GetMapping("/{id}/appointments")
     @PreAuthorize("hasAnyRole('ROLE_PATIENT', 'ROLE_ADMIN', 'ROLE_NUTRITIONIST')")
-    public ResponseEntity<List<AppointmentDTO>> getNutritionistAppointments(@PathVariable String id) {
+    public ResponseEntity<List<AppointmentDTO>> getNutritionistAppointments(@PathVariable Long id) {
         return ResponseEntity.ok(appointmentService.getAppointmentsByNutritionist(id));
     }
 
     @GetMapping("/{id}/available-slots")
     @PreAuthorize("hasRole('ROLE_PATIENT')")
     public ResponseEntity<List<String>> getAvailableSlots(
-            @PathVariable String id,
+            @PathVariable Long id,
             @RequestParam String timeRange,
             @RequestParam LocalDate selectedDate) {
         try {

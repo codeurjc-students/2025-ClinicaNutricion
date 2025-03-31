@@ -15,7 +15,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User getUserByIdUser(String idUser) {
+    public User getUserByIdUser(Long idUser) {
         return userRepository.findByIdUser(idUser).orElse(null);
     }
 
@@ -24,7 +24,7 @@ public class UserService {
     }
 
     public User updateUser(User updatedUser) {
-        User existingUser = userRepository.findById(updatedUser.getIdUser()).orElse(null);
+        User existingUser = userRepository.findByIdUser(updatedUser.getIdUser()).orElse(null);
 
         if (existingUser == null) {
             throw new RuntimeException("El usuario con ID " + updatedUser.getIdUser() + " no existe.");

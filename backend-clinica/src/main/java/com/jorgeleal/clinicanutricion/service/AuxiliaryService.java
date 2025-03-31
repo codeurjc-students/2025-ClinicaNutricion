@@ -78,8 +78,8 @@ public class AuxiliaryService {
         return auxiliaries.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
-    public Auxiliary getAuxiliaryById(String id) {
-        Auxiliary auxiliary = auxiliaryRepository.findById(id)
+    public Auxiliary getAuxiliaryById(Long id) {
+        Auxiliary auxiliary = auxiliaryRepository.findByUserIdUser(id)
             .orElseThrow(() -> new RuntimeException("Auxiliar no encontrado"));
         return auxiliary;
     }
@@ -93,8 +93,8 @@ public class AuxiliaryService {
         return auxiliaryRepository.save(auxiliary);
     }
 
-    public Auxiliary updateAuxiliary(String id, AuxiliaryDTO dto) {
-        Auxiliary existingAuxiliary = auxiliaryRepository.findById(id).orElse(null);
+    public Auxiliary updateAuxiliary(Long id, AuxiliaryDTO dto) {
+        Auxiliary existingAuxiliary = auxiliaryRepository.findByUserIdUser(id).orElse(null);
         if (existingAuxiliary == null) {
             throw new RuntimeException("El Auxiliar con ID " + id + " no existe.");
         }
@@ -112,10 +112,10 @@ public class AuxiliaryService {
         return auxiliaryRepository.save(existingAuxiliary);
     }
 
-    public void deleteAuxiliary(String id) {
-        if (!auxiliaryRepository.existsById(id)) {
+    public void deleteAuxiliary(Long id) {
+        if (!auxiliaryRepository.existsByIdUser(id)) {
             throw new RuntimeException("Auxiliar no encontrado");
         }
-        auxiliaryRepository.deleteById(id);
+        auxiliaryRepository.deleteByIdUser(id);
     }
 }

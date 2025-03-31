@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 @AllArgsConstructor
 public class AdminAuxiliary {
     @Id
-    private String idUser;
+    private Long idUser;
 
     @OneToOne
     @MapsId

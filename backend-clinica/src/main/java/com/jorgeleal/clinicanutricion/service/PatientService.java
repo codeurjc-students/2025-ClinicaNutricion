@@ -88,16 +88,16 @@ public class PatientService {
         return patientRepository.save(patient);
     }
 
-    public Patient getPatientById(String id) {
-        return patientRepository.findById(id).orElse(null);
+    public Patient getPatientById(Long id) {
+        return patientRepository.findByUserIdUser(id).orElse(null);
     }
 
     public List<Patient> getAllPatients() {
         return patientRepository.findAll();
     }    
 
-    public Patient updatePatient(String id, PatientDTO dto) {
-        Patient existingPatient = patientRepository.findById(id).orElse(null);
+    public Patient updatePatient(Long id, PatientDTO dto) {
+        Patient existingPatient = patientRepository.findByUserIdUser(id).orElse(null);
         if (existingPatient == null) {
             throw new RuntimeException("El Paciente con ID " + id + " no existe.");
         }
@@ -121,17 +121,17 @@ public class PatientService {
             .collect(Collectors.toList());
     }
 
-    public void changePatientStatus(String id, boolean status) {
-        Patient patient = patientRepository.findById(id).orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
+    public void changePatientStatus(Long id, boolean status) {
+        Patient patient = patientRepository.findByUserIdUser(id).orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
         patient.setActive(status);
         patientRepository.save(patient);
     }
 
-    public List<Appointment> getAppointmentsByPatient(String id) {
+    public List<Appointment> getAppointmentsByPatient(Long id) {
         return appointmentRepository.findByPatientIdUser(id);
     }
 
-    public List<Appointment> getAppointmentsByNutritionistId(String id) {
+    public List<Appointment> getAppointmentsByNutritionistId(Long id) {
         return appointmentRepository.findByNutritionistIdUser(id);
     }
 

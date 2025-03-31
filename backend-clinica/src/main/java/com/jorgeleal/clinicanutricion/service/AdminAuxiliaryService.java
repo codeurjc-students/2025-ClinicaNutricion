@@ -65,8 +65,8 @@ public class AdminAuxiliaryService {
         return adminAuxiliary;
     }
 
-    public AdminAuxiliary updateAdminAuxiliary(String id, AdminAuxiliaryDTO dto) {
-        AdminAuxiliary admin = adminAuxiliaryRepository.findById(id).orElse(null);
+    public AdminAuxiliary updateAdminAuxiliary(Long id, AdminAuxiliaryDTO dto) {
+        AdminAuxiliary admin = adminAuxiliaryRepository.findByUserIdUser(id).orElse(null);
         if (admin == null) {
             throw new RuntimeException("El AdminAuxiliary con ID " + id + " no existe.");
         }
@@ -84,8 +84,8 @@ public class AdminAuxiliaryService {
         return adminAuxiliaryRepository.save(admin);
     }
 
-    public AdminAuxiliary getAdminAuxiliaryById(String id) {
-        return adminAuxiliaryRepository.findById(id)
+    public AdminAuxiliary getAdminAuxiliaryById(Long id) {
+        return adminAuxiliaryRepository.findByUserIdUser(id)
             .orElseThrow(() -> new RuntimeException("Administrador auxiliar no encontrado"));
     }
     

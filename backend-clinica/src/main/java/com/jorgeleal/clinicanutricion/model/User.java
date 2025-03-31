@@ -15,9 +15,9 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 @AllArgsConstructor
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID) 
+    @GeneratedValue(strategy = GenerationType.IDENTITY) 
     @Column(name = "id_user")
-    private String idUser;
+    private Long idUser;
 
     @Column(name = "cognito_id", unique = true, nullable = false)
     private String cognitoId;
