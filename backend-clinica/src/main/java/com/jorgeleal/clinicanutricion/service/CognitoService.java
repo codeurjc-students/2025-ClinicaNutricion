@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CognitoService {
+    private String userPoolId = System.getenv("COGNITO_USER_POOL_ID") != null 
+    ? System.getenv("COGNITO_USER_POOL_ID") 
+    : "eu-west-3_akIyCC7tP";
 
     private final CognitoIdentityProviderClient cognitoClient = CognitoIdentityProviderClient.builder()
         .region(Region.EU_WEST_3)
@@ -25,7 +28,7 @@ public class CognitoService {
     
         try {
             AdminCreateUserRequest createUserRequest = AdminCreateUserRequest.builder()
-                    .userPoolId("eu-west-3_akIyCC7tP")
+                    .userPoolId(userPoolId)
                     .username(userDTO.getMail())
                     .temporaryPassword(temporaryPassword)
                     .messageAction("SUPPRESS")
@@ -45,7 +48,7 @@ public class CognitoService {
             String cognitoUserId = createdUser.user().username();
     
             AdminAddUserToGroupRequest addUserToGroupRequest = AdminAddUserToGroupRequest.builder()
-                    .userPoolId("eu-west-3_akIyCC7tP")
+                    .userPoolId(userPoolId)
                     .username(userDTO.getMail())
                     .groupName(groupName)
                     .build();
@@ -60,7 +63,7 @@ public class CognitoService {
 
     public void updateCognitoUser(UserDTO userDTO) {
         AdminUpdateUserAttributesRequest updateRequest = AdminUpdateUserAttributesRequest.builder()
-            .userPoolId("eu-west-3_akIyCC7tP")
+            .userPoolId(userPoolId)
             .username(userDTO.getMail())
             .userAttributes(
                 AttributeType.builder().name("email").value(userDTO.getMail()).build(),
