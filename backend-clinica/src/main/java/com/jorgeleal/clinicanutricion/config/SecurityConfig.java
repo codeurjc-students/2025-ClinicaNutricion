@@ -24,6 +24,9 @@ import java.util.List;
 public class SecurityConfig {
     private Logger log = LoggerFactory.getLogger(SecurityConfig.class);
 
+    @Value("${APP_ENV:dev}")
+    private String appEnv;
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
@@ -32,7 +35,6 @@ public class SecurityConfig {
             ? System.getenv("REACT_APP_FRONTEND_BASE_URL") 
             : "http://localhost:3000";
 
-        log.info("Frontend URL: " + frontendUrl);
         config.setAllowedOrigins(List.of(frontendUrl));
         config.setAllowedHeaders(List.of(                
                 "Authorization",
@@ -50,6 +52,29 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
+    }
+
+    @Bean
+    public OncePerRequestFilter cloudFrontValidationFilter() {
+        return new OncePerRequestFilter() {
+            @Override
+            protected void doFilterInternal(HttpServletRequest request,
+                                            HttpServletResponse response,
+                                            FilterChain filterChain)
+                    throws ServletException, IOException {
+
+                if ("prod".equalsIgnoreCase(appEnv)) {
+                    String header = request.getHeader("X-From-CloudFront");
+                    if (!"Secretocloudfront2_".equals(header)) {
+                        log.warn("Request blocked: missing or invalid X-From-CloudFront header");
+                        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied");
+                        return;
+                    }
+                }
+
+                filterChain.doFilter(request, response);
+            }
+        };
     }
 
     @Bean
