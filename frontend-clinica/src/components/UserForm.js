@@ -154,14 +154,16 @@ const UserForm = ({ isEditMode = false, userType }) => {
             }
         }
 
-        //Validación de hora de inicio
-        if (!formData.startTime) {
-            errors.startTime = "Debes introducir la hora de inicio.";
-        }
-
-        //Validación de hora de fin
-        if (!formData.endTime) {
-            errors.endTime = "Debes introducir la hora de fin.";
+        if (userType === "nutritionists") {
+            //Validación de hora de inicio
+            if (!formData.startTime) {
+                errors.startTime = "Debes introducir la hora de inicio.";
+            }
+    
+            //Validación de hora de fin
+            if (!formData.endTime) {
+                errors.endTime = "Debes introducir la hora de fin.";
+            }
         }
 
         setValidationErrors(errors);

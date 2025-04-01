@@ -31,7 +31,6 @@ jobs:
         run: mvn clean package -DskipTests
         working-directory: backend-clinica
         env:
-          APP_ENV: ${{ secrets.APP_ENV }}
           DB_URL: ${{ secrets.DB_URL }}
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
