@@ -16,10 +16,6 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.filter.OncePerRequestFilter;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import org.slf4j.LoggerFactory;
 import java.util.Collection;
@@ -31,9 +27,6 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
     private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
-
-    @Value("${APP_ENV:dev}")
-    private String appEnv;
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -60,31 +53,6 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
-    }
-
-    @Bean
-    public OncePerRequestFilter cloudFrontValidationFilter() {
-        return new OncePerRequestFilter() {
-            @Override
-            protected void doFilterInternal(HttpServletRequest request,
-                                            HttpServletResponse response,
-                                            FilterChain filterChain)
-                    throws ServletException, IOException {
-
-                if ("prod".equalsIgnoreCase(appEnv)) {
-                    String header = request.getHeader("X-From-CloudFront");
-                    log.info("X-From-CloudFront header: {}", header);
-                    log.info("Active profile: {}", appEnv);
-                    if (!"Secretocloudfront2_".equals(header)) {
-                        log.warn("Request blocked: missing or invalid X-From-CloudFront header");
-                        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied");
-                        return;
-                    }
-                }
-
-                filterChain.doFilter(request, response);
-            }
-        };
     }
 
     @Bean
