@@ -36,7 +36,7 @@ const NewAppointmentModal = ({ show, onClose, onConfirm, selectedTime }) => {
                 </p>
                 
                 <div className="table-container">
-                    <SearchComponent entityType="patients" onSelect={setSelectedPatient} selectedPatient={selectedPatient} showSelectButton={true} /> 
+                    <SearchComponent entityType="patients" onSelect={setSelectedPatient} selectedPatient={selectedPatient} showSelectButton={true} onlyActivePatients={true} /> 
                 </div>
 
             </Modal.Body>

@@ -134,8 +134,15 @@ public class PatientController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ROLE_NUTRITIONIST', 'ROLE_ADMIN', 'ROLE_AUXILIARY')")
-    public ResponseEntity<Patient> createPatient(@RequestBody PatientDTO dto) {
-        return ResponseEntity.ok(patientService.createPatient(dto));
+    public ResponseEntity<?> createPatient(@RequestBody PatientDTO dto) {
+        try {
+            Patient patient = patientService.createPatient(dto);
+            return ResponseEntity.ok(patient);
+        } catch (RuntimeException e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 
     @PutMapping("/{id}")

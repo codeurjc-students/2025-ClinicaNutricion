@@ -79,6 +79,10 @@ public class PatientService {
     }
 
     public Patient createPatient(PatientDTO dto) {
+        if (userService.mailExists(dto.getMail())) {
+            throw new RuntimeException("El correo electrónico ya está registrado.");
+        }
+        
         Patient patient = convertToDomain(dto);
         String idCognito = cognitoService.createCognitoUser(convertToUserDTO(dto));
         patient.setActive(true);

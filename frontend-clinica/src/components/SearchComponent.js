@@ -19,9 +19,9 @@ const formatGender = (gender) => {
 const ITEMS_PER_PAGE = 10;
 
 
-const SearchComponent = ({ entityType, userType, onSelect, selectedPatient, showSelectButton = false }) => {  
+const SearchComponent = ({ entityType, userType, onSelect, selectedPatient, showSelectButton = false, onlyActivePatients = false }) => {  
     const BASE_URL = process.env.REACT_APP_API_BASE_URL;
-    const [filters, setFilters] = useState({ name: "", surname: "", phone: "", email: "", active: ""});
+    const [filters, setFilters] = useState({ name: "", surname: "", phone: "", email: "", active: onlyActivePatients ? "true" : "" });
     const [results, setResults] = useState([]);
     const [searched, setSearched] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
@@ -33,7 +33,7 @@ const SearchComponent = ({ entityType, userType, onSelect, selectedPatient, show
     };
 
     const handleClearFilters = () => {
-        setFilters({ name: "", surname: "", phone: "", email: "", active: "" });
+        setFilters({ name: "", surname: "", phone: "", email: "", active: onlyActivePatients ? "true" : "" });
         setResults([]);
         setErrorMessage("");
         setSearched(false);
@@ -48,23 +48,32 @@ const SearchComponent = ({ entityType, userType, onSelect, selectedPatient, show
 
     const handleSearch = async () => {
         try {
-            const hasFilters = Object.values(filters).some(value => value.trim() !== "");
+            const filtersWithoutActive = onlyActivePatients ? { ...filters, active: "true" } : filters;
+            const isOnlyActiveApplied = onlyActivePatients && filters.active === "true" && !Object.values(filtersWithoutActive).some(value => value.trim() !== "" && value !== "true");
+    
+            if (isOnlyActiveApplied) {
+                setErrorMessage("Debes ingresar al menos un filtro para buscar.");
+                setTimeout(() => setErrorMessage(""), 3000);
+                return;
+            }
+    
+            const hasFilters = Object.values(filtersWithoutActive).some(value => value.trim() !== "");
             if (!hasFilters) {
                 setErrorMessage("Debes ingresar al menos un filtro para buscar.");
                 setTimeout(() => setErrorMessage(""), 3000);
                 return;
             }
-
+    
             setSearched(true);
-
+    
             const token = localStorage.getItem("token"); 
             if (!token) throw new Error("No se encontró un token de autenticación.");
-
+    
             const queryParams = new URLSearchParams({
-                ...filters,
-                active: parseActiveFilter(filters.active)
+                ...filtersWithoutActive,
+                active: parseActiveFilter(filtersWithoutActive.active)
             }).toString();
-
+    
             const response = await fetch(`${BASE_URL}/${entityType}?${queryParams}`, {
                 method: "GET",
                 headers: {
@@ -74,7 +83,7 @@ const SearchComponent = ({ entityType, userType, onSelect, selectedPatient, show
             });
     
             if (!response.ok) throw new Error(`Error en la búsqueda: ${response.status} ${response.statusText}`);
-
+    
             const data = await response.json();
             setResults(data);
             setCurrentPage(1);
@@ -82,6 +91,7 @@ const SearchComponent = ({ entityType, userType, onSelect, selectedPatient, show
             console.error("Error buscando:", error);
         }
     };
+    
 
     const handleToggleUserStatus = async (idUser, isActive) => {
         try {
@@ -152,11 +162,13 @@ const SearchComponent = ({ entityType, userType, onSelect, selectedPatient, show
                         <input type="text" name="surname" placeholder="Apellidos" value={filters.surname} onChange={handleFilterChange} />
                         <input type="text" name="phone" placeholder="Teléfono" value={filters.phone} onChange={handleFilterChange} />
                         <input type="text" name="email" placeholder="Email" value={filters.email} onChange={handleFilterChange} />
-                        <select name="active" value={filters.active} onChange={handleFilterChange}>
-                            <option value="">Todos</option>
-                            <option value="true">Activos</option>
-                            <option value="false">Inactivos</option>
-                        </select>
+                        {!onlyActivePatients && (
+                            <select name="active" value={filters.active} onChange={handleFilterChange}>
+                                <option value="">Todos</option>
+                                <option value="true">Activos</option>
+                                <option value="false">Inactivos</option>
+                            </select>
+                        )}
 
                         <button onClick={handleSearch} className="search-btn">Buscar</button>
                         <button onClick={handleClearFilters} className="clear-btn">Limpiar</button>

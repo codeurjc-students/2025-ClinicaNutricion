@@ -16,7 +16,6 @@ const TimeSelection = () => {
   const [availableSlots, setAvailableSlots] = useState([]);
   const [loading, setLoading] = useState(false);
   const showMore = false;
-
   const [showModal, setShowModal] = useState(false);
   const token = localStorage.getItem('token');
   const today = new Date();
@@ -80,7 +79,7 @@ const TimeSelection = () => {
     if (nutritionist && selectedDate) {
       fetchAvailableSlots();
     }
-  }, [nutritionist, selectedDate, timeRange, fetchAvailableSlots, BASE_URL, token]);
+  }, [nutritionist, selectedDate, timeRange, fetchAvailableSlots]);
 
   const handleDateChange = (date) => {
     if (date !== selectedDate) {
@@ -101,18 +100,29 @@ const TimeSelection = () => {
   const handleCloseModal = () => setShowModal(false);
 
   const handleTimeSelectionInModal = (time) => {
-    const newAvailableSlots = [...availableSlots];
-    if (!newAvailableSlots.slice(0, 7).includes(time)) {
-      const selectedIndex = newAvailableSlots.indexOf(time);
-      const selectedTime = newAvailableSlots.splice(selectedIndex, 1);
-      newAvailableSlots.splice(6, 0, ...selectedTime);
-    }
+    const newAvailableSlots = availableSlots.filter(slot => slot !== time);
+    newAvailableSlots.unshift(time);
     setAvailableSlots(newAvailableSlots);
     setSelectedTime(time);
     handleCloseModal();
   };
 
   const formattedDate = selectedDate.toLocaleDateString('en-CA'); 
+
+  //Filtramos las horas si la fecha seleccionada es hoy
+  const filterAvailableSlots = () => {
+    if (selectedDate.toLocaleDateString() === today.toLocaleDateString()) {
+      const currentTime = today.getHours() * 60 + today.getMinutes();
+      return availableSlots.filter(time => {
+        const [hour, minute] = time.split(':').map(Number);
+        const timeInMinutes = hour * 60 + minute;
+        return timeInMinutes > currentTime;
+      });
+    }
+    return availableSlots;
+  };
+
+  const filteredSlots = filterAvailableSlots();
 
   return (
     <div className="time-selection">
@@ -136,10 +146,10 @@ const TimeSelection = () => {
       <div className="time-list">
         {loading ? (
           <p>Cargando...</p>
-        ) : availableSlots.length > 0 ? (
+        ) : filteredSlots.length > 0 ? (
           <div className="time-buttons-container">
             <div className="time-button-container">
-              {availableSlots.slice(0, showMore ? availableSlots.length : 7).map((time) => (
+              {filteredSlots.slice(0, showMore ? filteredSlots.length : 7).map((time) => (
                 <button
                   key={time}
                   className={`time-button ${time === selectedTime ? 'selected' : ''}`}
@@ -148,7 +158,7 @@ const TimeSelection = () => {
                   {time}
                 </button>
               ))}
-              {availableSlots.length > 7 && !showMore && (
+              {filteredSlots.length > 7 && !showMore && (
                 <button className="show-more" onClick={handleShowModal}>
                   Más...
                 </button>
@@ -166,7 +176,7 @@ const TimeSelection = () => {
         </Modal.Header>
         <Modal.Body>
           <div className="modal-time-buttons">
-            {availableSlots.map((time) => (
+            {filteredSlots.map((time) => (
               <button
                 key={time}
                 className={`time-button ${time === selectedTime ? 'selected' : ''}`}

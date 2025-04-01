@@ -143,8 +143,13 @@ public class NutritionistController {
 
     @PostMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<NutritionistDTO> createNutritionist(@RequestBody NutritionistDTO dto) {
-        return ResponseEntity.ok(nutritionistService.createNutritionist(dto));
+    public ResponseEntity<?> createNutritionist(@RequestBody NutritionistDTO dto) {
+        try {
+            NutritionistDTO nutritionist = nutritionistService.createNutritionist(dto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(nutritionist);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        }
     }
 
     @PutMapping("/{id}")

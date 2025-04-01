@@ -87,31 +87,82 @@ const UserForm = ({ isEditMode = false, userType }) => {
     }, [isEditMode, id, userType, token, BASE_URL, location.pathname]);
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-        setValidationErrors({ ...validationErrors, [e.target.name]: "" });
+        const { name, value } = e.target;
+    
+        if (name === "maxActiveAppointments" || name === "minDaysBetweenAppointments") {
+            //Si el valor ingresado es menor que 1, lo ajustamos a 1
+            if (value < 1) {
+                setFormData({ ...formData, [name]: 1 });
+                setValidationErrors({ ...validationErrors, [name]: `El valor mínimo para ${name === "maxActiveAppointments" ? "citas activas" : "días entre citas"} es 1.` });
+                return;
+            }
+        }
+    
+        setFormData({ ...formData, [name]: value });
+        setValidationErrors({ ...validationErrors, [name]: "" }); //Limpiar los errores al cambiar el valor
     };
 
     const validateForm = () => {
         const errors = {};
 
-        // Validación de nombre y apellidos (permitir guiones en apellidos)
-        const nameRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\- ]{2,50}$/;
-        if (!nameRegex.test(formData.name)) errors.name = "El nombre solo puede contener letras y espacios (2-50 caracteres).";
-        if (!nameRegex.test(formData.surname)) errors.surname = "Los apellidos solo pueden contener letras, guiones y espacios (2-50 caracteres).";
+        //Validación de nombre y apellidos
+        if (!formData.name) {
+            errors.name = "Debes introducir tu nombre.";
+        } else {
+            const nameRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\- ]{2,50}$/;
+            if (!nameRegex.test(formData.name)) {
+                errors.name = "El nombre solo puede contener letras y espacios (2-50 caracteres).";
+            }
+        }
 
-        // Validación de fecha de nacimiento
-        const birthDate = new Date(formData.birthDate);
-        const minDate = new Date("1900-01-01");
-        const maxDate = new Date();
-        if (birthDate < minDate || birthDate > maxDate) errors.birthDate = "La fecha debe estar entre 1900 y hoy.";
+        if (!formData.surname) {
+            errors.surname = "Debes introducir tus apellidos.";
+        } else {
+            const surnameRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\- ]{2,50}$/;
+            if (!surnameRegex.test(formData.surname)) {
+                errors.surname = "Los apellidos solo pueden contener letras, guiones y espacios (2-50 caracteres).";
+            }
+        }
 
-        // Validación de email
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(formData.mail)) errors.mail = "Formato de email no válido.";
+        //Validación de fecha de nacimiento
+        if (!formData.birthDate) {
+            errors.birthDate = "Debes introducir tu fecha de nacimiento.";
+        } else {
+            const birthDate = new Date(formData.birthDate);
+            const minDate = new Date("1900-01-01");
+            const maxDate = new Date();
+            if (birthDate < minDate || birthDate > maxDate) errors.birthDate = "La fecha debe estar entre 1900 y hoy.";
+        }
 
-        // Validación de teléfono
-        const phoneRegex = /^\+\d{1,3}\d{6,14}$/;
-        if (!phoneRegex.test(formData.phone)) errors.phone = "Formato no válido, no dejes espacios e incluye el código de país.";
+        //Validación de email
+        if (!formData.mail) {
+            errors.mail = "Debes introducir tu correo electrónico.";
+        } else {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(formData.mail)) {
+                errors.mail = "Formato de email no válido.";
+            }
+        }
+
+        //Validación de teléfono
+        if (!formData.phone) {
+            errors.phone = "Debes introducir tu número de telefono.";
+        } else {
+            const phoneRegex = /^\+\d{1,3}\d{6,14}$/;
+            if (!phoneRegex.test(formData.phone)) {
+                errors.phone = "Formato no válido, no dejes espacios e incluye el código de país.";
+            }
+        }
+
+        //Validación de hora de inicio
+        if (!formData.startTime) {
+            errors.startTime = "Debes introducir la hora de inicio.";
+        }
+
+        //Validación de hora de fin
+        if (!formData.endTime) {
+            errors.endTime = "Debes introducir la hora de fin.";
+        }
 
         setValidationErrors(errors);
         return Object.keys(errors).length === 0;
@@ -148,8 +199,11 @@ const UserForm = ({ isEditMode = false, userType }) => {
                 setTimeout(() => setShowSuccess(false), 1000);
             } else {
                 const errorData = await response.json();
-                if (errorData.error && errorData.error.includes("Duplicate entry")) {
-                    setErrorMessage("Ya existe un usuario con este correo electrónico.");
+                if (errorData.error && errorData.error.includes("correo electrónico ya está registrado")) {
+                    setValidationErrors({
+                        ...validationErrors,
+                        mail: "El correo electrónico ya está registrado."
+                    });
                 } else {
                     setErrorMessage("Error al procesar la solicitud. Inténtelo de nuevo.");
                 }
@@ -227,22 +281,24 @@ const UserForm = ({ isEditMode = false, userType }) => {
 
                             <Form.Group className="form-group">
                                 <Form.Label>Hora de inicio:</Form.Label>
-                                <Form.Control type="time" name="startTime" value={formData.startTime} onChange={handleChange} required />
+                                <Form.Control type="time" name="startTime" value={formData.startTime} onChange={handleChange} isInvalid={!!validationErrors.startTime} required />
+                                <Form.Control.Feedback type="invalid">{validationErrors.startTime}</Form.Control.Feedback>
                             </Form.Group>
 
                             <Form.Group className="form-group">
                                 <Form.Label>Hora de fin:</Form.Label>
-                                <Form.Control type="time" name="endTime" value={formData.endTime} onChange={handleChange} required />
+                                <Form.Control type="time" name="endTime" value={formData.endTime} onChange={handleChange} isInvalid={!!validationErrors.endTime} required />
+                                <Form.Control.Feedback type="invalid"> {validationErrors.endTime} </Form.Control.Feedback>
                             </Form.Group>
 
                             <Form.Group className="form-group">
                                 <Form.Label>Máximo citas activas:</Form.Label>
-                                <Form.Control type="number" name="maxActiveAppointments" value={formData.maxActiveAppointments} onChange={handleChange} required />
+                                <Form.Control type="number" name="maxActiveAppointments" value={formData.maxActiveAppointments} onChange={handleChange} min="1" required />
                             </Form.Group>
 
                             <Form.Group className="form-group">
                                 <Form.Label>Mínimo días entre citas:</Form.Label>
-                                <Form.Control type="number" name="minDaysBetweenAppointments" value={formData.minDaysBetweenAppointments} onChange={handleChange} required />
+                                <Form.Control type="number" name="minDaysBetweenAppointments" value={formData.minDaysBetweenAppointments} onChange={handleChange} min="1" required />
                             </Form.Group>
                         </>
                     )}
