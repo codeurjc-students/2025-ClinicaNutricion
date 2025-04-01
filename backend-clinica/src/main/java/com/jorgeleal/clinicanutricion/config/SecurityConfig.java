@@ -30,7 +30,7 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    private Logger log = LoggerFactory.getLogger(SecurityConfig.class);
+    private java.util.logging.Logger log = LoggerFactory.getLogger(SecurityConfig.class);
 
     @Value("${APP_ENV:dev}")
     private String appEnv;
@@ -73,6 +73,7 @@ public class SecurityConfig {
 
                 if ("prod".equalsIgnoreCase(appEnv)) {
                     String header = request.getHeader("X-From-CloudFront");
+                    log.info("X-From-CloudFront header: {}", header);
                     if (!"Secretocloudfront2_".equals(header)) {
                         log.warn("Request blocked: missing or invalid X-From-CloudFront header");
                         response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied");
