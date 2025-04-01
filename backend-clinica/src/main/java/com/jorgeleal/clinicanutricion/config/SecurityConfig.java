@@ -74,6 +74,7 @@ public class SecurityConfig {
                 if ("prod".equalsIgnoreCase(appEnv)) {
                     String header = request.getHeader("X-From-CloudFront");
                     log.info("X-From-CloudFront header: {}", header);
+                    log.info("Active profile: {}", appEnv);
                     if (!"Secretocloudfront2_".equals(header)) {
                         log.warn("Request blocked: missing or invalid X-From-CloudFront header");
                         response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied");
