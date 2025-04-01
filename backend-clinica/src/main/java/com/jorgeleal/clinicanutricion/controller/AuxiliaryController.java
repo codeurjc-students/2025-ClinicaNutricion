@@ -112,8 +112,13 @@ public class AuxiliaryController {
 
     @PostMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Auxiliary> createAuxiliary(@RequestBody AuxiliaryDTO dto) {
-        return ResponseEntity.ok(auxiliaryService.createAuxiliary(dto));
+    public ResponseEntity<?> createAuxiliary(@RequestBody AuxiliaryDTO dto) {
+        try {
+            Auxiliary auxiliary = auxiliaryService.createAuxiliary(dto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(auxiliary);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        }
     }
 
     @PutMapping("/{id}")

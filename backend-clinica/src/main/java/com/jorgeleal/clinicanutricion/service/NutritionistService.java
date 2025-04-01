@@ -85,6 +85,9 @@ public class NutritionistService {
     
     
     public NutritionistDTO createNutritionist(NutritionistDTO dto) {
+        if (userService.mailExists(dto.getMail())) {
+            throw new RuntimeException("El correo electrónico ya está registrado.");
+        }
         Nutritionist nutritionist = convertToDomain(dto);
         String idCognito = cognitoService.createCognitoUser(convertToUserDTO(dto));
         nutritionist.setActive(true);

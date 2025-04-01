@@ -85,6 +85,9 @@ public class AuxiliaryService {
     }
 
     public Auxiliary createAuxiliary(AuxiliaryDTO dto) {
+        if (userService.mailExists(dto.getMail())) {
+            throw new RuntimeException("El correo electrónico ya está registrado.");
+        }
         Auxiliary auxiliary = convertToDomain(dto);
         String idCognito = cognitoService.createCognitoUser(convertToUserDTO(dto));
         User user = auxiliary.getUser();

@@ -40,4 +40,7 @@ public class UserService {
         return userRepository.save(existingUser);
     }
 
+    public boolean mailExists(String mail) {
+        return userRepository.existsByMail(mail);
+    }
 }
