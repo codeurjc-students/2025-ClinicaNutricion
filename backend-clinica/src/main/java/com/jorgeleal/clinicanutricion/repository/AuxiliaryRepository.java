@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.List;
 
 @Repository
-public interface AuxiliaryRepository extends JpaRepository<Auxiliary, String> {
+public interface AuxiliaryRepository extends JpaRepository<Auxiliary, Long> {
     Boolean existsByIdUser(Long idUser);
     void deleteByIdUser(Long idUser);
     Optional<Auxiliary> findByUserIdUser(Long idUser);

@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface AdminAuxiliaryRepository extends JpaRepository<AdminAuxiliary, String> {
+public interface AdminAuxiliaryRepository extends JpaRepository<AdminAuxiliary, Long> {
     Optional<AdminAuxiliary> findByUserIdUser(Long idUser);
 }

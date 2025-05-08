@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.List;
 
 @Repository
-public interface PatientRepository extends JpaRepository<Patient, String> {
+public interface PatientRepository extends JpaRepository<Patient, Long> {
     Optional<Patient> findByUserIdUser(Long idUser);
     @Query("SELECT n FROM Patient n WHERE " +
         "(:name IS NULL OR LOWER(n.user.name) LIKE LOWER(CONCAT('%', :name, '%'))) " +

@@ -6,12 +6,11 @@ import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.List;
-import java.lang.StackWalker.Option;
 import java.util.Optional;
 import java.time.LocalTime;
 
 @Repository
-public interface NutritionistRepository extends JpaRepository<Nutritionist, String> {
+public interface NutritionistRepository extends JpaRepository<Nutritionist, Long> {
         List<Nutritionist> findByUserNameContainingIgnoreCase(String name);
         Optional<Nutritionist> findByUserIdUser(Long idUser);
         long countByIdUser(Long idUser);
