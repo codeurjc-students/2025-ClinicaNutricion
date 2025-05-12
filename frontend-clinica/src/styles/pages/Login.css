@@ -1,0 +1,26 @@
+.login-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #f8f9fa; 
+}
+  
+.login-logo {
+    max-width: 325px;
+    margin-bottom: 2rem;
+}
+
+.login-btn {
+    width: 200px;
+    padding: 0.75rem;
+    font-size: 1.1rem;
+}
+
+.register-btn {
+    width: 200px;
+    padding: 0.6rem;
+    font-size: 1rem;
+    margin-top: 1rem;
+  }

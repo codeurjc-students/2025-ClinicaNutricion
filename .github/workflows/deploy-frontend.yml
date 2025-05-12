@@ -1,0 +1,48 @@
+name: Deploy to AWS S3
+on: 
+  push:
+    branches:
+      - main 
+      - develop
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Código
+        uses: actions/checkout@v3
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22.11.0'
+          working-directory: frontend-clinica
+
+      - name: Instalar Dependencias
+        run: npm install --legacy-peer-deps
+        working-directory: frontend-clinica
+
+      - name: Crear Build
+        run: npm run build
+        env:
+          REACT_APP_API_BASE_URL: ${{ secrets.REACT_APP_API_BASE_URL }}
+          REACT_APP_FRONTEND_BASE_URL: ${{ secrets.REACT_APP_FRONTEND_URL }}
+          REACT_APP_COGNITO_AUTHORITY: ${{ secrets.REACT_APP_COGNITO_AUTHORITY }}
+          REACT_APP_COGNITO_CLIENT_ID: ${{ secrets.REACT_APP_COGNITO_CLIENT_ID }}
+          REACT_APP_COGNITO_REDIRECT_URI: ${{ secrets.REACT_APP_COGNITO_REDIRECT_URI }}
+          REACT_APP_COGNITO_LOGOUT_URI: ${{ secrets.REACT_APP_COGNITO_LOGOUT_URI }}
+          REACT_APP_COGNITO_REGISTER_BASE_URL: ${{ secrets.REACT_APP_COGNITO_REGISTER_BASE_URL }}
+        working-directory: frontend-clinica
+
+      - name: Configurar Credenciales AWS
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Desplegar en S3
+        run: aws s3 sync frontend-clinica/build/ s3://react-nurition-clinic-app --delete
+
+      - name: Invalidar Caché de CloudFront (Refrescar cambios)
+        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"

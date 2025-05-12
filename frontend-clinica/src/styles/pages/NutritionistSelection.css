@@ -1,0 +1,134 @@
+/*Estilo general de la página*/
+.nutritionist-selection {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  min-height: 100vh;
+  padding: 20px;
+  text-align: center;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/*Wrapper para centrar y controlar ancho*/
+.content-wrapper {
+  width: 100%;
+  max-width: 480px;  
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-sizing: border-box;
+}
+
+/*Estilo para el encabezado*/
+.nutritionist-selection header {
+  width: 100%;
+  text-align: left;
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.nutritionist-selection header .back-button {
+  margin-top: -20px;
+  margin-left: -20px;
+  font-size: 18px;
+  color: black;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+/* Estilo de los selectores */
+.content-wrapper .select-time,
+.content-wrapper .select-nutritionist {
+  box-sizing: border-box;
+}
+
+.content-wrapper .select-time label,
+.content-wrapper .select-nutritionist label {
+  font-size: 18px;
+  color: #388e3c;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.content-wrapper .select-time select,
+.content-wrapper .select-nutritionist select {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #77d9b2;
+  border-radius: 5px;
+  background-color: white;
+  color: #000000;
+  transition: border-color 0.3s ease;
+}
+
+.content-wrapper .select-time select:hover,
+.content-wrapper .select-nutritionist select:hover {
+  border-color: #5bb28a;
+}
+
+/*Estilo del botón "Seleccionar"*/
+.content-wrapper .select-button {
+  background-color: #20c06f;
+  color: white;
+  padding: 12px 20px;
+  font-size: 18px;
+  border-radius: 8px;
+  max-width: 500px;
+  margin: 20px auto 0;
+  border: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.content-wrapper .select-button.inactive {
+  background-color: #d3d3d3;
+  color: #fff;
+  cursor: not-allowed;
+}
+
+.content-wrapper .select-button:disabled {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/*Estilo cuando está cargando nutricionistas*/
+.content-wrapper select:disabled {
+  cursor: not-allowed;
+  background-color: #f5f5f5;
+}
+
+/*Ajustes para pantallas medianas*/
+@media (max-width: 768px) {
+  .content-wrapper label {
+    font-size: 16px;
+  }
+
+  .content-wrapper .select-button {
+    font-size: 16px;
+    padding: 10px 20px;
+  }
+
+  .nutritionist-selection {
+    padding: 10px;
+  }
+}
+
+/*Ajuste extra para móviles pequeños*/
+@media (max-width: 480px) {
+  .content-wrapper {
+    max-width: 90vw;
+    padding: 0 5vw;
+  }
+}
