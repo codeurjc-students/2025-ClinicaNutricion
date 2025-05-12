@@ -31,6 +31,7 @@ jobs:
           REACT_APP_COGNITO_CLIENT_ID: ${{ secrets.REACT_APP_COGNITO_CLIENT_ID }}
           REACT_APP_COGNITO_REDIRECT_URI: ${{ secrets.REACT_APP_COGNITO_REDIRECT_URI }}
           REACT_APP_COGNITO_LOGOUT_URI: ${{ secrets.REACT_APP_COGNITO_LOGOUT_URI }}
+          REACT_APP_COGNITO_REGISTER_BASE_URL: ${{ secrets.REACT_APP_COGNITO_REGISTER_BASE_URL }}
         working-directory: frontend-clinica
 
       - name: Configurar Credenciales AWS
