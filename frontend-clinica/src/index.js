@@ -11,6 +11,9 @@ const cognitoAuthConfig = {
   post_logout_redirect_uri: process.env.REACT_APP_COGNITO_LOGOUT_URI,
   response_type: "code",
   scope: "email openid phone",
+  extraQueryParams: {
+    lang: "es"
+  }
 };
 
 const AuthRedirect = () => {
