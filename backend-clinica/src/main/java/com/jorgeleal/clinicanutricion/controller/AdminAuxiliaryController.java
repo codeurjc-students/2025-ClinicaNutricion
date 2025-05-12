@@ -2,7 +2,6 @@ package com.jorgeleal.clinicanutricion.controller;
 
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken; 
 import com.jorgeleal.clinicanutricion.dto.*;
 import jakarta.validation.Valid;
 import com.jorgeleal.clinicanutricion.model.*;
@@ -11,32 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.http.HttpStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import java.util.HashMap;
 
-import java.time.LocalDate;
-import java.util.List;
-
 @RestController
 @RequestMapping("/admin")
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 public class AdminAuxiliaryController {
-
-    @Autowired
-    private NutritionistService nutritionistService;
-
-    @Autowired
-    private AuxiliaryService auxiliaryService;
-
-    @Autowired
-    private AppointmentService appointmentService;
-
-    @Autowired
-    private PatientService patientService;
-
     @Autowired
     private UserService userService;
 

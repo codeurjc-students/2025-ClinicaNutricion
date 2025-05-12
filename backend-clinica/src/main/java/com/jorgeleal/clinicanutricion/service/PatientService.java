@@ -4,14 +4,9 @@ import com.jorgeleal.clinicanutricion.model.*;
 import com.jorgeleal.clinicanutricion.dto.*;
 import com.jorgeleal.clinicanutricion.repository.PatientRepository;
 import com.jorgeleal.clinicanutricion.repository.AppointmentRepository;
-import com.jorgeleal.clinicanutricion.service.UserService;
-import com.jorgeleal.clinicanutricion.service.CognitoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -110,7 +105,6 @@ public class PatientService {
         updatedUser.setName(dto.getName());
         updatedUser.setSurname(dto.getSurname());
         updatedUser.setBirthDate(dto.getBirthDate());
-        updatedUser.setMail(dto.getMail());
         updatedUser.setPhone(dto.getPhone());
         updatedUser.setGender(dto.getGender());
     

@@ -1,12 +1,16 @@
 .manage-users-container { 
+    margin-top: 20px;
     height: 100vh; 
     width: calc(100% - 190px);
     background: var(--background-color);
     padding: 30px;
-    margin: auto;
+    margin:auto;
 }
 
+.manage-users-sub-container {
+    margin-top: 40px;
 
+}
 
 .manage-users-buttons {
     display: flex;
@@ -29,10 +33,10 @@
     background-color: #388E3C;
 }
 
-.back-button {
+.manage-users-container .back-button {
     display: flex;
     align-items: center;
-    gap: 10px; /* Espaciado entre icono y texto */
+    gap: 10px;
     background-color: var(--background-color);
     color: rgb(0, 0, 0);
     border: none;
@@ -41,8 +45,7 @@
     border-radius: 5px;
     cursor: pointer;
     transition: background 0.3s;
-    margin-bottom: 20px;
-    width: fit-content; /* Para que se ajuste al contenido */
+    margin-left: 120px;
 }
 
 

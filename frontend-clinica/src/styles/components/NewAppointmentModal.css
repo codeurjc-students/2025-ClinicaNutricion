@@ -1,66 +1,65 @@
 /* NewAppointmentModal.css */
 .modal {
-    z-index: 4000 !important; /* Bootstrap usa 1050 por defecto, lo subimos un nivel */
+    z-index: 4000 !important;
 }
 /* Reducir el tamaño del modal */
 .modal-dialog {
-    max-width: 90vw;  /* Ajusta el ancho del modal al 90% del viewport */
+    max-width: 90vw;
     width: auto;
 }
 
 /* Reducir el tamaño de la tabla */
 .modal-body .table-responsive {
-    max-height: 60vh;
-    overflow-y: auto;
-    overflow-x: auto;  
+    max-height: none;
+    height: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+    display: block;
 }
 
-/* Ajustar tamaño de las celdas */
 .modal-body table {
-    font-size: 14px; /* Reduce el tamaño de la fuente */
+    font-size: 14px;
 }
 
-/* Ajustar el tamaño de las columnas */
 .modal-body th,
 .modal-body td {
-    padding: 6px;  /* Reduce el espacio interno de las celdas */
-    white-space: nowrap; /* Evita que el contenido de las celdas se expanda */
+    padding: 6px;
+    white-space: nowrap;
 }
 
-/* Limitar el ancho de las columnas específicas */
 .modal-body th:nth-child(1), 
 .modal-body td:nth-child(1) {
-    width: 120px; /* Nombre */
+    width: 120px;
 }
 
 .modal-body th:nth-child(2), 
 .modal-body td:nth-child(2) {
-    width: 150px; /* Apellidos */
+    width: 150px;
 }
 
 .modal-body th:nth-child(3),
 .modal-body td:nth-child(3) {
-    width: 110px; /* Fecha de nacimiento */
+    width: 110px;
 }
 
 .modal-body th:nth-child(4),
 .modal-body td:nth-child(4) {
-    width: 160px; /* Email */
+    width: 160px;
 }
 
 .modal-body th:nth-child(5),
 .modal-body td:nth-child(5) {
-    width: 100px; /* Teléfono */
+    width: 100px;
 }
 
 .modal-body th:nth-child(6),
 .modal-body td:nth-child(6) {
-    width: 80px; /* Género */
+    width: 80px;
 }
 
 .modal-body th:nth-child(7),
 .modal-body td:nth-child(7) {
-    width: 90px; /* Botón seleccionar */
+    width: 90px;
     text-align: center;
 }
 
@@ -72,7 +71,7 @@
 
 /* Botón de cancelar en rojo */
 .cancel-button {
-    background-color: #dc3545 !important; /* Rojo Bootstrap */
+    background-color: #dc3545 !important;
     color: white !important;
     border: none;
     padding: 8px 16px;
@@ -82,18 +81,18 @@
 }
 
 .cancel-button:hover {
-    background-color: #c82333 !important; /* Rojo más oscuro */
+    background-color: #c82333 !important; 
 }
 
 /* Botón de confirmar en gris cuando está deshabilitado */
 .confirm-button {
-    background-color: #6c757d !important; /* Gris Bootstrap */
+    background-color: #6c757d !important; 
     color: white !important;
     border: none;
     padding: 8px 16px;
     border-radius: 5px;
     font-size: 16px;
-    opacity: 0.5; /* Opacidad cuando está deshabilitado */
+    opacity: 0.5;
     transition: background 0.3s ease-in-out, opacity 0.3s ease-in-out;
 }
 
@@ -103,16 +102,16 @@
 
 /* Botón de confirmar en verde cuando hay un paciente seleccionado */
 .confirm-button.active {
-    background-color: #28a745 !important; /* Verde Bootstrap */
+    background-color: #28a745 !important; 
     opacity: 1;
 }
 
 .confirm-button.active:hover {
-    background-color: #218838 !important; /* Verde más oscuro */
+    background-color: #218838 !important;
 }
 
 /* Estilo para la fila seleccionada */
 .selected-row {
-    background-color: #d4edda !important;  /* Verde pastel */
+    background-color: #d4edda !important;
     font-weight: bold;
 }

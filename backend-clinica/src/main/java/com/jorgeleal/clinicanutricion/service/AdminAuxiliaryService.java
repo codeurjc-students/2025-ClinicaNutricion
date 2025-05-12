@@ -2,36 +2,20 @@ package com.jorgeleal.clinicanutricion.service;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import com.jorgeleal.clinicanutricion.service.*;
 import com.jorgeleal.clinicanutricion.model.*;
 import com.jorgeleal.clinicanutricion.dto.*;
 import com.jorgeleal.clinicanutricion.repository.AdminAuxiliaryRepository;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Map;
-import java.util.Optional;
+
 
 @Service
 public class AdminAuxiliaryService {
-
-    @Autowired
-    private NutritionistService nutritionistService;
-
-    @Autowired
-    private PatientService patientService;
-
-    @Autowired
-    private AuxiliaryService auxiliaryService;
-
     @Autowired
     private AdminAuxiliaryRepository adminAuxiliaryRepository;
 
     @Autowired
     private UserService userService;
-
+/* 
     private AdminAuxiliaryDTO convertToDTO(AdminAuxiliary adminAuxiliary) {
         AdminAuxiliaryDTO dto = new AdminAuxiliaryDTO();
         User user = adminAuxiliary.getUser();
@@ -64,7 +48,7 @@ public class AdminAuxiliaryService {
     
         return adminAuxiliary;
     }
-
+*/
     public AdminAuxiliary updateAdminAuxiliary(Long id, AdminAuxiliaryDTO dto) {
         AdminAuxiliary admin = adminAuxiliaryRepository.findByUserIdUser(id).orElse(null);
         if (admin == null) {
@@ -75,7 +59,6 @@ public class AdminAuxiliaryService {
         updatedUser.setName(dto.getName());
         updatedUser.setSurname(dto.getSurname());
         updatedUser.setBirthDate(dto.getBirthDate());
-        updatedUser.setMail(dto.getMail());
         updatedUser.setPhone(dto.getPhone());
         updatedUser.setGender(dto.getGender());
     

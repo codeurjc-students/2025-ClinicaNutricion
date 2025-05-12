@@ -1,11 +1,11 @@
 package com.jorgeleal.clinicanutricion.service;
 
-import com.jorgeleal.clinicanutricion.service.*;
 import com.jorgeleal.clinicanutricion.model.*;
 import com.jorgeleal.clinicanutricion.dto.*;
 import com.jorgeleal.clinicanutricion.repository.AuxiliaryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -115,10 +115,14 @@ public class AuxiliaryService {
         return auxiliaryRepository.save(existingAuxiliary);
     }
 
+    @Transactional
     public void deleteAuxiliary(Long id) {
-        if (!auxiliaryRepository.existsByIdUser(id)) {
-            throw new RuntimeException("Auxiliar no encontrado");
+        Auxiliary existingAuxiliary = auxiliaryRepository.findByUserIdUser(id).orElse(null);
+        if (existingAuxiliary == null) {
+            throw new RuntimeException("El Auxiliar con ID " + id + " no existe.");
         }
+        cognitoService.deleteCognitoUser(existingAuxiliary.getUser().getMail());
         auxiliaryRepository.deleteByIdUser(id);
+        userService.deleteUser(id);
     }
 }

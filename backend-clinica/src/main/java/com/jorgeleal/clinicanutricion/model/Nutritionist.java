@@ -33,9 +33,6 @@ public class Nutritionist {
     @Column(name = "appointment_duration", nullable = false)
     private int appointmentDuration;
 
-    @Column(name = "min_days_between_appointments", nullable = false)
-    private int minDaysBetweenAppointments;
-
     @Column(name = "max_active_appointments", nullable = false)
     private int maxActiveAppointments;
 

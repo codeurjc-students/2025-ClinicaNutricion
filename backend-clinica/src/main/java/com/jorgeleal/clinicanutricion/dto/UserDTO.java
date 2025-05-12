@@ -1,8 +1,5 @@
 package com.jorgeleal.clinicanutricion.dto; 
 
-import com.jorgeleal.clinicanutricion.model.Gender; 
-import jakarta.validation.constraints.*; 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter; 
 import lombok.Setter; 
 import java.time.LocalDate; 

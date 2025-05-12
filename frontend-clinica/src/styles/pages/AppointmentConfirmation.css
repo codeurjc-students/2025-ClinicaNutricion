@@ -1,61 +1,96 @@
+/* 1) Contenedor full-screen con scroll interno y sin margen */
 .appointment-confirmation {
-    background-color: #f8f9fa;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 500px;
-    margin: 40px auto;
-    text-align: center;
+  background-color: #f8f9fa;
+  height: 100vh;
+  overflow-y: auto;
+  position: relative;
+  display: flex;
+  justify-content: center; 
+  align-items: flex-start;
+  padding: 20px;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+}
+
+/* Header y BackButton */
+.appointment-confirmation header .back-button {
+  font-size: 18px;
+  color: #000000;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+.appointment-confirmation header .back-button:hover {
+  color: #388e3c;
+}
+
+/* Contenido principal */
+.appointment-confirmation .content-wrapper {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  width: 100%;
+  padding: 20px;
+  text-align: center;
+  margin-top: 60px;
+}
+
+.appointment-confirmation h2 {
+  color: #343a40;
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+}
+
+.appointment-confirmation p {
+  font-size: 1rem;
+  margin: 10px 0;
+  color: #495057;
+}
+
+.appointment-confirmation strong {
+  font-weight: 600;
+  color: #388e3c;
+}
+
+.appointment-confirmation .btn-confirm {
+  background-color: #20c06f;
+  color: white;
+  padding: 12px 20px;
+  font-size: 18px;
+  border-radius: 8px;
+  max-width: 500px;
+  margin: 20px auto 0;
+  border: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.appointment-confirmation .btn-confirm:disabled {
+  background-color: #d3d3d3;
+  color: #8a8a8a;
+  cursor: not-allowed;
+}
+
+.appointment-confirmation .error-text {
+  color: #c0392b;
+  font-size: 0.9rem;
+  margin-top: 12px;
+  line-height: 1.3;
+}
+
+@media (max-width: 768px) {
+  .appointment-confirmation .content-wrapper {
+    padding: 15px;
   }
-  
   .appointment-confirmation h2 {
-    color: #343a40;
-    font-size: 1.8rem;
-    margin-bottom: 20px;
+    font-size: 1.6rem;
   }
-  
   .appointment-confirmation p {
+    font-size: 0.9rem;
+  }
+  .appointment-confirmation .btn-confirm {
     font-size: 1rem;
-    margin: 10px 0;
-    color: #495057;
   }
-  
-  .appointment-confirmation strong {
-    font-weight: 600;
-    color: #007bff;
-  }
-  
-  .appointment-confirmation button {
-    padding: 12px 20px;
-    font-size: 1.1rem;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .appointment-confirmation button:hover {
-    background-color: #218838;
-  }
-  
-  @media (max-width: 768px) {
-    .appointment-confirmation {
-      padding: 15px;
-      margin: 20px;
-    }
-  
-    .appointment-confirmation h2 {
-      font-size: 1.6rem;
-    }
-  
-    .appointment-confirmation p {
-      font-size: 0.9rem;
-    }
-  
-    .appointment-confirmation button {
-      font-size: 1rem;
-    }
-  }
-  
+}

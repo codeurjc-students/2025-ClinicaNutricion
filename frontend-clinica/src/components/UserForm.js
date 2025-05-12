@@ -10,16 +10,11 @@ const UserForm = ({ isEditMode = false, userType }) => {
     const BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const { id } = useParams(); //Obtener el ID para el modo edición
     const location = useLocation();
-
     const auth = useAuth(); 
     const token = auth.user?.access_token;
-
     const [errorMessage, setErrorMessage] = useState("");
     const [validationErrors, setValidationErrors] = useState({});
-
     const isProfilePage = location.pathname.includes("/profile");
-
-    // Estado para la notificación de éxito
     const [showSuccess, setShowSuccess] = useState(false);
 
     //Definir datos iniciales
@@ -38,7 +33,6 @@ const UserForm = ({ isEditMode = false, userType }) => {
             startTime: "",
             endTime: "",
             maxActiveAppointments: 2,
-            minDaysBetweenAppointments: 15,
         });
     }
 
@@ -75,7 +69,6 @@ const UserForm = ({ isEditMode = false, userType }) => {
                             startTime: data.startTime || "",
                             endTime: data.endTime || "",
                             maxActiveAppointments: data.maxActiveAppointments || "",
-                            minDaysBetweenAppointments: data.minDaysBetweenAppointments || ""
                         };
                     }
                 }
@@ -89,7 +82,7 @@ const UserForm = ({ isEditMode = false, userType }) => {
     const handleChange = (e) => {
         const { name, value } = e.target;
     
-        if (name === "maxActiveAppointments" || name === "minDaysBetweenAppointments") {
+        if (name === "maxActiveAppointments") {
             //Si el valor ingresado es menor que 1, lo ajustamos a 1
             if (value < 1) {
                 setFormData({ ...formData, [name]: 1 });
@@ -158,11 +151,26 @@ const UserForm = ({ isEditMode = false, userType }) => {
             //Validación de hora de inicio
             if (!formData.startTime) {
                 errors.startTime = "Debes introducir la hora de inicio.";
+            } else {
+                if (formData.startTime < "09:00" || formData.startTime > "20:00") {
+                    errors.startTime = "La hora de inicio debe estar entre 09:00 y 20:00.";
+                }
             }
-    
+
             //Validación de hora de fin
             if (!formData.endTime) {
                 errors.endTime = "Debes introducir la hora de fin.";
+            } else {
+                if (formData.endTime < "09:00" || formData.endTime > "20:00") {
+                    errors.endTime = "La hora de fin debe estar entre 09:00 y 20:00.";
+                }
+            }
+
+            if (formData.startTime && formData.endTime) {
+                if (formData.startTime >= formData.endTime) {
+                    errors.endTime = "La hora de fin debe ser mayor que la hora de inicio.";
+                    errors.startTime = "La hora de inicio debe ser menor que la hora de fin.";
+                }
             }
         }
 
@@ -207,7 +215,7 @@ const UserForm = ({ isEditMode = false, userType }) => {
                         mail: "El correo electrónico ya está registrado."
                     });
                 } else {
-                    setErrorMessage("Error al procesar la solicitud. Inténtelo de nuevo.");
+                    setErrorMessage(errorData.error);
                 }
             }
         } catch (error) {
@@ -226,7 +234,7 @@ const UserForm = ({ isEditMode = false, userType }) => {
     return (
         <>
             <Container className={`form-container ${isProfilePage ? "profile-form-container" : ""}`}>
-                <h2>{titles[userType]}</h2>
+                <h2>{isProfilePage ? "Mi perfil" : titles[userType] }</h2>
                 {errorMessage && <div className="error-message">{errorMessage}</div>}
 
                 <Form noValidate onSubmit={handleSubmit}>
@@ -250,7 +258,7 @@ const UserForm = ({ isEditMode = false, userType }) => {
 
                     <Form.Group className="form-group">
                         <Form.Label>Email:</Form.Label>
-                        <Form.Control type="mail" name="mail" value={formData.mail} onChange={handleChange} isInvalid={!!validationErrors.mail}  required />
+                        <Form.Control type="mail" name="mail" value={formData.mail} onChange={handleChange} readOnly={isEditMode} disabled={isEditMode} isInvalid={!!validationErrors.mail}  required />
                         <Form.Control.Feedback type="invalid">{validationErrors.mail}</Form.Control.Feedback>
                     </Form.Group>
 
@@ -296,11 +304,6 @@ const UserForm = ({ isEditMode = false, userType }) => {
                             <Form.Group className="form-group">
                                 <Form.Label>Máximo citas activas:</Form.Label>
                                 <Form.Control type="number" name="maxActiveAppointments" value={formData.maxActiveAppointments} onChange={handleChange} min="1" required />
-                            </Form.Group>
-
-                            <Form.Group className="form-group">
-                                <Form.Label>Mínimo días entre citas:</Form.Label>
-                                <Form.Control type="number" name="minDaysBetweenAppointments" value={formData.minDaysBetweenAppointments} onChange={handleChange} min="1" required />
                             </Form.Group>
                         </>
                     )}

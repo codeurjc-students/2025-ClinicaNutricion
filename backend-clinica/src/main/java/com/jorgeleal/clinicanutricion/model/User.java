@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
@@ -34,7 +35,8 @@ public class User {
     @Column(name = "phone", nullable = false)
     private String phone;
 
-    @Column(name = "mail", unique = true, nullable = false)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @Column(name = "mail", unique = true, nullable = false, updatable = false)
     private String mail;
 
     @Enumerated(EnumType.STRING)

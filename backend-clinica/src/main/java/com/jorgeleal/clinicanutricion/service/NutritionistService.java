@@ -1,16 +1,14 @@
 package com.jorgeleal.clinicanutricion.service;
 
-import com.jorgeleal.clinicanutricion.service.*;
 import com.jorgeleal.clinicanutricion.model.*;
 import com.jorgeleal.clinicanutricion.dto.*;
 import com.jorgeleal.clinicanutricion.repository.NutritionistRepository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.time.LocalTime;
-import java.time.LocalDate;
-import java.util.ArrayList;
 
 @Service
 public class NutritionistService {
@@ -39,7 +37,6 @@ public class NutritionistService {
         dto.setStartTime(nutritionist.getStartTime());
         dto.setEndTime(nutritionist.getEndTime());
         dto.setMaxActiveAppointments(nutritionist.getMaxActiveAppointments());
-        dto.setMinDaysBetweenAppointments(nutritionist.getMinDaysBetweenAppointments());
         dto.setActive(nutritionist.isActive());
     
         return dto;
@@ -63,7 +60,6 @@ public class NutritionistService {
         nutritionist.setStartTime(dto.getStartTime());
         nutritionist.setEndTime(dto.getEndTime());
         nutritionist.setMaxActiveAppointments(dto.getMaxActiveAppointments());
-        nutritionist.setMinDaysBetweenAppointments(dto.getMinDaysBetweenAppointments());
         nutritionist.setActive(dto.isActive());
     
         return nutritionist;
@@ -103,6 +99,11 @@ public class NutritionistService {
         return nutritionist;
     }
 
+    public NutritionistDTO getNutritionistByIdDTO(Long id) {
+        Nutritionist nutritionist = getNutritionistById(id);
+        return convertToDTO(nutritionist);
+    }
+
     public NutritionistDTO updateNutritionist(Long id, NutritionistDTO dto) {
         Nutritionist existingNutritionist = nutritionistRepository.findByUserIdUser(id).orElse(null);
         if (existingNutritionist == null) {
@@ -113,22 +114,18 @@ public class NutritionistService {
         updatedUser.setName(dto.getName());
         updatedUser.setSurname(dto.getSurname());
         updatedUser.setBirthDate(dto.getBirthDate());
-        updatedUser.setMail(dto.getMail());
         updatedUser.setPhone(dto.getPhone());
         updatedUser.setGender(dto.getGender());
     
         userService.updateUser(updatedUser);
         cognitoService.updateCognitoUser(convertToUserDTO(dto));
     
-        existingNutritionist.setActive(dto.isActive());
         existingNutritionist.setAppointmentDuration(dto.getAppointmentDuration());
         existingNutritionist.setStartTime(dto.getStartTime());
         existingNutritionist.setEndTime(dto.getEndTime());
         existingNutritionist.setMaxActiveAppointments(dto.getMaxActiveAppointments());
-        existingNutritionist.setMinDaysBetweenAppointments(dto.getMinDaysBetweenAppointments());
     
         Nutritionist savedNutritionist = nutritionistRepository.save(existingNutritionist);
-    
         return convertToDTO(savedNutritionist);
     }
     
@@ -152,6 +149,17 @@ public class NutritionistService {
         nutritionistRepository.save(nutritionist);
     }
 
+    @Transactional
+    public void deleteNutritionist(Long id) {
+        Nutritionist nutritionist = nutritionistRepository.findByUserIdUser(id).orElse(null);
+        if (nutritionist == null) {
+            throw new RuntimeException("El Nutricionista con ID " + id + " no existe.");
+        }
+        cognitoService.deleteCognitoUser(nutritionist.getUser().getMail());
+        nutritionistRepository.delete(nutritionist);
+        userService.deleteUser(id);
+    }
+
     public List<NutritionistDTO> getNutritionistsByTimeRange(String timeRange) {
         System.out.println("timeRange recibido: " + timeRange); 
         List<Nutritionist> nutritionists;
@@ -169,10 +177,10 @@ public class NutritionistService {
                     break;
                 case "mediodía":
                     startHour = LocalTime.of(12, 0);
-                    endHour = LocalTime.of(14, 0);
+                    endHour = LocalTime.of(16, 0);
                     break;
                 case "tarde":
-                    startHour = LocalTime.of(14, 0);
+                    startHour = LocalTime.of(16, 0);
                     endHour = LocalTime.of(20, 0);
                     break;
                 default:

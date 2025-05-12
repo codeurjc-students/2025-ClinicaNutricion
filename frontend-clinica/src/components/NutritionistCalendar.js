@@ -15,6 +15,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import NewAppointmentModal from "./NewAppointmentModal";
 import "moment/locale/es";
 import es from "date-fns/locale/es";
+import { toast } from 'react-toastify';
 
 registerLocale("es", es);
 moment.updateLocale("es", { week: { dow: 1 } }); 
@@ -75,11 +76,12 @@ const NutritionistCalendar = ({ nutritionistId, appointmentDuration, startTime, 
         if (nutritionistId) fetchAppointments();
     }, [nutritionistId, currentDate, fetchAppointments]);
 
+
     // Drag and Drop
     const handleEventDrop = async ({ event, start, end }) => {
         const originalAppointments = [...appointments];
         if (moment(start).isBefore(today)) {
-            alert("No puedes modificar citas en días pasados.");
+            toast.error("No puedes modificar citas a días pasados.");
             return;
         }
 
@@ -104,7 +106,7 @@ const NutritionistCalendar = ({ nutritionistId, appointmentDuration, startTime, 
 
             if (!response.ok) throw new Error("Error al actualizar la cita");
         } catch (error) {
-            alert("Error: No se puede mover la cita porque hay un solapamiento.");
+            toast.error("Error: No se puede mover la cita porque hay un solapamiento.");
             setAppointments(originalAppointments);
         }
     };
@@ -112,7 +114,7 @@ const NutritionistCalendar = ({ nutritionistId, appointmentDuration, startTime, 
     const createAppointmentOrBlockout = async (type, patient = null, selectedTime = null) => {
         const start = selectedTime || contextMenuInfo?.selectedTime;
         if (moment(start).isBefore(today)) {
-            alert("No puedes agregar citas ni bloqueos en días pasados.");
+            toast.error("No puedes agregar citas ni bloqueos en días pasados.");
             return;
         }
     
@@ -182,7 +184,7 @@ const NutritionistCalendar = ({ nutritionistId, appointmentDuration, startTime, 
     
     const handleConfirmAppointment = (patient) => {
         if (!selectedTime) {
-            alert("Error: No se ha definido una hora para la cita.");
+            toast.error("Error: No se ha definido una hora para la cita.");
             return;
         }
         createAppointmentOrBlockout("APPOINTMENT", patient, selectedTime);

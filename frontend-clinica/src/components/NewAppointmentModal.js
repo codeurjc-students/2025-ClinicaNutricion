@@ -3,18 +3,19 @@ import { Modal, Button } from "react-bootstrap";
 import SearchComponent from "./SearchComponent";
 import moment from "moment";
 import "../styles/components/NewAppointmentModal.css";
+import { toast } from 'react-toastify';
 
 const NewAppointmentModal = ({ show, onClose, onConfirm, selectedTime }) => { 
     const [selectedPatient, setSelectedPatient] = useState(null);
 
     const handleConfirm = () => {
         if (!selectedPatient) {
-            alert("Selecciona un paciente antes de continuar.");
+            toast.error("Selecciona un paciente antes de continuar.");
             return;
         }
 
         if (!selectedTime) {
-            alert("Error: No se ha definido una hora para la cita.");
+            toast.error("Error: No se ha definido una hora para la cita.");
             return;
         }
 

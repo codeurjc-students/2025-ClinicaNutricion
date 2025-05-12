@@ -40,6 +40,10 @@ public class UserService {
         return userRepository.save(existingUser);
     }
 
+    public void deleteUser(Long idUser) {
+        userRepository.deleteById(idUser);
+    }
+
     public boolean mailExists(String mail) {
         return userRepository.existsByMail(mail);
     }

@@ -9,8 +9,7 @@ import BackButton from '../../components/BackButton';
 const TimeSelection = () => {
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const location = useLocation();
-  const { nutritionist, timeRange } = location.state || {}; 
-  const [patient, setPatient] = useState({});
+  const { patient, nutritionist, timeRange } = location.state || {}; 
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState(null);
   const [availableSlots, setAvailableSlots] = useState([]);
@@ -19,34 +18,6 @@ const TimeSelection = () => {
   const [showModal, setShowModal] = useState(false);
   const token = localStorage.getItem('token');
   const today = new Date();
-
-  useEffect(() => {
-    const fetchPatientData = async () => {
-      try {
-        const response = await fetch(`${BASE_URL}/patients/profile`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) throw new Error("Error obteniendo el perfil del paciente");
-
-        const data = await response.json();
-
-        setPatient({
-            idUser: data.id,
-            name: data.name,
-            surname: data.surname,
-        });
-      } catch (error) {
-        console.error('Error al obtener los datos del paciente:', error);
-      }
-    };
-
-    fetchPatientData();
-  }, [BASE_URL, token]);
 
   const fetchAvailableSlots = useCallback(async () => {
     try {
@@ -130,78 +101,80 @@ const TimeSelection = () => {
         <BackButton defaultText="Selección de nutricionista" />
       </header>
 
-      <div className="nutritionist-info">
-        <h5>Nutricionista seleccionado:</h5>
-        <p>{nutritionist ? `${nutritionist.name} ${nutritionist.surname}` : 'No seleccionado'}</p>
-      </div>
+      <div className="content-wrapper">
+        <div className="nutritionist-info">
+          <h5>Nutricionista seleccionado:</h5>
+          <p>{nutritionist ? `${nutritionist.name} ${nutritionist.surname}` : 'No seleccionado'}</p>
+        </div>
 
-      <div className="calendar-container">
-        <Calendar
-          onChange={handleDateChange}
-          value={selectedDate}
-          minDate={today}
-        />
-      </div>
+        <div className="calendar-container">
+          <Calendar
+            onChange={handleDateChange}
+            value={selectedDate}
+            minDate={today}
+          />
+        </div>
 
-      <div className="time-list">
-        {loading ? (
-          <p>Cargando...</p>
-        ) : filteredSlots.length > 0 ? (
-          <div className="time-buttons-container">
-            <div className="time-button-container">
-              {filteredSlots.slice(0, showMore ? filteredSlots.length : 7).map((time) => (
+        <div className="time-list">
+          {loading ? (
+            <p>Cargando...</p>
+          ) : filteredSlots.length > 0 ? (
+            <div className="time-buttons-container">
+              <div className="time-button-container">
+                {filteredSlots.slice(0, showMore ? filteredSlots.length : 7).map((time) => (
+                  <button
+                    key={time}
+                    className={`time-button ${time === selectedTime ? 'selected' : ''}`}
+                    onClick={() => handleTimeSelection(time)}
+                  >
+                    {time}
+                  </button>
+                ))}
+                {filteredSlots.length > 7 && !showMore && (
+                  <button className="show-more" onClick={handleShowModal}>
+                    Más...
+                  </button>
+                )}
+              </div>
+            </div>
+          ) : (
+            <p>No hay huecos disponibles para esta fecha</p>
+          )}
+        </div>
+
+        <Modal show={showModal} onHide={handleCloseModal} centered>
+          <Modal.Header closeButton>
+            <Modal.Title>Seleccionar una hora</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <div className="modal-time-buttons">
+              {filteredSlots.map((time) => (
                 <button
                   key={time}
                   className={`time-button ${time === selectedTime ? 'selected' : ''}`}
-                  onClick={() => handleTimeSelection(time)}
+                  onClick={() => handleTimeSelectionInModal(time)}
                 >
                   {time}
                 </button>
               ))}
-              {filteredSlots.length > 7 && !showMore && (
-                <button className="show-more" onClick={handleShowModal}>
-                  Más...
-                </button>
-              )}
             </div>
-          </div>
-        ) : (
-          <p>No hay huecos disponibles para esta fecha</p>
-        )}
+          </Modal.Body>
+        </Modal>
+
+        <Link to="/patients/appointment-confirmation" state={{
+          patient,
+          selectedDate: formattedDate,
+          selectedTime,
+          nutritionist,
+        }}>
+          <button 
+            className={`confirm-btn ${selectedDate && selectedTime ? 'enabled' : ''}`} 
+            disabled={!selectedDate || !selectedTime}
+          >
+            Confirmar cita
+          </button>
+        </Link>
       </div>
-
-      <Modal show={showModal} onHide={handleCloseModal} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Seleccionar una hora</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="modal-time-buttons">
-            {filteredSlots.map((time) => (
-              <button
-                key={time}
-                className={`time-button ${time === selectedTime ? 'selected' : ''}`}
-                onClick={() => handleTimeSelectionInModal(time)}
-              >
-                {time}
-              </button>
-            ))}
-          </div>
-        </Modal.Body>
-      </Modal>
-
-      <Link to="/patients/appointment-confirmation" state={{
-        patient,
-        selectedDate: formattedDate,
-        selectedTime,
-        nutritionist,
-      }}>
-        <button 
-          className={`confirm-btn ${selectedDate && selectedTime ? 'enabled' : ''}`} 
-          disabled={!selectedDate || !selectedTime}
-        >
-          Confirmar cita
-        </button>
-      </Link>
     </div>
   );
 };

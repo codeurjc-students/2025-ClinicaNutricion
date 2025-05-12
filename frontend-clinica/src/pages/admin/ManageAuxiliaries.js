@@ -5,7 +5,7 @@ const ManageAuxiliaries = () => {
     const navigate = useNavigate();
 
     return (
-        <div>
+        <div className="manage-users-sub-container">
             <BackButton text="Gestión de Usuarios" to="/admin/manage-users" />
             <h2 className="text-center">Gestión de Auxiliares</h2>
             <div className="manage-users-buttons">

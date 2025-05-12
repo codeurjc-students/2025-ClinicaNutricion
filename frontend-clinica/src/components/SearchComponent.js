@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Modal, Button } from "react-bootstrap";
 import "../styles/components/SearchComponent.css";
 import editIcon from "../assets/icons/edit-icon.png";
 import deleteIcon from "../assets/icons/delete-icon.png";
 import ToggleSwitch from "./ToggleSwitch";
+import { toast } from 'react-toastify';
 
 const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -18,7 +20,6 @@ const formatGender = (gender) => {
 
 const ITEMS_PER_PAGE = 10;
 
-
 const SearchComponent = ({ entityType, userType, onSelect, selectedPatient, showSelectButton = false, onlyActivePatients = false }) => {  
     const BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const [filters, setFilters] = useState({ name: "", surname: "", phone: "", email: "", active: onlyActivePatients ? "true" : "" });
@@ -26,6 +27,8 @@ const SearchComponent = ({ entityType, userType, onSelect, selectedPatient, show
     const [searched, setSearched] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [auxToDelete, setAuxToDelete] = useState(null);
     const navigate = useNavigate();
 
     const handleFilterChange = (e) => {
@@ -115,13 +118,11 @@ const SearchComponent = ({ entityType, userType, onSelect, selectedPatient, show
             ));
         } catch (error) {
             console.error("Error cambiando estado del usuario:", error);
-            alert("No se pudo cambiar el estado del usuario.");
+            toast.error("No se pudo cambiar el estado del usuario.");
         }
     };
 
     const handleDeleteUser = async (idUser) => {
-        if (!window.confirm("¿Estás seguro de que quieres eliminar este usuario?")) return;
-
         try {
             const token = localStorage.getItem("token");
             if (!token) throw new Error("No se encontró un token de autenticación.");
@@ -137,10 +138,27 @@ const SearchComponent = ({ entityType, userType, onSelect, selectedPatient, show
             if (!response.ok) throw new Error("Error al eliminar el usuario.");
 
             setResults(results.filter(user => user.idUser !== idUser));
+            toast.success("Usuario eliminado correctamente.");
         } catch (error) {
-            console.error("Error eliminando usuario:", error);
-            alert("No se pudo eliminar el usuario.");
+            console.error(error);
+            toast.error("No se pudo eliminar el usuario.");
         }
+    };
+
+    //Modal borrar usuario
+    const openDeleteModal = (idUser) => {
+        setAuxToDelete(idUser);
+        setShowDeleteModal(true);
+    };
+
+    const closeDeleteModal = () => {
+        setShowDeleteModal(false);
+        setAuxToDelete(null);
+    };
+
+    const confirmDelete = async () => {
+        await handleDeleteUser(auxToDelete);
+        closeDeleteModal();
     };
 
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -162,7 +180,7 @@ const SearchComponent = ({ entityType, userType, onSelect, selectedPatient, show
                         <input type="text" name="surname" placeholder="Apellidos" value={filters.surname} onChange={handleFilterChange} />
                         <input type="text" name="phone" placeholder="Teléfono" value={filters.phone} onChange={handleFilterChange} />
                         <input type="text" name="email" placeholder="Email" value={filters.email} onChange={handleFilterChange} />
-                        {!onlyActivePatients && (
+                        { entityType !== "auxiliaries" && !onlyActivePatients && ( 
                             <select name="active" value={filters.active} onChange={handleFilterChange}>
                                 <option value="">Todos</option>
                                 <option value="true">Activos</option>
@@ -208,11 +226,14 @@ const SearchComponent = ({ entityType, userType, onSelect, selectedPatient, show
                                     ) : (
                                         <>
                                             <th>Editar</th>
-                                            {entityType === "auxiliaries" ? (
-                                                <th>Eliminar</th>
-                                            ) : (
+                                            {entityType === "auxiliaries" && <th>Eliminar</th>}
+                                            {entityType === "nutritionists" && (
+                                              <>
                                                 <th>Estado</th>
+                                                <th>Eliminar</th>
+                                              </>
                                             )}
+                                            {entityType === "patients" && <th>Estado</th>}
                                         </>
                                 )}
                             </tr>
@@ -252,20 +273,21 @@ const SearchComponent = ({ entityType, userType, onSelect, selectedPatient, show
                                                         <img src={editIcon} alt="Editar" className="action-icon" />
                                                     </button>
                                                 </td>
-                                                {entityType === "auxiliaries" ? (
-                                                    <td className="action-cell">
-                                                        <button className="action-btn" onClick={() => handleDeleteUser(item.idUser)}>
-                                                            <img src={deleteIcon} alt="Eliminar" className="action-icon" />
-                                                        </button>
-                                                    </td>
-                                                ) : (
+                                                {(entityType === "nutritionists" || entityType === "patients") && (
                                                     <td>
-                                                        <div className="toggle-container">
-                                                            <ToggleSwitch 
-                                                                isActive={item.active} 
-                                                                onToggle={() => handleToggleUserStatus(item.idUser, item.active)} 
-                                                            />
-                                                        </div>
+                                                    <div className="toggle-container">
+                                                        <ToggleSwitch 
+                                                        isActive={item.active} 
+                                                        onToggle={() => handleToggleUserStatus(item.idUser, item.active)} 
+                                                        />
+                                                    </div>
+                                                    </td>
+                                                )}
+                                                {(entityType === "auxiliaries" || entityType === "nutritionists") && (
+                                                    <td className="action-cell">
+                                                    <button className="action-btn" onClick={() => openDeleteModal(item.idUser)}>
+                                                        <img src={deleteIcon} alt="Eliminar" className="action-icon" />
+                                                    </button>
                                                     </td>
                                                 )}
                                             </>
@@ -302,6 +324,28 @@ const SearchComponent = ({ entityType, userType, onSelect, selectedPatient, show
                 </div>
             )}
             </div>
+            {/*Modal de confirmación*/}
+            <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
+                <Modal.Header closeButton>
+                <Modal.Title>Confirmar eliminación</Modal.Title>
+                </Modal.Header>
+
+                <Modal.Body>
+                    {entityType === "nutritionists"
+                    ? "¿Estás seguro de que quieres eliminar este nutricionista? Se borrarán todas las citas asociadas."
+                    : "¿Estás seguro de que quieres eliminar este auxiliar?"
+                    }
+                </Modal.Body>
+
+                <Modal.Footer>
+                <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+                    Cancelar
+                </Button>
+                <Button variant="danger" onClick={confirmDelete}>
+                    Eliminar
+                </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 };

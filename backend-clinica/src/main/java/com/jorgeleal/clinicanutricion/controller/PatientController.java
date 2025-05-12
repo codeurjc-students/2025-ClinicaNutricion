@@ -1,23 +1,18 @@
 package com.jorgeleal.clinicanutricion.controller;
 
-import com.jorgeleal.clinicanutricion.model.Appointment;
 import com.jorgeleal.clinicanutricion.dto.*;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken; 
-import com.jorgeleal.clinicanutricion.dto.PatientDTO;
+
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jorgeleal.clinicanutricion.model.*;
 import com.jorgeleal.clinicanutricion.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.jorgeleal.clinicanutricion.service.PatientService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.time.LocalDate;
-
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -38,9 +33,6 @@ public class PatientController {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    @Autowired
-    private AuxiliaryService auxiliaryService;
 
     @GetMapping("/profile")
     @PreAuthorize("hasRole('ROLE_PATIENT')")
@@ -122,14 +114,14 @@ public class PatientController {
         return ResponseEntity.ok(patientService.getPatientById(id));
     }
 
-    @GetMapping("/{id}/appointments")
+    @GetMapping("/{id}/appointments/pending")
     @PreAuthorize("hasRole('ROLE_PATIENT')")
-    public ResponseEntity<List<AppointmentDTO>> getPatientAppointments(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
-        String userId = jwt.getSubject();
-        if (!userId.equals(id.toString())) {
+    public ResponseEntity<List<AppointmentDTO>> getPatientPendingAppointments(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
+        String cognitoId = patientService.getPatientById(id).getUser().getCognitoId();
+        if (!cognitoId.equals(jwt.getSubject())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        return ResponseEntity.ok(appointmentService.getAppointmentsByPatient(id));
+        return ResponseEntity.ok(appointmentService.getPendingAppointmentsByPatient(id));
     }
 
     @PostMapping

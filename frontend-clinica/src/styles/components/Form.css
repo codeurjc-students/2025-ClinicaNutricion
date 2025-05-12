@@ -10,7 +10,7 @@
     max-height: 80vh;
 }
 
-/* Estilizar el título */
+/*Estilizar el título*/
 .form-container h2 {
     text-align: center;
     color: var(--text-color);
@@ -18,18 +18,18 @@
     margin-bottom: 20px;
 }
 
-/* Contenedor de cada campo */
+/*Contenedor de cada campo*/
 .form-group {
     margin-bottom: 15px;
 }
 
-/* Etiquetas */
+/*Etiquetas*/
 label {
     font-weight: bold;
     color: var(--text-color); 
 }
 
-/* Inputs y selects */
+/*Inputs y selects*/
 input, select {
     width: 100%;
     padding: 10px;
@@ -38,14 +38,14 @@ input, select {
     font-size: 14px;
 }
 
-/* Mejora en la selección de inputs */
+/*Mejora en la selección de inputs*/
 input:focus, select:focus {
     border-color: var(--primary-color); 
     outline: none;
     box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
 }
 
-/* Botón principal */
+/*Botón principal*/
 .btn-submit {
     width: 100%;
     padding: 10px;
@@ -70,7 +70,6 @@ input:focus, select:focus {
     margin-top: 10px;
 }
 
-/* Diseño Responsive */
 @media (max-width: 768px) {
     .form-container {
         width: 90%;

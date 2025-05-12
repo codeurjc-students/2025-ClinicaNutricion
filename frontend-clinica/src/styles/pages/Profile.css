@@ -1,4 +1,4 @@
-/* Estilos para la página de perfil */
+/*Estilos para la página de perfil*/
 .profile-form-container {
     max-width: 600px; 
     margin: auto; 
@@ -9,7 +9,7 @@
     text-align: center;
 }
 
-/* Estilo para los labels */
+/*Estilo para los labels*/
 .profile-form-container label {
     font-weight: bold;
     color: #2E7D32; 
@@ -18,7 +18,7 @@
     margin-bottom: 5px;
 }
 
-/* Estilos para los inputs */
+/*Estilos para los inputs*/
 .profile-form-container input,
 .profile-form-container select {
     width: 100%;
@@ -30,9 +30,9 @@
     background-color: white;
 }
 
-/* Botón guardar */
+/*Botón guardar*/
 .profile-form-container .btn-submit {
-    background-color: #43A047; /* Verde */
+    background-color: #43A047;
     color: white;
     font-size: 18px;
     font-weight: bold;
@@ -45,10 +45,33 @@
 }
 
 .profile-form-container .btn-submit:hover {
-    background-color: #388E3C; /* Verde más oscuro */
+    background-color: #388E3C;
 }
 
-/* Responsividad para pantallas pequeñas */
+.back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #388e3c;
+  transition: color 0.2s;
+  z-index: 10;
+}
+
+.back-button:hover {
+  color: #2e7d32;
+}
+
+.back-button .back-icon {
+  width: 20px;
+  margin-right: 8px;
+}
+
 @media screen and (max-width: 768px) {
     .profile-form-container {
         width: 90%;

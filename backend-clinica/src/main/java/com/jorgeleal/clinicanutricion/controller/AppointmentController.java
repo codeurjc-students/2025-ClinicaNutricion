@@ -3,8 +3,6 @@ package com.jorgeleal.clinicanutricion.controller;
 import com.jorgeleal.clinicanutricion.dto.AppointmentDTO;
 import com.jorgeleal.clinicanutricion.service.AppointmentService;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jorgeleal.clinicanutricion.model.Appointment;
@@ -16,7 +14,6 @@ import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/appointments")

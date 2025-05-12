@@ -5,15 +5,11 @@ import com.jorgeleal.clinicanutricion.dto.AppointmentDTO;
 import com.jorgeleal.clinicanutricion.service.*;
 import com.jorgeleal.clinicanutricion.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.jorgeleal.clinicanutricion.repository.NutritionistRepository;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken; 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
-import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import java.util.HashMap;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,12 +26,6 @@ public class NutritionistController {
 
     @Autowired
     private AppointmentService appointmentService;
-
-    @Autowired
-    private PatientService patientService;
-
-    @Autowired
-    private AuxiliaryService auxiliaryService;
 
     @Autowired
     private UserService userService;
@@ -81,7 +71,6 @@ public class NutritionistController {
             response.put("startTime", nutritionist.getStartTime());
             response.put("endTime", nutritionist.getEndTime());
             response.put("appointmentDuration", nutritionist.getAppointmentDuration());
-            response.put("minDaysBetweenAppointments", nutritionist.getMinDaysBetweenAppointments());
             response.put("maxActiveAppointments", nutritionist.getMaxActiveAppointments());
     
             return ResponseEntity.ok(response);
@@ -188,4 +177,17 @@ public class NutritionistController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> deleteNutritionist(@PathVariable Long id) {
+        try {
+            appointmentService.deleteAppointmentsByNutritionist(id);
+            nutritionistService.deleteNutritionist(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        }
+    }
+
 }

@@ -3,12 +3,11 @@ import com.jorgeleal.clinicanutricion.dto.UserDTO;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminAddUserToGroupRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminCreateUserRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminDeleteUserRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminUpdateUserAttributesRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeType;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.UsernameExistsException;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.CognitoIdentityProviderException;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.*;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -76,5 +75,13 @@ public class CognitoService {
             .build();
 
         cognitoClient.adminUpdateUserAttributes(updateRequest);
+    }
+
+    public void deleteCognitoUser(String username) {
+        AdminDeleteUserRequest deleteRequest = AdminDeleteUserRequest.builder()
+            .userPoolId(userPoolId)
+            .username(username)
+            .build();
+        cognitoClient.adminDeleteUser(deleteRequest);
     }
 }

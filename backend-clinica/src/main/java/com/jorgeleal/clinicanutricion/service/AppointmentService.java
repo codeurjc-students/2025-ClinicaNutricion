@@ -9,11 +9,16 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalTime;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class AppointmentService {
+
+    private static final Logger logger = LoggerFactory.getLogger(AppointmentService.class);
 
     @Autowired
     private AppointmentRepository appointmentRepository;
@@ -28,6 +33,7 @@ public class AppointmentService {
         AppointmentDTO dto = new AppointmentDTO();
         dto.setIdAppointment(appointment.getIdAppointment());
         dto.setIdNutritionist(appointment.getNutritionist().getIdUser());
+        dto.setNutritionist(nutritionistService.getNutritionistByIdDTO(appointment.getNutritionist().getIdUser()));
         dto.setDate(appointment.getDate());
         dto.setStartTime(appointment.getStartTime());
         dto.setEndTime(appointment.getEndTime());
@@ -145,6 +151,21 @@ public class AppointmentService {
                 .collect(Collectors.toList());
     }
 
+    public List<AppointmentDTO> getPendingAppointmentsByPatient(Long patientId) {
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+        try {
+            return appointmentRepository
+                .findPendingByPatientAndDateTime(patientId, today, now)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+        } catch (Exception ex) {
+            logger.error("Error al obtener citas pendientes para el paciente id={} a partir de {} {}: ", patientId, today, now, ex);
+            return Collections.emptyList();
+        }
+    }
+
     public List<AppointmentDTO> getAppointmentsByNutritionistAndDate(Long idUser, LocalDate date) {
         List<Appointment> appointments = appointmentRepository.findByNutritionist_IdUserAndDateOrderByStartTimeAsc(idUser, date);
         return appointments.stream()
@@ -152,42 +173,58 @@ public class AppointmentService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    public void deleteAppointmentsByNutritionist(Long nutritionistId) {
+        appointmentRepository.deleteByNutritionistIdUser(nutritionistId);
+    }
+
     public List<String> getAvailableSlots(Long nutritionistId, String timeRange, LocalDate selectedDate) {
         Nutritionist nutritionist = nutritionistService.getNutritionistById(nutritionistId);
         int appointmentDuration = nutritionist.getAppointmentDuration();
 
-        LocalTime startHour = LocalTime.of(0, 0);
-        LocalTime endHour = LocalTime.of(23, 59);
+        LocalTime workStart = nutritionist.getStartTime();
+        LocalTime workEnd   = nutritionist.getEndTime();
 
+        LocalTime rangeStart;
+        LocalTime rangeEnd;
         switch (timeRange) {
             case "mañana":
-                startHour = LocalTime.of(9, 0);
-                endHour = LocalTime.of(12, 0);
+                rangeStart = LocalTime.of(9, 0);
+                rangeEnd   = LocalTime.of(12, 0);
                 break;
             case "mediodía":
-                startHour = LocalTime.of(12, 0);
-                endHour = LocalTime.of(14, 0);
+                rangeStart = LocalTime.of(12, 0);
+                rangeEnd   = LocalTime.of(16, 0);
                 break;
             case "tarde":
-                startHour = LocalTime.of(14, 0);
-                endHour = LocalTime.of(20, 0);
+                rangeStart = LocalTime.of(16, 0);
+                rangeEnd   = LocalTime.of(20, 0);
                 break;
             case "a cualquier hora":
-                startHour = LocalTime.of(0, 0);
-                endHour = LocalTime.of(23, 59);
+                rangeStart = LocalTime.of(0, 0);
+                rangeEnd   = LocalTime.of(23, 59);
                 break;
             default:
                 throw new IllegalArgumentException("Franja horaria no válida");
         }
 
+        //Ajustar con horas de trabajo
+        LocalTime startHour = rangeStart.isBefore(workStart) ? workStart : rangeStart;
+        LocalTime endHour   = rangeEnd.isAfter(workEnd)   ? workEnd   : rangeEnd;
+
+        //Validamos que la hora de inicio sea anterior a la hora de fin
+        if (!startHour.isBefore(endHour)) {
+            return Collections.emptyList();
+        }
+
+        //Obtenemos las citas existentes
         List<AppointmentDTO> appointments = getAppointmentsByNutritionistAndDate(nutritionistId, selectedDate);
 
+        //Generamos los huecos disponibles
         List<String> availableSlots = new ArrayList<>();
         LocalTime currentTime = startHour;
-
         while (currentTime.isBefore(endHour)) {
             boolean isOccupied = false;
-
             for (AppointmentDTO appointment : appointments) {
                 if (!currentTime.isBefore(appointment.getStartTime()) && currentTime.isBefore(appointment.getEndTime())) {
                     isOccupied = true;
@@ -198,7 +235,6 @@ public class AppointmentService {
             if (!isOccupied) {
                 availableSlots.add(currentTime.toString());
             }
-
             currentTime = currentTime.plusMinutes(appointmentDuration);
         }
 

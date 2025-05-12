@@ -5,7 +5,7 @@
     max-width: 100%;
     margin: auto;
     min-height: auto;
-    margin-top: -20px;
+    margin-top: 40px;
 }
 
 /* Tipo de búsqueda */
@@ -49,9 +49,15 @@
 }
 
 .table-responsive {
-    max-height: 65vh;
-    overflow-y: auto;
+    max-height: none;
+    height: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
     display: block;
+}
+
+.results-table {
+    white-space: nowrap;
 }
 
 .results-table th, .results-table td {

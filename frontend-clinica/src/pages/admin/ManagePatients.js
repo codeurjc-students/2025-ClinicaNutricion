@@ -1,6 +1,6 @@
 import { useNavigate, Outlet, useLocation } from "react-router-dom";
-import BackButton from "../components/BackButton";
-import "../styles/pages/ManagePatients.css";
+import BackButton from "../../components/BackButton";
+import "../../styles/pages/ManageUsers.css";
 
 const ManagePatients = ({ userType }) => {
     const navigate = useNavigate();
@@ -17,7 +17,7 @@ const ManagePatients = ({ userType }) => {
 
 
     return (
-        <div className="manage-patients-container">
+        <div className="manage-users-sub-container">
             <BackButton />
             {!isSubPage && (
                 <>
