@@ -84,7 +84,24 @@ public class AppointmentService {
         }
 
         Appointment appointment = convertToDomain(dto);
+<<<<<<< Updated upstream
         return convertToDTO(appointmentRepository.save(appointment));
+=======
+        Appointment saved = appointmentRepository.save(appointment);
+        AppointmentDTO result  = convertToDTO(saved);
+        Patient patient  =patientService.getPatientById(dto.getIdPatient());
+
+        emailService.sendAppointmentConfirmation(
+            patient.getUser().getMail(),
+            patient.getUser().getName(),
+            saved.getDate(),
+            saved.getStartTime(),
+            result.getNutritionist().getName(),
+            result.getNutritionist().getSurname()
+        );
+
+        return result;
+>>>>>>> Stashed changes
     }
     
 

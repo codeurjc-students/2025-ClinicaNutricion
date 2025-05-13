@@ -4,6 +4,9 @@ import com.jorgeleal.clinicanutricion.model.*;
 import com.jorgeleal.clinicanutricion.dto.*;
 import com.jorgeleal.clinicanutricion.repository.PatientRepository;
 import com.jorgeleal.clinicanutricion.repository.AppointmentRepository;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -11,6 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class PatientService {
+    private static final Logger logger = LoggerFactory.getLogger(AppointmentService.class);
 
     @Autowired
     private PatientRepository patientRepository;
@@ -74,17 +78,22 @@ public class PatientService {
     }
 
     public Patient createPatient(PatientDTO dto) {
-        if (userService.mailExists(dto.getMail())) {
-            throw new RuntimeException("El correo electrónico ya está registrado.");
+        try {
+            if (userService.mailExists(dto.getMail())) {
+                throw new RuntimeException("El correo electrónico ya está registrado.");
+            }
+            
+            Patient patient = convertToDomain(dto);
+            String idCognito = cognitoService.createCognitoUser(convertToUserDTO(dto));
+            patient.setActive(true);
+            User user = patient.getUser();
+            user.setCognitoId(idCognito);
+            patient.setUser(userService.saveUser(user));
+            return patientRepository.save(patient);
+        } catch (Exception e) {
+            logger.error("Error al crear el paciente: {}", e.getMessage());
+            throw new RuntimeException("Error al crear el paciente: " + e.getMessage());
         }
-        
-        Patient patient = convertToDomain(dto);
-        String idCognito = cognitoService.createCognitoUser(convertToUserDTO(dto));
-        patient.setActive(true);
-        User user = patient.getUser();
-        user.setCognitoId(idCognito);
-        patient.setUser(userService.saveUser(user));
-        return patientRepository.save(patient);
     }
 
     public Patient getPatientById(Long id) {
