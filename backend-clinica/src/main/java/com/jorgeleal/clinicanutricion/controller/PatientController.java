@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jorgeleal.clinicanutricion.model.*;
 import com.jorgeleal.clinicanutricion.service.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,6 @@ import java.util.HashMap;
 @RestController
 @RequestMapping("/patients")
 public class PatientController {
-
     @Autowired
     private PatientService patientService;
 

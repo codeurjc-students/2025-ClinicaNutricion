@@ -32,13 +32,15 @@ public class EmailService {
 
     @Async
     public void sendAppointmentConfirmation(String toAddress, String patientName,
-                                            LocalDate date, LocalTime time) {
+                                            LocalDate date, LocalTime time, String nutritionistName, String nutritionistSurname) {
         try {
-            String subject = "Confirmación de tu cita";
+            String subject = "Confirmación de tu cita de nutrición";
             String htmlBody = String.format(
-                "<h1>Hola %s,</h1>"
-            + "<p>Tu cita ha sido confirmada para el %s a las %s.</p>",
+                "<h2>¡Hola %s!</h2>"
+            + "<p>Tu cita de nutrición con %s %s ha sido confirmada para el %s a las %s.</p>",
                 patientName,
+                nutritionistName,
+                nutritionistSurname,
                 date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                 time.format(DateTimeFormatter.ofPattern("HH:mm"))
             );

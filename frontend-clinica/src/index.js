@@ -23,6 +23,10 @@ const AuthRedirect = () => {
 
   useEffect(() => {
     if (auth.isAuthenticated) {
+      if (location.search.includes("signup")) {
+        navigate("/patients");
+        return; 
+      }
       const token = auth.user?.access_token; 
       if (token) {
         localStorage.setItem("token", token);
