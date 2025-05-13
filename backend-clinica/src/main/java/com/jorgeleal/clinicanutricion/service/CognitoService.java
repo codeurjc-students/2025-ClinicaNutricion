@@ -84,4 +84,15 @@ public class CognitoService {
             .build();
         cognitoClient.adminDeleteUser(deleteRequest);
     }
+
+    public void addUserToPatientGroup(String sub) {
+        final String groupName = "patient";
+        AdminAddUserToGroupRequest request = AdminAddUserToGroupRequest.builder()
+            .userPoolId(userPoolId)
+            .username(sub)
+            .groupName(groupName)
+            .build();
+
+        cognitoClient.adminAddUserToGroup(request);
+    }
 }

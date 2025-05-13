@@ -95,7 +95,9 @@ public class AppointmentService {
             patient.getUser().getMail(),
             patient.getUser().getName(),
             saved.getDate(),
-            saved.getStartTime()
+            saved.getStartTime(),
+            result.getNutritionist().getName(),
+            result.getNutritionist().getSurname()
         );
 
         return result;

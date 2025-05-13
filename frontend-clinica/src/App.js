@@ -13,10 +13,6 @@ const App = () => {
   const {client_id, redirect_uri, response_type, scope} = auth.settings;
   const handleRegister = () => {
     const base = process.env.REACT_APP_COGNITO_REGISTER_BASE_URL;
-    if (!base) {
-      alert("Falta configurar REACT_APP_COGNITO_REGISTER_BASE_URL en .env");
-      return;
-    }
     const signupUrl =
       `${base}` +
       `?client_id=${encodeURIComponent(client_id)}` +
