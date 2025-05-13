@@ -20,16 +20,12 @@ const AuthRedirect = () => {
 
   useEffect(() => {
     if (auth.isAuthenticated) {
-      if (location.search.includes("signup")) {
-        navigate("/patients");
-        return; 
-      }
       const token = auth.user?.access_token; 
       if (token) {
         localStorage.setItem("token", token);
       }
       // Redirige solo si el usuario se encuentra en "/" 
-      if (location.pathname === "/") {
+      if (location.pathname === "/" || window.location.href.includes("/?code")) {
         const roles = auth.user?.profile["cognito:groups"] || [];
         if (roles.includes("admin")) {
           navigate("/admin");
