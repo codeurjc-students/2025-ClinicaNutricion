@@ -29,6 +29,9 @@ public class AppointmentService {
     @Autowired
     private PatientService patientService;
 
+    @Autowired
+    private EmailService emailService;
+
     private AppointmentDTO convertToDTO(Appointment appointment) {
         AppointmentDTO dto = new AppointmentDTO();
         dto.setIdAppointment(appointment.getIdAppointment());
@@ -84,9 +87,6 @@ public class AppointmentService {
         }
 
         Appointment appointment = convertToDomain(dto);
-<<<<<<< Updated upstream
-        return convertToDTO(appointmentRepository.save(appointment));
-=======
         Appointment saved = appointmentRepository.save(appointment);
         AppointmentDTO result  = convertToDTO(saved);
         Patient patient  =patientService.getPatientById(dto.getIdPatient());
@@ -101,7 +101,6 @@ public class AppointmentService {
         );
 
         return result;
->>>>>>> Stashed changes
     }
     
 
