@@ -24,7 +24,7 @@ const AuthRedirect = () => {
       if (token) {
         localStorage.setItem("token", token);
       }
-      // Redirige solo si el usuario se encuentra en "/" 
+      // Redirige en base al rol del usuario
       if (location.pathname === "/" || window.location.href.includes("/?code")) {
         const roles = auth.user?.profile["cognito:groups"] || [];
         if (roles.includes("admin")) {
