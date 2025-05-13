@@ -11,6 +11,9 @@ const cognitoAuthConfig = {
   post_logout_redirect_uri: process.env.REACT_APP_COGNITO_LOGOUT_URI,
   response_type: "code",
   scope: "email openid phone",
+  extraQueryParams: {
+    lang: "es"
+  }
 };
 
 const AuthRedirect = () => {
@@ -20,6 +23,10 @@ const AuthRedirect = () => {
 
   useEffect(() => {
     if (auth.isAuthenticated) {
+      if (location.search.includes("signup")) {
+        navigate("/patients");
+        return; 
+      }
       const token = auth.user?.access_token; 
       if (token) {
         localStorage.setItem("token", token);

@@ -30,8 +30,7 @@ const App = () => {
 
         <button
           className="btn btn-success login-btn"
-          onClick={() => auth.signinRedirect()}
-        >
+          onClick={() => auth.signinRedirect()}>
           Iniciar Sesión
         </button>
 
