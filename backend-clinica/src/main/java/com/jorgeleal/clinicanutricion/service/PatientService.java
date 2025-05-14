@@ -8,6 +8,7 @@ import com.jorgeleal.clinicanutricion.repository.AppointmentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -128,10 +129,19 @@ public class PatientService {
             .collect(Collectors.toList());
     }
 
+    @Transactional
     public void changePatientStatus(Long id, boolean status) {
         Patient patient = patientRepository.findByUserIdUser(id).orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
         patient.setActive(status);
         patientRepository.save(patient);
+
+        String username = patient.getUser().getMail();  
+        if (status) {
+            cognitoService.enableUser(username);
+        } else {
+            cognitoService.disableUser(username);
+            cognitoService.globalSignOut(username);
+        }
     }
 
     public List<Appointment> getAppointmentsByPatient(Long id) {

@@ -155,7 +155,7 @@ public class NutritionistController {
         }
         nutritionistService.changeNutritionistStatus(id, active);
         return ResponseEntity.ok().build();
-    }    
+    }
 
     @GetMapping("/{id}/appointments")
     @PreAuthorize("hasAnyRole('ROLE_PATIENT', 'ROLE_ADMIN', 'ROLE_NUTRITIONIST')")

@@ -15,7 +15,6 @@ const ManagePatients = ({ userType }) => {
         (!location.pathname.endsWith("/patients") && location.pathname.includes("/manage-users/patients")) ||
         (!location.pathname.endsWith("/patients") && location.pathname.includes("/patients"));
 
-
     return (
         <div className="manage-users-sub-container">
             <BackButton />

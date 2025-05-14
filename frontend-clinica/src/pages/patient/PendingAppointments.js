@@ -137,8 +137,8 @@ const PendingAppointments = () => {
           </>
         ) : (
           <p>
-            No tienes citas próximas. Reserva tu primera cita con tu nutricionista 
-            para empezar tu plan de nutrición.
+            No tienes citas próximas. Reserva una cita con tu nutricionista 
+            para continuar con tu plan de nutrición.
           </p>
         )}
       </div>

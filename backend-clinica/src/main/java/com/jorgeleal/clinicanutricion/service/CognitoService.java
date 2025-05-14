@@ -4,7 +4,10 @@ import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityPr
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminAddUserToGroupRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminCreateUserRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminDeleteUserRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminDisableUserRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminEnableUserRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminUpdateUserAttributesRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminUserGlobalSignOutRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeType;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.UsernameExistsException;
@@ -94,5 +97,28 @@ public class CognitoService {
             .build();
 
         cognitoClient.adminAddUserToGroup(request);
+    }
+
+    public void disableUser(String username) {
+        AdminDisableUserRequest request = AdminDisableUserRequest.builder()
+            .userPoolId(userPoolId)
+            .username(username)
+            .build();
+        cognitoClient.adminDisableUser(request);
+    }
+
+    public void enableUser(String username) {
+        AdminEnableUserRequest request = AdminEnableUserRequest.builder()
+            .userPoolId(userPoolId)
+            .username(username)
+            .build();
+        cognitoClient.adminEnableUser(request);
+    }
+
+    public void globalSignOut(String username) {
+        cognitoClient.adminUserGlobalSignOut(AdminUserGlobalSignOutRequest.builder()
+            .userPoolId(userPoolId)
+            .username(username)
+            .build());
     }
 }

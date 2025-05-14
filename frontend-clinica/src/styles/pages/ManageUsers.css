@@ -9,7 +9,21 @@
 
 .manage-users-sub-container {
     margin-top: 40px;
+    height: 100vh; 
+    width: calc(100% - 190px);
+    background: var(--background-color);
+    padding: 30px;
+    margin:auto;
+}
 
+.manage-users-sub-container .back-button {
+    font-size: 18px;
+    color: black;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    margin-left: 120px;
 }
 
 .manage-users-buttons {

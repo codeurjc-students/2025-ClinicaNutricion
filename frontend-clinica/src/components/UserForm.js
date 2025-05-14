@@ -225,10 +225,10 @@ const UserForm = ({ isEditMode = false, userType }) => {
     };
 
     const titles = {
-        patient: isEditMode ? "Editar Paciente" : "Registrar Paciente",
-        nutritionist: isEditMode ? "Editar Nutricionista" : "Registrar Nutricionista",
-        auxiliary: isEditMode ? "Editar Auxiliar" : "Registrar Auxiliar",
-        admin_auxiliary: isEditMode ? "Editar Administrador Auxiliar" : "Registrar Administrador Auxiliar",
+        patients: isEditMode ? "Editar Paciente" : "Registrar Paciente",
+        nutritionists: isEditMode ? "Editar Nutricionista" : "Registrar Nutricionista",
+        auxiliaries: isEditMode ? "Editar Auxiliar" : "Registrar Auxiliar",
+        admin: isEditMode ? "Editar Administrador Auxiliar" : "Registrar Administrador Auxiliar",
     };
 
     return (

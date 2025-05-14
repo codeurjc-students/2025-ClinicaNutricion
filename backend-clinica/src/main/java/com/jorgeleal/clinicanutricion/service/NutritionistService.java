@@ -143,10 +143,19 @@ public class NutritionistService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void changeNutritionistStatus(Long id, boolean status) {
         Nutritionist nutritionist = nutritionistRepository.findByUserIdUser(id).orElseThrow(() -> new RuntimeException("Nutricionista no encontrado"));
         nutritionist.setActive(status);
         nutritionistRepository.save(nutritionist);
+
+        String username = nutritionist.getUser().getMail();  
+        if (status) {
+            cognitoService.enableUser(username);
+        } else {
+            cognitoService.disableUser(username);
+            cognitoService.globalSignOut(username);
+        }
     }
 
     @Transactional

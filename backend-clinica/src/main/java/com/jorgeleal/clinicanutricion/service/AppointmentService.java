@@ -91,14 +91,16 @@ public class AppointmentService {
         AppointmentDTO result  = convertToDTO(saved);
         Patient patient  =patientService.getPatientById(dto.getIdPatient());
 
-        emailService.sendAppointmentConfirmation(
-            patient.getUser().getMail(),
-            patient.getUser().getName(),
-            saved.getDate(),
-            saved.getStartTime(),
-            result.getNutritionist().getName(),
-            result.getNutritionist().getSurname()
-        );
+        if(dto.getType() == AppointmentType.APPOINTMENT) {
+            emailService.sendAppointmentConfirmation(
+                patient.getUser().getMail(),
+                patient.getUser().getName(),
+                saved.getDate(),
+                saved.getStartTime(),
+                result.getNutritionist().getName(),
+                result.getNutritionist().getSurname()
+            );
+        }
 
         return result;
     }
