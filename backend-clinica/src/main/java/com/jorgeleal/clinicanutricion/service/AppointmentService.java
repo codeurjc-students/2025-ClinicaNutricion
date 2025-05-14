@@ -196,6 +196,11 @@ public class AppointmentService {
         appointmentRepository.deleteByNutritionistIdUser(nutritionistId);
     }
 
+    @Transactional
+    public void deleteAppointmentsByPatient(Long patientId) {
+        appointmentRepository.deleteByPatientIdUser(patientId);
+    }
+
     public List<String> getAvailableSlots(Long nutritionistId, String timeRange, LocalDate selectedDate) {
         Nutritionist nutritionist = nutritionistService.getNutritionistById(nutritionistId);
         int appointmentDuration = nutritionist.getAppointmentDuration();

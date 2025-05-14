@@ -151,5 +151,17 @@ public class PatientController {
         }
         patientService.changePatientStatus(id, active);
         return ResponseEntity.ok().build();
-    }     
+    }
+    
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> deletePatient(@PathVariable Long id) {
+        try {
+            appointmentService.deleteAppointmentsByPatient(id);
+            patientService.deletePatient(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        }
+    }
 }

@@ -101,10 +101,6 @@ public class PatientService {
         return patientRepository.findByUserIdUser(id).orElse(null);
     }
 
-    public List<Patient> getAllPatients() {
-        return patientRepository.findAll();
-    }    
-
     public Patient updatePatient(Long id, PatientDTO dto) {
         Patient existingPatient = patientRepository.findByUserIdUser(id).orElse(null);
         if (existingPatient == null) {
@@ -142,6 +138,17 @@ public class PatientService {
             cognitoService.disableUser(username);
             cognitoService.globalSignOut(username);
         }
+    }
+
+    @Transactional
+    public void deletePatient(Long id) {
+        Patient patient = patientRepository.findByUserIdUser(id).orElse(null);
+        if (patient == null) {
+            throw new RuntimeException("El paciente con ID " + id + " no existe.");
+        }
+        cognitoService.deleteCognitoUser(patient.getUser().getMail());
+        patientRepository.delete(patient);
+        userService.deleteUser(id);
     }
 
     public List<Appointment> getAppointmentsByPatient(Long id) {
