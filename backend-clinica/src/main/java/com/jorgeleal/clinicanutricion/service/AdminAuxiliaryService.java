@@ -15,40 +15,7 @@ public class AdminAuxiliaryService {
 
     @Autowired
     private UserService userService;
-/* 
-    private AdminAuxiliaryDTO convertToDTO(AdminAuxiliary adminAuxiliary) {
-        AdminAuxiliaryDTO dto = new AdminAuxiliaryDTO();
-        User user = adminAuxiliary.getUser();
-    
-        dto.setIdUser(user.getIdUser());
-        dto.setName(user.getName());
-        dto.setSurname(user.getSurname());
-        dto.setBirthDate(user.getBirthDate());
-        dto.setMail(user.getMail());
-        dto.setPhone(user.getPhone());
-        dto.setGender(user.getGender());
-    
-        return dto;
-    }
 
-    private AdminAuxiliary convertToDomain(AdminAuxiliaryDTO dto) {
-        AdminAuxiliary adminAuxiliary = new AdminAuxiliary();
-        User user = new User();
-    
-        user.setIdUser(dto.getIdUser());
-        user.setName(dto.getName());
-        user.setSurname(dto.getSurname());
-        user.setBirthDate(dto.getBirthDate());
-        user.setMail(dto.getMail());
-        user.setPhone(dto.getPhone());
-        user.setGender(dto.getGender());
-        user.setUserType(UserType.ADMIN);
-    
-        adminAuxiliary.setUser(user);
-    
-        return adminAuxiliary;
-    }
-*/
     public AdminAuxiliary updateAdminAuxiliary(Long id, AdminAuxiliaryDTO dto) {
         AdminAuxiliary admin = adminAuxiliaryRepository.findByUserIdUser(id).orElse(null);
         if (admin == null) {
@@ -66,10 +33,4 @@ public class AdminAuxiliaryService {
     
         return adminAuxiliaryRepository.save(admin);
     }
-
-    public AdminAuxiliary getAdminAuxiliaryById(Long id) {
-        return adminAuxiliaryRepository.findByUserIdUser(id)
-            .orElseThrow(() -> new RuntimeException("Administrador auxiliar no encontrado"));
-    }
-    
 }

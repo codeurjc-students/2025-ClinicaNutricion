@@ -227,13 +227,12 @@ const SearchComponent = ({ entityType, userType, onSelect, selectedPatient, show
                                         <>
                                             <th>Editar</th>
                                             {entityType === "auxiliaries" && <th>Eliminar</th>}
-                                            {entityType === "nutritionists" && (
+                                            {(entityType === "nutritionists" || entityType === "patients") && (
                                               <>
                                                 <th>Estado</th>
                                                 <th>Eliminar</th>
                                               </>
                                             )}
-                                            {entityType === "patients" && <th>Estado</th>}
                                         </>
                                 )}
                             </tr>
@@ -283,13 +282,11 @@ const SearchComponent = ({ entityType, userType, onSelect, selectedPatient, show
                                                     </div>
                                                     </td>
                                                 )}
-                                                {(entityType === "auxiliaries" || entityType === "nutritionists") && (
-                                                    <td className="action-cell">
-                                                    <button className="action-btn" onClick={() => openDeleteModal(item.idUser)}>
-                                                        <img src={deleteIcon} alt="Eliminar" className="action-icon" />
-                                                    </button>
-                                                    </td>
-                                                )}
+                                                <td className="action-cell">
+                                                <button className="action-btn" onClick={() => openDeleteModal(item.idUser)}>
+                                                    <img src={deleteIcon} alt="Eliminar" className="action-icon" />
+                                                </button>
+                                                </td>
                                             </>
                                         )}
                                     </tr>
