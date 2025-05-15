@@ -86,7 +86,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/appointments/{id}").hasAnyAuthority("ROLE_AUXILIARY", "ROLE_NUTRITIONIST", "ROLE_ADMIN")
 
 
-                .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2

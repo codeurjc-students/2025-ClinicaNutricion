@@ -19,13 +19,13 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Smoke test
+      - name: Análisis estático (Checkstyle, PMD, SpotBugs)
         working-directory: backend-clinica
-        run: mvn test -Dtest=ApplicationSmokeTest
+        run: mvn verify -DskipTests=true
 
       - name: Unit tests
         working-directory: backend-clinica
-        run: mvn test -DskipTests=false -DexcludeTests=ApplicationSmokeTest
+        run: mvn test -DskipTests=false
 
       - name: Publicar reportes de tests
         if: always()
@@ -78,3 +78,6 @@ jobs:
         run: |
           aws elasticbeanstalk update-environment --application-name ${{ secrets.EB_APPLICATION_NAME }} --environment-name ${{ secrets.EB_ENVIRONMENT_NAME }} --version-label "v-${{ github.run_number }}"
         working-directory: backend-clinica
+
+      - name: Smoke test
+        run: curl -f https://api.clinicanutricion.es/health
