@@ -1,5 +1,5 @@
-import BackButton from "../../components/BackButton";
-import { useNavigate } from "react-router-dom";
+import BackButton from '../../components/BackButton';
+import { useNavigate } from 'react-router-dom';
 
 const ManageNutritionists = () => {
   const navigate = useNavigate();
@@ -11,13 +11,13 @@ const ManageNutritionists = () => {
       <div className="manage-users-buttons">
         <button
           className="btn btn-primary"
-          onClick={() => navigate("/admin/manage-users/nutritionists/create")}
+          onClick={() => navigate('/admin/manage-users/nutritionists/create')}
         >
           Dar de alta
         </button>
         <button
           className="btn btn-primary"
-          onClick={() => navigate("/admin/manage-users/nutritionists/search")}
+          onClick={() => navigate('/admin/manage-users/nutritionists/search')}
         >
           Buscar Nutricionista
         </button>

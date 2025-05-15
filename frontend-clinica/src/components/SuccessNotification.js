@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import "../styles/components/SuccessNotification.css";
-import successIcon from "../assets/icons/success-icon.png";
+import React, { useEffect, useState } from 'react';
+import '../styles/components/SuccessNotification.css';
+import successIcon from '../assets/icons/success-icon.png';
 
 const SuccessNotification = ({ message, onClose }) => {
   const [visible, setVisible] = useState(true);
@@ -15,7 +15,7 @@ const SuccessNotification = ({ message, onClose }) => {
   }, [onClose]);
 
   return (
-    <div className={`success-notification ${!visible ? "fade-out" : ""}`}>
+    <div className={`success-notification ${!visible ? 'fade-out' : ''}`}>
       <p>{message}</p>
       <img src={successIcon} alt="Éxito" className="success-icon" />
     </div>

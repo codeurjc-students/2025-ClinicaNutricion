@@ -1,12 +1,12 @@
-import React from "react";
-import { useAuth } from "react-oidc-context";
-import AppRoutes from "./routes";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "./styles/global.css";
-import logo from "./assets/sidebar/LogoClinicaPrincipal.png";
-import "./styles/pages/Login.css";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import React from 'react';
+import { useAuth } from 'react-oidc-context';
+import AppRoutes from './routes';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './styles/global.css';
+import logo from './assets/sidebar/LogoClinicaPrincipal.png';
+import './styles/pages/Login.css';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const App = () => {
   const auth = useAuth();

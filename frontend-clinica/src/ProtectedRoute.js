@@ -1,6 +1,6 @@
-import React from "react";
-import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "react-oidc-context";
+import React from 'react';
+import { Navigate, Outlet } from 'react-router-dom';
+import { useAuth } from 'react-oidc-context';
 
 const ProtectedRoute = ({ allowedRoles }) => {
   const auth = useAuth();
@@ -9,7 +9,7 @@ const ProtectedRoute = ({ allowedRoles }) => {
     return <Navigate to="/" />;
   }
 
-  const roles = auth.user?.profile["cognito:groups"] || [];
+  const roles = auth.user?.profile['cognito:groups'] || [];
 
   if (!roles.some((role) => allowedRoles.includes(role))) {
     return <Navigate to="/unauthorized" />;

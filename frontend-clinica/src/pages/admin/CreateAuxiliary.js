@@ -1,5 +1,5 @@
-import UserForm from "../../components/UserForm";
-import "../../styles/components/Form.css";
+import UserForm from '../../components/UserForm';
+import '../../styles/components/Form.css';
 
 const CreateAuxiliary = () => {
   return (

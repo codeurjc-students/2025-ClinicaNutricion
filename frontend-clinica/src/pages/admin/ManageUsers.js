@@ -1,9 +1,9 @@
-import { Link, Outlet, useLocation } from "react-router-dom";
-import "../../styles/pages/ManageUsers.css";
+import { Link, Outlet, useLocation } from 'react-router-dom';
+import '../../styles/pages/ManageUsers.css';
 
 const ManageUsers = () => {
   const location = useLocation();
-  const isBasePath = location.pathname === "/admin/manage-users";
+  const isBasePath = location.pathname === '/admin/manage-users';
 
   return (
     <div className="manage-users-container">
@@ -11,14 +11,14 @@ const ManageUsers = () => {
 
       {isBasePath && (
         <div className="manage-users-buttons">
-          <Link to="patients" state={{ prevTitle: "Gestión de Usuarios" }}>
+          <Link to="patients" state={{ prevTitle: 'Gestión de Usuarios' }}>
             <button className="btn btn-primary">Pacientes</button>
           </Link>
 
-          <Link to="nutritionists" state={{ prevTitle: "Gestión de Usuarios" }}>
+          <Link to="nutritionists" state={{ prevTitle: 'Gestión de Usuarios' }}>
             <button className="btn btn-primary">Nutricionistas</button>
           </Link>
-          <Link to="auxiliaries" state={{ prevTitle: "Gestión de Usuarios" }}>
+          <Link to="auxiliaries" state={{ prevTitle: 'Gestión de Usuarios' }}>
             <button className="btn btn-primary">Auxiliares</button>
           </Link>
         </div>

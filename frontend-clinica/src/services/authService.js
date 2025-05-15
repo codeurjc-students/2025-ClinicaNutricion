@@ -1,4 +1,4 @@
-import { useAuth } from "react-oidc-context";
+import { useAuth } from 'react-oidc-context';
 
 export const login = () => {
   window.location.href = process.env.REACT_APP_FRONTEND_BASE_URL;

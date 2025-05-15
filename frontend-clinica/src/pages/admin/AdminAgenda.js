@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { Container, Form, Spinner } from "react-bootstrap";
-import NutritionistCalendar from "../../components/NutritionistCalendar";
-import "../../styles/pages/AdminAgenda.css";
+import React, { useState, useEffect } from 'react';
+import { Container, Form, Spinner } from 'react-bootstrap';
+import NutritionistCalendar from '../../components/NutritionistCalendar';
+import '../../styles/pages/AdminAgenda.css';
 
 const AdminAgenda = () => {
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const [nutritionists, setNutritionists] = useState([]);
   const [selectedNutritionist, setSelectedNutritionist] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
 
@@ -23,25 +23,25 @@ const AdminAgenda = () => {
         setLoading(true);
         let url = `${BASE_URL}/nutritionists`;
 
-        if (searchTerm.trim() !== "") {
+        if (searchTerm.trim() !== '') {
           url += `?fullName=${encodeURIComponent(searchTerm)}`;
         }
 
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem('token');
         const response = await fetch(url, {
-          method: "GET",
+          method: 'GET',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         });
 
-        if (!response.ok) throw new Error("Error en la respuesta del servidor");
+        if (!response.ok) throw new Error('Error en la respuesta del servidor');
         const data = await response.json();
         setNutritionists(data);
         setShowDropdown(true);
       } catch (error) {
-        console.error("Error cargando nutricionistas:", error);
+        console.error('Error cargando nutricionistas:', error);
       } finally {
         setLoading(false);
       }
@@ -53,7 +53,7 @@ const AdminAgenda = () => {
     const value = e.target.value;
     if (selectedNutritionist) {
       setSelectedNutritionist(null);
-      setSearchTerm("");
+      setSearchTerm('');
     } else {
       setSearchTerm(value);
     }
@@ -64,7 +64,7 @@ const AdminAgenda = () => {
       <h2 className="text-center">
         {selectedNutritionist
           ? `Agenda de ${selectedNutritionist.name} ${selectedNutritionist.surname}`
-          : "Agenda de Nutricionistas"}
+          : 'Agenda de Nutricionistas'}
       </h2>
 
       {/* Buscador de nutricionistas */}

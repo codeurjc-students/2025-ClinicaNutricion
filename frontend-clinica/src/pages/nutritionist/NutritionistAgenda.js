@@ -1,25 +1,25 @@
-import React, { useState, useEffect } from "react";
-import NutritionistCalendar from "../../components/NutritionistCalendar";
-import "../../styles/pages/NutritionistAgenda.css";
+import React, { useState, useEffect } from 'react';
+import NutritionistCalendar from '../../components/NutritionistCalendar';
+import '../../styles/pages/NutritionistAgenda.css';
 
 const NutritionistAgenda = () => {
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const [nutritionist, setNutritionist] = useState(null);
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const response = await fetch(`${BASE_URL}/nutritionists/profile`, {
-          method: "GET",
+          method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
         });
 
         if (!response.ok)
-          throw new Error("Error obteniendo el perfil del nutricionista");
+          throw new Error('Error obteniendo el perfil del nutricionista');
 
         const data = await response.json();
 
@@ -32,7 +32,7 @@ const NutritionistAgenda = () => {
           endTime: data.endTime,
         });
       } catch (error) {
-        console.error("Error obteniendo el perfil del nutricionista:", error);
+        console.error('Error obteniendo el perfil del nutricionista:', error);
       }
     };
 

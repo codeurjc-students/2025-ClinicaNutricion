@@ -1,6 +1,6 @@
-import React from "react";
-import { Container, Row, Col, Button } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import React from 'react';
+import { Container, Row, Col, Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 const ProfileButton = () => {
   const navigate = useNavigate();
@@ -12,7 +12,7 @@ const ProfileButton = () => {
           <Button
             variant="outline-success"
             className="rounded-circle"
-            onClick={() => navigate("/profile")}
+            onClick={() => navigate('/profile')}
           >
             <i className="bi bi-person"></i>
           </Button>
