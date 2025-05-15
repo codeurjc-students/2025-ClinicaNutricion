@@ -1,11 +1,10 @@
-/* 1) Contenedor full-screen con scroll interno y sin margen */
 .appointment-confirmation {
   background-color: #f8f9fa;
   height: 100vh;
   overflow-y: auto;
   position: relative;
   display: flex;
-  justify-content: center; 
+  justify-content: center;
   align-items: flex-start;
   padding: 20px;
   box-sizing: border-box;
@@ -13,24 +12,23 @@
   margin: 0;
 }
 
-/* Header y BackButton */
 .appointment-confirmation header .back-button {
   font-size: 18px;
-  color: #000000;
+  color: #000;
   background: none;
   border: none;
   cursor: pointer;
   transition: color 0.3s ease;
 }
+
 .appointment-confirmation header .back-button:hover {
   color: #388e3c;
 }
 
-/* Contenido principal */
 .appointment-confirmation .content-wrapper {
   background-color: white;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
   max-width: 500px;
   width: 100%;
   padding: 20px;
@@ -64,7 +62,9 @@
   max-width: 500px;
   margin: 20px auto 0;
   border: none;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .appointment-confirmation .btn-confirm:disabled {
@@ -80,16 +80,19 @@
   line-height: 1.3;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .appointment-confirmation .content-wrapper {
     padding: 15px;
   }
+
   .appointment-confirmation h2 {
     font-size: 1.6rem;
   }
+
   .appointment-confirmation p {
     font-size: 0.9rem;
   }
+
   .appointment-confirmation .btn-confirm {
     font-size: 1rem;
   }

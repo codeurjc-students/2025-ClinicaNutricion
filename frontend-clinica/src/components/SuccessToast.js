@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { Toast } from 'react-bootstrap';
-import { useLocation } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { Toast } from "react-bootstrap";
+import { useLocation } from "react-router-dom";
 
 const SuccessToast = () => {
   const location = useLocation();
@@ -18,7 +18,7 @@ const SuccessToast = () => {
       onClose={() => setShow(false)}
       delay={3000}
       autohide
-      style={{ position: 'fixed', top: 20, right: 20 }}
+      style={{ position: "fixed", top: 20, right: 20 }}
     >
       <Toast.Header>
         <strong className="me-auto text-success">

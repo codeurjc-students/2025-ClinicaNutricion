@@ -10,7 +10,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
   const auth = useAuth();
-  const {client_id, redirect_uri, response_type, scope} = auth.settings;
+  const { client_id, redirect_uri, response_type, scope } = auth.settings;
   const handleRegister = () => {
     const base = process.env.REACT_APP_COGNITO_REGISTER_BASE_URL;
     const signupUrl =
@@ -30,12 +30,15 @@ const App = () => {
 
         <button
           className="btn btn-success login-btn"
-          onClick={() => auth.signinRedirect()}>
+          onClick={() => auth.signinRedirect()}
+        >
           Iniciar Sesión
         </button>
 
-        <button className="btn btn-outline-primary register-btn"
-          onClick={handleRegister}>
+        <button
+          className="btn btn-outline-primary register-btn"
+          onClick={handleRegister}
+        >
           Registrarse
         </button>
       </div>
