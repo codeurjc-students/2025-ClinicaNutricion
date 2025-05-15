@@ -21,16 +21,11 @@ jobs:
 
       - name: Smoke test
         working-directory: backend-clinica
-        run: mvn test \
-              -DskipTests=false \
-              -Dtest=ApplicationSmokeTest \
-              -DfailIfNoTests=true
+        run: mvn test -DskipTests=false -Dtest=ApplicationSmokeTest -DfailIfNoTests=true
 
       - name: Unit tests
         working-directory: backend-clinica
-        run: mvn test \
-              -DskipTests=false \
-              -DexcludeTests=ApplicationSmokeTest
+        run: mvn test -DskipTests=false -DexcludeTests=ApplicationSmokeTest
 
       - name: Publicar reportes de tests
         if: always()
