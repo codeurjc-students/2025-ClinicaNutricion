@@ -1,4 +1,7 @@
 spring:
+  config:
+    import: optional:dotenv:.env
+
   security:
     oauth2:
       resourceserver:
