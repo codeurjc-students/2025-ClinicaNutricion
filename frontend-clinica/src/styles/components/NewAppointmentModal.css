@@ -1,117 +1,112 @@
-/* NewAppointmentModal.css */
 .modal {
-    z-index: 4000 !important;
-}
-/* Reducir el tamaño del modal */
-.modal-dialog {
-    max-width: 90vw;
-    width: auto;
+  z-index: 4000 !important;
 }
 
-/* Reducir el tamaño de la tabla */
+.modal-dialog {
+  max-width: 90vw;
+  width: auto;
+}
+
 .modal-body .table-responsive {
-    max-height: none;
-    height: auto;
-    overflow-x: auto;
-    overflow-y: hidden;
-    display: block;
+  max-height: none;
+  height: auto;
+  overflow: auto hidden;
+  display: block;
 }
 
 .modal-body table {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 .modal-body th,
 .modal-body td {
-    padding: 6px;
-    white-space: nowrap;
+  padding: 6px;
+  white-space: nowrap;
 }
 
-.modal-body th:nth-child(1), 
+.modal-body th:nth-child(1),
 .modal-body td:nth-child(1) {
-    width: 120px;
+  width: 120px;
 }
 
-.modal-body th:nth-child(2), 
+.modal-body th:nth-child(2),
 .modal-body td:nth-child(2) {
-    width: 150px;
+  width: 150px;
 }
 
 .modal-body th:nth-child(3),
 .modal-body td:nth-child(3) {
-    width: 110px;
+  width: 110px;
 }
 
 .modal-body th:nth-child(4),
 .modal-body td:nth-child(4) {
-    width: 160px;
+  width: 160px;
 }
 
 .modal-body th:nth-child(5),
 .modal-body td:nth-child(5) {
-    width: 100px;
+  width: 100px;
 }
 
 .modal-body th:nth-child(6),
 .modal-body td:nth-child(6) {
-    width: 80px;
+  width: 80px;
 }
 
 .modal-body th:nth-child(7),
 .modal-body td:nth-child(7) {
-    width: 90px;
-    text-align: center;
+  width: 90px;
+  text-align: center;
 }
 
 .appointment-text {
-    color: black;
-    font-size: 16px;
-    margin-bottom: 15px;
+  color: #000;
+  font-size: 16px;
+  margin-bottom: 15px;
 }
 
-/* Botón de cancelar en rojo */
 .cancel-button {
-    background-color: #dc3545 !important;
-    color: white !important;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 5px;
-    font-size: 16px;
-    transition: background 0.3s ease-in-out;
+  background-color: #dc3545 !important;
+  color: #fff !important;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: background 0.3s ease-in-out;
 }
 
 .cancel-button:hover {
-    background-color: #c82333 !important; 
+  background-color: #c82333 !important;
 }
 
-/* Botón de confirmar en gris cuando está deshabilitado */
 .confirm-button {
-    background-color: #6c757d !important; 
-    color: white !important;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 5px;
-    font-size: 16px;
-    opacity: 0.5;
-    transition: background 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  background-color: #6c757d !important;
+  color: #fff !important;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  font-size: 16px;
+  opacity: 0.5;
+  transition:
+    background 0.3s ease-in-out,
+    opacity 0.3s ease-in-out;
 }
 
 .confirm-button.disabled {
-    cursor: not-allowed;
+  cursor: not-allowed;
 }
 
-/* Botón de confirmar en verde cuando hay un paciente seleccionado */
 .confirm-button.active {
-    background-color: #28a745 !important; 
-    opacity: 1;
+  background-color: #28a745 !important;
+  opacity: 1;
 }
 
 .confirm-button.active:hover {
-    background-color: #218838 !important;
+  background-color: #218838 !important;
 }
 
-/* Estilo para la fila seleccionada */
 .selected-row {
-    background-color: #d4edda !important;
-    font-weight: bold;
+  background-color: #d4edda !important;
+  font-weight: bold;
 }

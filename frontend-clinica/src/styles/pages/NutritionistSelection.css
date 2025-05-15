@@ -1,4 +1,3 @@
-/*Estilo general de la página*/
 .nutritionist-selection {
   flex: 1;
   width: 100%;
@@ -14,10 +13,9 @@
   overflow: hidden;
 }
 
-/*Wrapper para centrar y controlar ancho*/
 .content-wrapper {
   width: 100%;
-  max-width: 480px;  
+  max-width: 480px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -25,7 +23,6 @@
   box-sizing: border-box;
 }
 
-/*Estilo para el encabezado*/
 .nutritionist-selection header {
   width: 100%;
   text-align: left;
@@ -48,7 +45,6 @@
   transition: color 0.3s ease;
 }
 
-/* Estilo de los selectores */
 .content-wrapper .select-time,
 .content-wrapper .select-nutritionist {
   box-sizing: border-box;
@@ -62,6 +58,11 @@
   display: block;
 }
 
+.content-wrapper select:disabled {
+  cursor: not-allowed;
+  background-color: #f5f5f5;
+}
+
 .content-wrapper .select-time select,
 .content-wrapper .select-nutritionist select {
   width: 100%;
@@ -70,7 +71,7 @@
   border: 1px solid #77d9b2;
   border-radius: 5px;
   background-color: white;
-  color: #000000;
+  color: #000;
   transition: border-color 0.3s ease;
 }
 
@@ -79,7 +80,6 @@
   border-color: #5bb28a;
 }
 
-/*Estilo del botón "Seleccionar"*/
 .content-wrapper .select-button {
   background-color: #20c06f;
   color: white;
@@ -89,7 +89,9 @@
   max-width: 500px;
   margin: 20px auto 0;
   border: none;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .content-wrapper .select-button.inactive {
@@ -103,14 +105,7 @@
   opacity: 0.6;
 }
 
-/*Estilo cuando está cargando nutricionistas*/
-.content-wrapper select:disabled {
-  cursor: not-allowed;
-  background-color: #f5f5f5;
-}
-
-/*Ajustes para pantallas medianas*/
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .content-wrapper label {
     font-size: 16px;
   }
@@ -125,8 +120,7 @@
   }
 }
 
-/*Ajuste extra para móviles pequeños*/
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .content-wrapper {
     max-width: 90vw;
     padding: 0 5vw;

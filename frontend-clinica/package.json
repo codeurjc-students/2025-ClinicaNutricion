@@ -33,7 +33,9 @@
   "scripts": {
     "start": "react-scripts start --no-source-maps",
     "build": "react-scripts build --no-source-maps",
-    "test": "react-scripts test",
+    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
+    "stylelint": "stylelint \"src/**/*.{css,scss}\"",
+    "format": "prettier --write .",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -53,5 +55,13 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-prettier": "^5.4.0",
+    "prettier": "^3.5.3",
+    "stylelint": "^16.19.1",
+    "stylelint-config-standard": "^38.0.0"
   }
 }

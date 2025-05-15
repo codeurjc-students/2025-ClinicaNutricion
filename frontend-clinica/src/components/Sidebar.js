@@ -9,78 +9,91 @@ import ManageUsersIcon from "../assets/sidebar/LogoManageUsers.png";
 import LogoClinica from "../assets/sidebar/LogoClinica.png";
 
 const Sidebar = () => {
-    const location = useLocation();
-    const auth = useAuth();
-    const roles = auth.user?.profile["cognito:groups"] || [];
+  const location = useLocation();
+  const auth = useAuth();
+  const roles = auth.user?.profile["cognito:groups"] || [];
 
-    const hideSidebar = location.pathname === "/" || location.pathname.startsWith("/patient");
+  const hideSidebar =
+    location.pathname === "/" || location.pathname.startsWith("/patient");
 
-    // Obtener opciones de menú según el rol del usuario
-    const getMenuOptions = () => {
-        if (roles.includes("admin")) {
-            return [
-                { path: "/admin/profile", icon: ProfileIcon, label: "Perfil" },
-                { path: "/admin/agenda", icon: CalendarIcon, label: "Agenda" },
-                { path: "/admin/manage-users", icon: ManageUsersIcon, label: "Gestión de Usuarios" }
-            ];
-        } else if (roles.includes("nutritionist")) {
-            return [
-                { path: "/nutritionists/profile", icon: ProfileIcon, label: "Perfil" },
-                { path: "/nutritionists/agenda", icon: CalendarIcon, label: "Agenda" },
-                { path: "/nutritionists/patients", icon: ManageUsersIcon, label: "Gestión de Pacientes" }
-            ];
-        } else if (roles.includes("auxiliary")) {
-            return [
-                { path: "/auxiliaries/profile", icon: ProfileIcon, label: "Perfil" },
-                { path: "/auxiliaries/agenda", icon: CalendarIcon, label: "Agenda" },
-                { path: "/auxiliaries/patients", icon: ManageUsersIcon, label: "Gestión de Pacientes" }
-            ];
-        } else {
-            return [];
-        }
-    };
-
-    if (hideSidebar) {
-        return null;
+  // Obtener opciones de menú según el rol del usuario
+  const getMenuOptions = () => {
+    if (roles.includes("admin")) {
+      return [
+        { path: "/admin/profile", icon: ProfileIcon, label: "Perfil" },
+        { path: "/admin/agenda", icon: CalendarIcon, label: "Agenda" },
+        {
+          path: "/admin/manage-users",
+          icon: ManageUsersIcon,
+          label: "Gestión de Usuarios",
+        },
+      ];
+    } else if (roles.includes("nutritionist")) {
+      return [
+        { path: "/nutritionists/profile", icon: ProfileIcon, label: "Perfil" },
+        { path: "/nutritionists/agenda", icon: CalendarIcon, label: "Agenda" },
+        {
+          path: "/nutritionists/patients",
+          icon: ManageUsersIcon,
+          label: "Gestión de Pacientes",
+        },
+      ];
+    } else if (roles.includes("auxiliary")) {
+      return [
+        { path: "/auxiliaries/profile", icon: ProfileIcon, label: "Perfil" },
+        { path: "/auxiliaries/agenda", icon: CalendarIcon, label: "Agenda" },
+        {
+          path: "/auxiliaries/patients",
+          icon: ManageUsersIcon,
+          label: "Gestión de Pacientes",
+        },
+      ];
+    } else {
+      return [];
     }
+  };
 
-    const menuOptions = getMenuOptions();
+  if (hideSidebar) {
+    return null;
+  }
 
-    return (
-        <div className="sidebar">
-             <div className="sidebar-logo">
-                <img src={LogoClinica} alt="Logo de la clínica" className="logo" />
-            </div>
+  const menuOptions = getMenuOptions();
 
-            <hr className="sidebar-separator" />
+  return (
+    <div className="sidebar">
+      <div className="sidebar-logo">
+        <img src={LogoClinica} alt="Logo de la clínica" className="logo" />
+      </div>
 
-            {menuOptions.map((option, index) => (
-                <NavLink 
-                    key={index} 
-                    to={option.path} 
-                    className="sidebar-button" 
-                    activeclassname="active"
-                >
-                    <img src={option.icon} alt={option.label} className="icon" />
-                </NavLink>
-            ))}
+      <hr className="sidebar-separator" />
 
-            {/* Botón para Logout */}
-            <button
-                className="sidebar-button logout"
-                onClick={() =>
-                    auth.signoutRedirect({
-                        extraQueryParams: {
-                            client_id: auth.settings.client_id,
-                            logout_uri: window.location.origin + "/",
-                        },
-                    })
-                }
-            >
-                <img src={logOutIcon} alt="Cerrar sesión" className="icon" />
-            </button>
-        </div>
-    );
+      {menuOptions.map((option, index) => (
+        <NavLink
+          key={index}
+          to={option.path}
+          className="sidebar-button"
+          activeclassname="active"
+        >
+          <img src={option.icon} alt={option.label} className="icon" />
+        </NavLink>
+      ))}
+
+      {/* Botón para Logout */}
+      <button
+        className="sidebar-button logout"
+        onClick={() =>
+          auth.signoutRedirect({
+            extraQueryParams: {
+              client_id: auth.settings.client_id,
+              logout_uri: window.location.origin + "/",
+            },
+          })
+        }
+      >
+        <img src={logOutIcon} alt="Cerrar sesión" className="icon" />
+      </button>
+    </div>
+  );
 };
 
 export default Sidebar;

@@ -1,7 +1,11 @@
 import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { AuthProvider, useAuth } from "react-oidc-context";
-import { BrowserRouter as Router, useNavigate, useLocation } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
 import App from "./App";
 
 const cognitoAuthConfig = {
@@ -20,11 +24,11 @@ const AuthRedirect = () => {
 
   useEffect(() => {
     if (auth.isAuthenticated) {
-      const token = auth.user?.access_token; 
+      const token = auth.user?.access_token;
       if (token) {
         localStorage.setItem("token", token);
       }
-      // Redirige solo si el usuario se encuentra en "/" 
+      // Redirige solo si el usuario se encuentra en "/"
       if (location.pathname === "/") {
         const roles = auth.user?.profile["cognito:groups"] || [];
         if (roles.includes("admin")) {
@@ -55,5 +59,5 @@ root.render(
         <App />
       </Router>
     </AuthProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

@@ -1,16 +1,16 @@
 .nutritionist-agenda-container {
-    margin-top: 10px; 
-    height: 100vh; 
-    width: calc(100% - 160px);
-    margin-left: 160px;
-    padding: 30px;
-    border-radius: 8px;
+  margin-top: 10px;
+  height: 100vh;
+  width: calc(100% - 160px);
+  margin-left: 160px;
+  padding: 30px;
+  border-radius: 8px;
 }
 
 .nutritionist-title {
-    font-size: 24px;
-    font-weight: bold;
-    color: #3a7a59; 
-    margin-bottom: 20px; 
-    text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #3a7a59;
+  margin-bottom: 20px;
+  text-align: center;
 }
