@@ -21,7 +21,7 @@ jobs:
 
       - name: Smoke test
         working-directory: backend-clinica
-        run: mvn test -Dtest=HealthEndpointSmokeTest
+        run: mvn test -Dtest=ApplicationSmokeTest
 
       - name: Unit tests
         working-directory: backend-clinica
