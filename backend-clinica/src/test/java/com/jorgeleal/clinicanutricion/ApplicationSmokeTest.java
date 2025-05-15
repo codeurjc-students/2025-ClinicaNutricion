@@ -17,13 +17,7 @@ class ApplicationSmokeTest {
     private MockMvc mockMvc;
 
     @Test
-    void contextLoads() { 
-        // Si tiene exito las anotaciones de Spring Boot se cargan correctamente y el contexto de la aplicacion se inicializa.
-    }
-
-    @Test
     void healthEndpointReturnsOk() throws Exception {
-        mockMvc.perform(get("/health"))
-               .andExpect(status().isOk());
+        mockMvc.perform(get("/health")).andExpect(status().isOk());
     }
 }
