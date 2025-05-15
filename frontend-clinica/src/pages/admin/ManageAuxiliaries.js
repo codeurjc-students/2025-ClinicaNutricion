@@ -1,5 +1,5 @@
-import { useNavigate } from "react-router-dom";
-import BackButton from "../../components/BackButton";
+import { useNavigate } from 'react-router-dom';
+import BackButton from '../../components/BackButton';
 
 const ManageAuxiliaries = () => {
   const navigate = useNavigate();
@@ -11,13 +11,13 @@ const ManageAuxiliaries = () => {
       <div className="manage-users-buttons">
         <button
           className="btn btn-primary"
-          onClick={() => navigate("/admin/manage-users/auxiliaries/create")}
+          onClick={() => navigate('/admin/manage-users/auxiliaries/create')}
         >
           Dar de alta
         </button>
         <button
           className="btn btn-primary"
-          onClick={() => navigate("/admin/manage-users/auxiliaries/search")}
+          onClick={() => navigate('/admin/manage-users/auxiliaries/search')}
         >
           Buscar Auxiliar
         </button>

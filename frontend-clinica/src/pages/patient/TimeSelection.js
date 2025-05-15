@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { useLocation, Link } from "react-router-dom";
-import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css";
-import { Modal } from "react-bootstrap";
-import "../../styles/pages/TimeSelection.css";
-import BackButton from "../../components/BackButton";
+import React, { useState, useEffect, useCallback } from 'react';
+import { useLocation, Link } from 'react-router-dom';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
+import { Modal } from 'react-bootstrap';
+import '../../styles/pages/TimeSelection.css';
+import BackButton from '../../components/BackButton';
 
 const TimeSelection = () => {
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
@@ -16,7 +16,7 @@ const TimeSelection = () => {
   const [loading, setLoading] = useState(false);
   const showMore = false;
   const [showModal, setShowModal] = useState(false);
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem('token');
   const today = new Date();
 
   const fetchAvailableSlots = useCallback(async () => {
@@ -24,22 +24,22 @@ const TimeSelection = () => {
       setLoading(true);
       const nutritionistId = nutritionist.idUser;
       const encodedTimeRange = encodeURIComponent(timeRange);
-      const formattedDate = selectedDate.toLocaleDateString("en-CA");
+      const formattedDate = selectedDate.toLocaleDateString('en-CA');
       const url = `${BASE_URL}/nutritionists/${nutritionistId}/available-slots?timeRange=${encodedTimeRange}&selectedDate=${formattedDate}`;
 
       const response = await fetch(url, {
-        method: "GET",
+        method: 'GET',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
       });
 
-      if (!response.ok) throw new Error("Error al obtener los huecos libres");
+      if (!response.ok) throw new Error('Error al obtener los huecos libres');
       const data = await response.json();
       setAvailableSlots(data);
     } catch (error) {
-      console.error("Error al obtener los huecos libres:", error);
+      console.error('Error al obtener los huecos libres:', error);
       setAvailableSlots([]);
     } finally {
       setLoading(false);
@@ -78,14 +78,14 @@ const TimeSelection = () => {
     handleCloseModal();
   };
 
-  const formattedDate = selectedDate.toLocaleDateString("en-CA");
+  const formattedDate = selectedDate.toLocaleDateString('en-CA');
 
   //Filtramos las horas si la fecha seleccionada es hoy
   const filterAvailableSlots = () => {
     if (selectedDate.toLocaleDateString() === today.toLocaleDateString()) {
       const currentTime = today.getHours() * 60 + today.getMinutes();
       return availableSlots.filter((time) => {
-        const [hour, minute] = time.split(":").map(Number);
+        const [hour, minute] = time.split(':').map(Number);
         const timeInMinutes = hour * 60 + minute;
         return timeInMinutes > currentTime;
       });
@@ -107,7 +107,7 @@ const TimeSelection = () => {
           <p>
             {nutritionist
               ? `${nutritionist.name} ${nutritionist.surname}`
-              : "No seleccionado"}
+              : 'No seleccionado'}
           </p>
         </div>
 
@@ -130,7 +130,7 @@ const TimeSelection = () => {
                   .map((time) => (
                     <button
                       key={time}
-                      className={`time-button ${time === selectedTime ? "selected" : ""}`}
+                      className={`time-button ${time === selectedTime ? 'selected' : ''}`}
                       onClick={() => handleTimeSelection(time)}
                     >
                       {time}
@@ -157,7 +157,7 @@ const TimeSelection = () => {
               {filteredSlots.map((time) => (
                 <button
                   key={time}
-                  className={`time-button ${time === selectedTime ? "selected" : ""}`}
+                  className={`time-button ${time === selectedTime ? 'selected' : ''}`}
                   onClick={() => handleTimeSelectionInModal(time)}
                 >
                   {time}
@@ -177,7 +177,7 @@ const TimeSelection = () => {
           }}
         >
           <button
-            className={`confirm-btn ${selectedDate && selectedTime ? "enabled" : ""}`}
+            className={`confirm-btn ${selectedDate && selectedTime ? 'enabled' : ''}`}
             disabled={!selectedDate || !selectedTime}
           >
             Confirmar cita

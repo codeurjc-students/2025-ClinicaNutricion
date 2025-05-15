@@ -1,34 +1,34 @@
-import React from "react";
-import { Route, Routes, Navigate } from "react-router-dom";
-import { useAuth } from "react-oidc-context";
-import Sidebar from "./components/Sidebar";
-import UserForm from "./components/UserForm";
-import BackButton from "./components/BackButton";
-import SearchComponent from "./components/SearchComponent";
-import ManagePatients from "./pages/admin/ManagePatients";
-import ManageNutritionists from "./pages/admin/ManageNutritionists";
-import ManageAuxiliaries from "./pages/admin/ManageAuxiliaries";
-import MainPatientScreen from "./pages/patient/MainPatientScreen";
-import NutritionistSelection from "./pages/patient/NutritionistSelection";
-import TimeSelection from "./pages/patient/TimeSelection";
-import AppointmentConfirmation from "./pages/patient/AppointmentConfirmation";
-import ManageUsers from "./pages/admin/ManageUsers";
-import AdminAgenda from "./pages/admin/AdminAgenda";
-import NutritionistAgenda from "./pages/nutritionist/NutritionistAgenda";
-import PendingAppointments from "./pages/patient/PendingAppointments";
+import React from 'react';
+import { Route, Routes, Navigate } from 'react-router-dom';
+import { useAuth } from 'react-oidc-context';
+import Sidebar from './components/Sidebar';
+import UserForm from './components/UserForm';
+import BackButton from './components/BackButton';
+import SearchComponent from './components/SearchComponent';
+import ManagePatients from './pages/admin/ManagePatients';
+import ManageNutritionists from './pages/admin/ManageNutritionists';
+import ManageAuxiliaries from './pages/admin/ManageAuxiliaries';
+import MainPatientScreen from './pages/patient/MainPatientScreen';
+import NutritionistSelection from './pages/patient/NutritionistSelection';
+import TimeSelection from './pages/patient/TimeSelection';
+import AppointmentConfirmation from './pages/patient/AppointmentConfirmation';
+import ManageUsers from './pages/admin/ManageUsers';
+import AdminAgenda from './pages/admin/AdminAgenda';
+import NutritionistAgenda from './pages/nutritionist/NutritionistAgenda';
+import PendingAppointments from './pages/patient/PendingAppointments';
 
 const AppRoutes = () => {
   const auth = useAuth();
 
   if (!auth.isAuthenticated) return <Navigate to="/" />;
 
-  const roles = auth.user?.profile["cognito:groups"] || [];
+  const roles = auth.user?.profile['cognito:groups'] || [];
 
   const getUserType = () => {
-    if (roles.includes("admin")) return "admin";
-    if (roles.includes("nutritionist")) return "nutritionists";
-    if (roles.includes("auxiliary")) return "auxiliaries";
-    if (roles.includes("patient")) return "patients";
+    if (roles.includes('admin')) return 'admin';
+    if (roles.includes('nutritionist')) return 'nutritionists';
+    if (roles.includes('auxiliary')) return 'auxiliaries';
+    if (roles.includes('patient')) return 'patients';
     return null;
   };
 
@@ -49,9 +49,9 @@ const AppRoutes = () => {
           path="/:userType/profile"
           element={
             <ProtectedRoute
-              allowedRoles={["admin", "nutritionist", "auxiliary", "patient"]}
+              allowedRoles={['admin', 'nutritionist', 'auxiliary', 'patient']}
             >
-              {userType === "patients" && (
+              {userType === 'patients' && (
                 <BackButton defaultText="Menú principal" />
               )}
               <UserForm isEditMode={true} userType={userType} />
@@ -66,7 +66,7 @@ const AppRoutes = () => {
         <Route
           path="/nutritionist/agenda"
           element={
-            <ProtectedRoute allowedRoles={["nutritionist"]}>
+            <ProtectedRoute allowedRoles={['nutritionist']}>
               <NutritionistAgenda />
             </ProtectedRoute>
           }
@@ -74,7 +74,7 @@ const AppRoutes = () => {
         <Route
           path="/nutritionists/patients"
           element={
-            <ProtectedRoute allowedRoles={["nutritionist"]}>
+            <ProtectedRoute allowedRoles={['nutritionist']}>
               <ManagePatients userType="nutritionists" />
             </ProtectedRoute>
           }
@@ -104,7 +104,7 @@ const AppRoutes = () => {
         <Route
           path="/auxiliaries/agenda"
           element={
-            <ProtectedRoute allowedRoles={["auxiliary"]}>
+            <ProtectedRoute allowedRoles={['auxiliary']}>
               <AdminAgenda />
             </ProtectedRoute>
           }
@@ -112,7 +112,7 @@ const AppRoutes = () => {
         <Route
           path="/auxiliaries/patients"
           element={
-            <ProtectedRoute allowedRoles={["auxiliary"]}>
+            <ProtectedRoute allowedRoles={['auxiliary']}>
               <ManagePatients userType="auxiliaries" />
             </ProtectedRoute>
           }
@@ -142,7 +142,7 @@ const AppRoutes = () => {
         <Route
           path="/admin/agenda"
           element={
-            <ProtectedRoute allowedRoles={["admin"]}>
+            <ProtectedRoute allowedRoles={['admin']}>
               <AdminAgenda />
             </ProtectedRoute>
           }
@@ -150,7 +150,7 @@ const AppRoutes = () => {
         <Route
           path="/admin/manage-users"
           element={
-            <ProtectedRoute allowedRoles={["admin"]}>
+            <ProtectedRoute allowedRoles={['admin']}>
               <ManageUsers />
             </ProtectedRoute>
           }
@@ -249,7 +249,7 @@ const AppRoutes = () => {
         <Route
           path="/patients"
           element={
-            <ProtectedRoute allowedRoles={["patient"]}>
+            <ProtectedRoute allowedRoles={['patient']}>
               <MainPatientScreen />
             </ProtectedRoute>
           }
@@ -257,7 +257,7 @@ const AppRoutes = () => {
         <Route
           path="/patients/nutritionist-selection"
           element={
-            <ProtectedRoute allowedRoles={["patient"]}>
+            <ProtectedRoute allowedRoles={['patient']}>
               <NutritionistSelection />
             </ProtectedRoute>
           }
@@ -265,7 +265,7 @@ const AppRoutes = () => {
         <Route
           path="/patients/time-selection"
           element={
-            <ProtectedRoute allowedRoles={["patient"]}>
+            <ProtectedRoute allowedRoles={['patient']}>
               <TimeSelection />
             </ProtectedRoute>
           }
@@ -273,7 +273,7 @@ const AppRoutes = () => {
         <Route
           path="/patients/appointment-confirmation"
           element={
-            <ProtectedRoute allowedRoles={["patient"]}>
+            <ProtectedRoute allowedRoles={['patient']}>
               <AppointmentConfirmation />
             </ProtectedRoute>
           }
@@ -281,7 +281,7 @@ const AppRoutes = () => {
         <Route
           path="/patients/appointments/pending"
           element={
-            <ProtectedRoute allowedRoles={["patient"]}>
+            <ProtectedRoute allowedRoles={['patient']}>
               <PendingAppointments />
             </ProtectedRoute>
           }

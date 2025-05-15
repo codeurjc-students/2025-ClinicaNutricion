@@ -1,12 +1,12 @@
-import React, { useState, useEffect, cloneElement, useCallback } from "react";
-import { Calendar, momentLocalizer, Views } from "react-big-calendar";
-import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
-import moment from "moment";
-import "react-big-calendar/lib/css/react-big-calendar.css";
-import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import { DndProvider } from "react-dnd";
-import "../styles/components/Calendar.css";
+import React, { useState, useEffect, cloneElement, useCallback } from 'react';
+import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
+import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
+import moment from 'moment';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { DndProvider } from 'react-dnd';
+import '../styles/components/Calendar.css';
 import {
   Button,
   Container,
@@ -15,18 +15,18 @@ import {
   Dropdown,
   Form,
   InputGroup,
-} from "react-bootstrap";
-import { ZoomIn, ZoomOut } from "react-bootstrap-icons";
-import DatePicker from "react-datepicker";
-import { registerLocale } from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import NewAppointmentModal from "./NewAppointmentModal";
-import "moment/locale/es";
-import es from "date-fns/locale/es";
-import { toast } from "react-toastify";
+} from 'react-bootstrap';
+import { ZoomIn, ZoomOut } from 'react-bootstrap-icons';
+import DatePicker from 'react-datepicker';
+import { registerLocale } from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import NewAppointmentModal from './NewAppointmentModal';
+import 'moment/locale/es';
+import es from 'date-fns/locale/es';
+import { toast } from 'react-toastify';
 
-registerLocale("es", es);
-moment.updateLocale("es", { week: { dow: 1 } });
+registerLocale('es', es);
+moment.updateLocale('es', { week: { dow: 1 } });
 
 const localizer = momentLocalizer(moment);
 const DnDCalendar = withDragAndDrop(Calendar);
@@ -47,39 +47,39 @@ const NutritionistCalendar = ({
   const [selectedTime, setSelectedTime] = useState(null);
   const [zoom, setZoom] = useState(22.5);
 
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem('token');
   const slotsPerHour = 60 / appointmentDuration;
 
-  const workStart = moment(startTime, "HH:mm");
-  const workEnd = moment(endTime, "HH:mm");
+  const workStart = moment(startTime, 'HH:mm');
+  const workEnd = moment(endTime, 'HH:mm');
   const minTime = workStart.toDate();
   const maxTime = workEnd.toDate();
-  const today = moment().startOf("day");
+  const today = moment().startOf('day');
 
   const fetchAppointments = useCallback(async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
 
       const response = await fetch(
         `${BASE_URL}/appointments/nutritionist/${nutritionistId}`,
         {
-          method: "GET",
+          method: 'GET',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         },
       );
 
-      if (!response.ok) throw new Error("Error en la carga de citas");
+      if (!response.ok) throw new Error('Error en la carga de citas');
       let data = await response.json();
 
       setAppointments(
         data.map((appointment) => ({
           id: appointment.idAppointment,
           title:
-            appointment.type === "BLOCKOUT"
-              ? "Bloqueo"
+            appointment.type === 'BLOCKOUT'
+              ? 'Bloqueo'
               : `${appointment.patient.name} ${appointment.patient.surname}`,
           start: new Date(`${appointment.date}T${appointment.startTime}`),
           end: new Date(`${appointment.date}T${appointment.endTime}`),
@@ -87,7 +87,7 @@ const NutritionistCalendar = ({
         })),
       );
     } catch (error) {
-      console.error("Error cargando citas:", error);
+      console.error('Error cargando citas:', error);
     }
   }, [nutritionistId, BASE_URL]);
 
@@ -99,7 +99,7 @@ const NutritionistCalendar = ({
   const handleEventDrop = async ({ event, start, end }) => {
     const originalAppointments = [...appointments];
     if (moment(start).isBefore(today)) {
-      toast.error("No puedes modificar citas a días pasados.");
+      toast.error('No puedes modificar citas a días pasados.');
       return;
     }
 
@@ -110,22 +110,22 @@ const NutritionistCalendar = ({
 
     try {
       const response = await fetch(`${BASE_URL}/appointments/${event.id}`, {
-        method: "PUT",
+        method: 'PUT',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          date: moment(start).format("YYYY-MM-DD"),
-          startTime: moment(start).format("HH:mm"),
-          endTime: moment(end).format("HH:mm"),
+          date: moment(start).format('YYYY-MM-DD'),
+          startTime: moment(start).format('HH:mm'),
+          endTime: moment(end).format('HH:mm'),
         }),
       });
 
-      if (!response.ok) throw new Error("Error al actualizar la cita");
+      if (!response.ok) throw new Error('Error al actualizar la cita');
     } catch (error) {
       toast.error(
-        "Error: No se puede mover la cita porque hay un solapamiento.",
+        'Error: No se puede mover la cita porque hay un solapamiento.',
       );
       setAppointments(originalAppointments);
     }
@@ -138,58 +138,58 @@ const NutritionistCalendar = ({
   ) => {
     const start = selectedTime || contextMenuInfo?.selectedTime;
     if (moment(start).isBefore(today)) {
-      toast.error("No puedes agregar citas ni bloqueos en días pasados.");
+      toast.error('No puedes agregar citas ni bloqueos en días pasados.');
       return;
     }
 
     const end = new Date(start.getTime() + appointmentDuration * 60000);
     const newEvent = {
       idNutritionist: nutritionistId,
-      date: moment(start).format("YYYY-MM-DD"),
-      startTime: moment(start).format("HH:mm"),
-      endTime: moment(end).format("HH:mm"),
+      date: moment(start).format('YYYY-MM-DD'),
+      startTime: moment(start).format('HH:mm'),
+      endTime: moment(end).format('HH:mm'),
       type: type,
-      idPatient: type === "APPOINTMENT" && patient ? patient.idUser : undefined,
+      idPatient: type === 'APPOINTMENT' && patient ? patient.idUser : undefined,
     };
 
     try {
       const response = await fetch(`${BASE_URL}/appointments`, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(newEvent),
       });
 
-      if (!response.ok) throw new Error("Error al crear el evento");
+      if (!response.ok) throw new Error('Error al crear el evento');
       fetchAppointments();
     } catch (error) {
-      console.error("Error al crear evento:", error);
+      console.error('Error al crear evento:', error);
     }
   };
 
   const formatDateHeader = () => {
     if (view === Views.DAY) {
       return (
-        moment(currentDate).format("dddd, MMMM DD").charAt(0).toUpperCase() +
-        moment(currentDate).format("dddd, MMMM DD").slice(1)
+        moment(currentDate).format('dddd, MMMM DD').charAt(0).toUpperCase() +
+        moment(currentDate).format('dddd, MMMM DD').slice(1)
       );
     }
     if (view === Views.WEEK) {
-      const from = moment(currentDate).startOf("week");
-      const to = moment(currentDate).endOf("week");
+      const from = moment(currentDate).startOf('week');
+      const to = moment(currentDate).endOf('week');
       return (
-        from.format("MMMM DD").charAt(0).toUpperCase() +
-        from.format("MMMM DD").slice(1) +
-        " - " +
-        to.format("MMMM DD").charAt(0).toUpperCase() +
-        to.format("MMMM DD").slice(1)
+        from.format('MMMM DD').charAt(0).toUpperCase() +
+        from.format('MMMM DD').slice(1) +
+        ' - ' +
+        to.format('MMMM DD').charAt(0).toUpperCase() +
+        to.format('MMMM DD').slice(1)
       );
     }
     return (
-      moment(currentDate).format("MMMM YYYY").charAt(0).toUpperCase() +
-      moment(currentDate).format("MMMM YYYY").slice(1)
+      moment(currentDate).format('MMMM YYYY').charAt(0).toUpperCase() +
+      moment(currentDate).format('MMMM YYYY').slice(1)
     );
   };
 
@@ -199,7 +199,7 @@ const NutritionistCalendar = ({
   const navigateDate = (direction) => {
     const newDate = moment(currentDate).add(
       direction,
-      view === Views.DAY ? "days" : view === Views.WEEK ? "weeks" : "months",
+      view === Views.DAY ? 'days' : view === Views.WEEK ? 'weeks' : 'months',
     );
     setCurrentDate(newDate.toDate());
   };
@@ -211,10 +211,10 @@ const NutritionistCalendar = ({
 
   const handleConfirmAppointment = (patient) => {
     if (!selectedTime) {
-      toast.error("Error: No se ha definido una hora para la cita.");
+      toast.error('Error: No se ha definido una hora para la cita.');
       return;
     }
-    createAppointmentOrBlockout("APPOINTMENT", patient, selectedTime);
+    createAppointmentOrBlockout('APPOINTMENT', patient, selectedTime);
     setShowModal(false);
   };
 
@@ -226,14 +226,14 @@ const NutritionistCalendar = ({
       const response = await fetch(
         `${BASE_URL}/appointments/${eventToDelete.id}`,
         {
-          method: "DELETE",
+          method: 'DELETE',
           headers: {
             Authorization: `Bearer ${token}`,
           },
         },
       );
 
-      if (!response.ok) throw new Error("Error al eliminar el evento");
+      if (!response.ok) throw new Error('Error al eliminar el evento');
 
       setAppointments(
         appointments.filter((appt) => appt.id !== eventToDelete.id),
@@ -242,7 +242,7 @@ const NutritionistCalendar = ({
         blockouts.filter((blockout) => blockout.id !== eventToDelete.id),
       );
     } catch (error) {
-      console.error("Error eliminando evento:", error);
+      console.error('Error eliminando evento:', error);
     }
 
     setContextMenuInfo(null);
@@ -266,16 +266,16 @@ const NutritionistCalendar = ({
 
   useEffect(() => {
     document.documentElement.style.setProperty(
-      "--calendar-slot-height",
+      '--calendar-slot-height',
       `${zoom * 2.5}px`,
     );
   }, [zoom]);
 
   useEffect(() => {
     const handleClickOutside = () => closeContextMenu();
-    document.addEventListener("click", handleClickOutside);
+    document.addEventListener('click', handleClickOutside);
     return () => {
-      document.removeEventListener("click", handleClickOutside);
+      document.removeEventListener('click', handleClickOutside);
     };
   }, []);
 
@@ -283,7 +283,7 @@ const NutritionistCalendar = ({
     event: ({ event }) => (
       <div
         className={
-          event.type === "BLOCKOUT" ? "blockout-event" : "appointment-event"
+          event.type === 'BLOCKOUT' ? 'blockout-event' : 'appointment-event'
         }
         onContextMenu={(e) => handleRightClick(e, event.start, event)}
       >
@@ -325,7 +325,7 @@ const NutritionistCalendar = ({
           </Col>
 
           {/* Selector de Fecha */}
-          <Col xs="auto" style={{ position: "relative", zIndex: 1100 }}>
+          <Col xs="auto" style={{ position: 'relative', zIndex: 1100 }}>
             <InputGroup>
               <DatePicker
                 selected={currentDate}
@@ -361,19 +361,19 @@ const NutritionistCalendar = ({
           <Col xs="auto">
             <div className="view-buttons">
               <Button
-                variant={view === Views.DAY ? "primary" : "outline-primary"}
+                variant={view === Views.DAY ? 'primary' : 'outline-primary'}
                 onClick={() => setView(Views.DAY)}
               >
                 Day
               </Button>
               <Button
-                variant={view === Views.WEEK ? "primary" : "outline-primary"}
+                variant={view === Views.WEEK ? 'primary' : 'outline-primary'}
                 onClick={() => setView(Views.WEEK)}
               >
                 Week
               </Button>
               <Button
-                variant={view === Views.MONTH ? "primary" : "outline-primary"}
+                variant={view === Views.MONTH ? 'primary' : 'outline-primary'}
                 onClick={() => setView(Views.MONTH)}
               >
                 Month
@@ -385,9 +385,9 @@ const NutritionistCalendar = ({
         {/* Encabezado personalizado para la vista diaria */}
         {view === Views.DAY && (
           <div className="custom-day-header">
-            {`${moment(currentDate).format("dddd")}`.charAt(0).toUpperCase() +
-              `${moment(currentDate).format("dddd")}`.slice(1) +
-              ` ${parseInt(moment(currentDate).format("D"))}`}
+            {`${moment(currentDate).format('dddd')}`.charAt(0).toUpperCase() +
+              `${moment(currentDate).format('dddd')}`.slice(1) +
+              ` ${parseInt(moment(currentDate).format('D'))}`}
           </div>
         )}
 
@@ -397,14 +397,14 @@ const NutritionistCalendar = ({
             <Dropdown.Toggle
               as="div"
               style={{
-                position: "fixed",
+                position: 'fixed',
                 top: contextMenuInfo.y,
                 left: contextMenuInfo.x,
-                background: "transparent",
-                border: "none",
+                background: 'transparent',
+                border: 'none',
               }}
             />
-            <Dropdown.Menu style={{ position: "absolute", top: 0, left: 0 }}>
+            <Dropdown.Menu style={{ position: 'absolute', top: 0, left: 0 }}>
               {contextMenuInfo.event ? (
                 <Dropdown.Item onClick={handleDeleteEvent}>
                   Eliminar
@@ -417,7 +417,7 @@ const NutritionistCalendar = ({
                   <Dropdown.Item
                     onClick={() =>
                       createAppointmentOrBlockout(
-                        "BLOCKOUT",
+                        'BLOCKOUT',
                         null,
                         contextMenuInfo?.selectedTime,
                       )
@@ -437,7 +437,7 @@ const NutritionistCalendar = ({
           events={[...appointments, ...blockouts]}
           startAccessor="start"
           endAccessor="end"
-          style={{ height: 500, marginTop: "10px" }}
+          style={{ height: 500, marginTop: '10px' }}
           date={currentDate}
           view={view}
           onView={setView}
@@ -453,24 +453,24 @@ const NutritionistCalendar = ({
           min={minTime}
           max={maxTime}
           formats={{
-            timeGutterFormat: "HH:mm",
+            timeGutterFormat: 'HH:mm',
             agendaTimeRangeFormat: ({ start, end }) =>
-              `${moment(start).format("HH:mm")} - ${moment(end).format("HH:mm")}`,
+              `${moment(start).format('HH:mm')} - ${moment(end).format('HH:mm')}`,
             weekdayFormat: (date) =>
-              moment(date).format("dddd DD").charAt(0).toUpperCase() +
-              moment(date).format("dddd DD").slice(1),
+              moment(date).format('dddd DD').charAt(0).toUpperCase() +
+              moment(date).format('dddd DD').slice(1),
             dayFormat: (date) =>
-              moment(date).format("dddd, DD MMMM").charAt(0).toUpperCase() +
-              moment(date).format("dddd, DD MMMM").slice(1),
+              moment(date).format('dddd, DD MMMM').charAt(0).toUpperCase() +
+              moment(date).format('dddd, DD MMMM').slice(1),
           }}
           messages={{
-            today: "Hoy",
-            previous: "←",
-            next: "→",
-            month: "Mes",
-            week: "Semana",
-            day: "Día",
-            agenda: "Agenda",
+            today: 'Hoy',
+            previous: '←',
+            next: '→',
+            month: 'Mes',
+            week: 'Semana',
+            day: 'Día',
+            agenda: 'Agenda',
           }}
         />
       </Container>

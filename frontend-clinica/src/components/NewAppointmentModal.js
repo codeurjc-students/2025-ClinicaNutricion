@@ -1,21 +1,21 @@
-import React, { useState } from "react";
-import { Modal, Button } from "react-bootstrap";
-import SearchComponent from "./SearchComponent";
-import moment from "moment";
-import "../styles/components/NewAppointmentModal.css";
-import { toast } from "react-toastify";
+import React, { useState } from 'react';
+import { Modal, Button } from 'react-bootstrap';
+import SearchComponent from './SearchComponent';
+import moment from 'moment';
+import '../styles/components/NewAppointmentModal.css';
+import { toast } from 'react-toastify';
 
 const NewAppointmentModal = ({ show, onClose, onConfirm, selectedTime }) => {
   const [selectedPatient, setSelectedPatient] = useState(null);
 
   const handleConfirm = () => {
     if (!selectedPatient) {
-      toast.error("Selecciona un paciente antes de continuar.");
+      toast.error('Selecciona un paciente antes de continuar.');
       return;
     }
 
     if (!selectedTime) {
-      toast.error("Error: No se ha definido una hora para la cita.");
+      toast.error('Error: No se ha definido una hora para la cita.');
       return;
     }
 
@@ -33,9 +33,9 @@ const NewAppointmentModal = ({ show, onClose, onConfirm, selectedTime }) => {
       </Modal.Header>
       <Modal.Body>
         <p className="appointment-text">
-          Selecciona un paciente para la cita programada el{" "}
-          <strong>{moment(selectedTime).format("DD/MM/YYYY")}</strong> a las{" "}
-          <strong>{moment(selectedTime).format("HH:mm")}</strong>.
+          Selecciona un paciente para la cita programada el{' '}
+          <strong>{moment(selectedTime).format('DD/MM/YYYY')}</strong> a las{' '}
+          <strong>{moment(selectedTime).format('HH:mm')}</strong>.
         </p>
 
         <div className="table-container">
@@ -53,7 +53,7 @@ const NewAppointmentModal = ({ show, onClose, onConfirm, selectedTime }) => {
           Cancelar
         </Button>
         <Button
-          className={`confirm-button ${selectedPatient ? "active" : "disabled"}`}
+          className={`confirm-button ${selectedPatient ? 'active' : 'disabled'}`}
           onClick={handleConfirm}
           disabled={!selectedPatient}
         >

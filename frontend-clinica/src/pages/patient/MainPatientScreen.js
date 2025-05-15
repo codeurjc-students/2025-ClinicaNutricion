@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import "../../styles/pages/MainPatientScreen.css";
-import profileLogo from "../../assets/sidebar/LogoPerfil.png";
-import logOutIcon from "../../assets/sidebar/LogoLogOut.png";
-import { useAuth } from "react-oidc-context";
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import '../../styles/pages/MainPatientScreen.css';
+import profileLogo from '../../assets/sidebar/LogoPerfil.png';
+import logOutIcon from '../../assets/sidebar/LogoLogOut.png';
+import { useAuth } from 'react-oidc-context';
 
 const MainPatientScreen = () => {
   const auth = useAuth();
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem('token');
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   const [patient, setPatient] = useState(null);
@@ -16,7 +16,7 @@ const MainPatientScreen = () => {
     auth.signoutRedirect({
       extraQueryParams: {
         client_id: auth.settings.client_id,
-        logout_uri: window.location.origin + "/",
+        logout_uri: window.location.origin + '/',
       },
     });
   };
@@ -25,14 +25,14 @@ const MainPatientScreen = () => {
     const fetchPatientData = async () => {
       try {
         const response = await fetch(`${BASE_URL}/patients/profile`, {
-          method: "GET",
+          method: 'GET',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         });
         if (!response.ok)
-          throw new Error("Error obteniendo el perfil del paciente");
+          throw new Error('Error obteniendo el perfil del paciente');
         const data = await response.json();
         setPatient({
           idUser: data.id,
@@ -40,7 +40,7 @@ const MainPatientScreen = () => {
           surname: data.surname,
         });
       } catch (error) {
-        console.error("Error al obtener los datos del paciente:", error);
+        console.error('Error al obtener los datos del paciente:', error);
       }
     };
 

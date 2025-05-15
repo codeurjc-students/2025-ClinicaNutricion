@@ -1,5 +1,5 @@
-import { useNavigate, useLocation } from "react-router-dom";
-import backIcon from "../assets/icons/back-icon.png";
+import { useNavigate, useLocation } from 'react-router-dom';
+import backIcon from '../assets/icons/back-icon.png';
 
 const BackButton = ({ defaultText }) => {
   const navigate = useNavigate();

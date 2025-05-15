@@ -1,24 +1,24 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Modal, Button } from "react-bootstrap";
-import "../styles/components/SearchComponent.css";
-import editIcon from "../assets/icons/edit-icon.png";
-import deleteIcon from "../assets/icons/delete-icon.png";
-import ToggleSwitch from "./ToggleSwitch";
-import { toast } from "react-toastify";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Modal, Button } from 'react-bootstrap';
+import '../styles/components/SearchComponent.css';
+import editIcon from '../assets/icons/edit-icon.png';
+import deleteIcon from '../assets/icons/delete-icon.png';
+import ToggleSwitch from './ToggleSwitch';
+import { toast } from 'react-toastify';
 
 const formatDate = (dateString) => {
-  if (!dateString) return "N/A";
+  if (!dateString) return 'N/A';
   const date = new Date(dateString);
-  return new Intl.DateTimeFormat("es-ES", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
+  return new Intl.DateTimeFormat('es-ES', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
   }).format(date);
 };
 
 const formatGender = (gender) => {
-  if (!gender) return "N/A";
+  if (!gender) return 'N/A';
   return gender.charAt(0).toUpperCase() + gender.slice(1).toLowerCase();
 };
 
@@ -34,15 +34,15 @@ const SearchComponent = ({
 }) => {
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const [filters, setFilters] = useState({
-    name: "",
-    surname: "",
-    phone: "",
-    email: "",
-    active: onlyActivePatients ? "true" : "",
+    name: '',
+    surname: '',
+    phone: '',
+    email: '',
+    active: onlyActivePatients ? 'true' : '',
   });
   const [results, setResults] = useState([]);
   const [searched, setSearched] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [auxToDelete, setAuxToDelete] = useState(null);
@@ -54,55 +54,55 @@ const SearchComponent = ({
 
   const handleClearFilters = () => {
     setFilters({
-      name: "",
-      surname: "",
-      phone: "",
-      email: "",
-      active: onlyActivePatients ? "true" : "",
+      name: '',
+      surname: '',
+      phone: '',
+      email: '',
+      active: onlyActivePatients ? 'true' : '',
     });
     setResults([]);
-    setErrorMessage("");
+    setErrorMessage('');
     setSearched(false);
     setCurrentPage(1);
   };
 
   const parseActiveFilter = (value) => {
-    if (value === "true") return "true";
-    if (value === "false") return "false";
-    return "";
+    if (value === 'true') return 'true';
+    if (value === 'false') return 'false';
+    return '';
   };
 
   const handleSearch = async () => {
     try {
       const filtersWithoutActive = onlyActivePatients
-        ? { ...filters, active: "true" }
+        ? { ...filters, active: 'true' }
         : filters;
       const isOnlyActiveApplied =
         onlyActivePatients &&
-        filters.active === "true" &&
+        filters.active === 'true' &&
         !Object.values(filtersWithoutActive).some(
-          (value) => value.trim() !== "" && value !== "true",
+          (value) => value.trim() !== '' && value !== 'true',
         );
 
       if (isOnlyActiveApplied) {
-        setErrorMessage("Debes ingresar al menos un filtro para buscar.");
-        setTimeout(() => setErrorMessage(""), 3000);
+        setErrorMessage('Debes ingresar al menos un filtro para buscar.');
+        setTimeout(() => setErrorMessage(''), 3000);
         return;
       }
 
       const hasFilters = Object.values(filtersWithoutActive).some(
-        (value) => value.trim() !== "",
+        (value) => value.trim() !== '',
       );
       if (!hasFilters) {
-        setErrorMessage("Debes ingresar al menos un filtro para buscar.");
-        setTimeout(() => setErrorMessage(""), 3000);
+        setErrorMessage('Debes ingresar al menos un filtro para buscar.');
+        setTimeout(() => setErrorMessage(''), 3000);
         return;
       }
 
       setSearched(true);
 
-      const token = localStorage.getItem("token");
-      if (!token) throw new Error("No se encontró un token de autenticación.");
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('No se encontró un token de autenticación.');
 
       const queryParams = new URLSearchParams({
         ...filtersWithoutActive,
@@ -110,10 +110,10 @@ const SearchComponent = ({
       }).toString();
 
       const response = await fetch(`${BASE_URL}/${entityType}?${queryParams}`, {
-        method: "GET",
+        method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       });
 
@@ -126,27 +126,27 @@ const SearchComponent = ({
       setResults(data);
       setCurrentPage(1);
     } catch (error) {
-      console.error("Error buscando:", error);
+      console.error('Error buscando:', error);
     }
   };
 
   const handleToggleUserStatus = async (idUser, isActive) => {
     try {
-      const token = localStorage.getItem("token");
-      if (!token) throw new Error("No se encontró un token de autenticación.");
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('No se encontró un token de autenticación.');
 
       const endpoint = `${BASE_URL}/${entityType}/${idUser}/status`;
       const response = await fetch(endpoint, {
-        method: "PUT",
+        method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(!isActive),
       });
 
       if (!response.ok)
-        throw new Error("Error al cambiar el estado del usuario.");
+        throw new Error('Error al cambiar el estado del usuario.');
 
       setResults(
         results.map((user) =>
@@ -154,31 +154,31 @@ const SearchComponent = ({
         ),
       );
     } catch (error) {
-      console.error("Error cambiando estado del usuario:", error);
-      toast.error("No se pudo cambiar el estado del usuario.");
+      console.error('Error cambiando estado del usuario:', error);
+      toast.error('No se pudo cambiar el estado del usuario.');
     }
   };
 
   const handleDeleteUser = async (idUser) => {
     try {
-      const token = localStorage.getItem("token");
-      if (!token) throw new Error("No se encontró un token de autenticación.");
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('No se encontró un token de autenticación.');
 
       const response = await fetch(`${BASE_URL}/${entityType}/${idUser}`, {
-        method: "DELETE",
+        method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       });
 
-      if (!response.ok) throw new Error("Error al eliminar el usuario.");
+      if (!response.ok) throw new Error('Error al eliminar el usuario.');
 
       setResults(results.filter((user) => user.idUser !== idUser));
-      toast.success("Usuario eliminado correctamente.");
+      toast.success('Usuario eliminado correctamente.');
     } catch (error) {
       console.error(error);
-      toast.error("No se pudo eliminar el usuario.");
+      toast.error('No se pudo eliminar el usuario.');
     }
   };
 
@@ -206,12 +206,12 @@ const SearchComponent = ({
     <div className="content">
       <div className="search-container">
         <h2 className="text-center">
-          Buscar{" "}
-          {entityType === "nutritionists"
-            ? "Nutricionistas"
-            : entityType === "patients"
-              ? "Pacientes"
-              : "Auxiliares"}
+          Buscar{' '}
+          {entityType === 'nutritionists'
+            ? 'Nutricionistas'
+            : entityType === 'patients'
+              ? 'Pacientes'
+              : 'Auxiliares'}
         </h2>
 
         {/* Mensaje de error */}
@@ -250,7 +250,7 @@ const SearchComponent = ({
               value={filters.email}
               onChange={handleFilterChange}
             />
-            {entityType !== "auxiliaries" && !onlyActivePatients && (
+            {entityType !== 'auxiliaries' && !onlyActivePatients && (
               <select
                 name="active"
                 value={filters.active}
@@ -275,7 +275,7 @@ const SearchComponent = ({
         {selectedPatient && (
           <div className="selected-patient mt-3 text-center">
             <p>
-              <strong>Paciente seleccionado:</strong> {selectedPatient.name}{" "}
+              <strong>Paciente seleccionado:</strong> {selectedPatient.name}{' '}
               {selectedPatient.surname}
               <button
                 className="clear-selection-btn"
@@ -294,7 +294,7 @@ const SearchComponent = ({
               <tr>
                 <th>Nombre</th>
                 <th>Apellidos</th>
-                {entityType === "nutritionists" ? (
+                {entityType === 'nutritionists' ? (
                   <>
                     <th>Duración de citas</th>
                     <th>Entrada</th>
@@ -312,9 +312,9 @@ const SearchComponent = ({
                 ) : (
                   <>
                     <th>Editar</th>
-                    {entityType === "auxiliaries" && <th>Eliminar</th>}
-                    {(entityType === "nutritionists" ||
-                      entityType === "patients") && (
+                    {entityType === 'auxiliaries' && <th>Eliminar</th>}
+                    {(entityType === 'nutritionists' ||
+                      entityType === 'patients') && (
                       <>
                         <th>Estado</th>
                         <th>Eliminar</th>
@@ -330,18 +330,18 @@ const SearchComponent = ({
                   <tr key={item.idUser}>
                     <td>{item.name}</td>
                     <td>{item.surname}</td>
-                    {entityType === "nutritionists" ? (
+                    {entityType === 'nutritionists' ? (
                       <>
                         <td>
                           {item.appointmentDuration
                             ? `${item.appointmentDuration} minutos`
-                            : "N/A"}
+                            : 'N/A'}
                         </td>
                         <td>
-                          {item.startTime ? item.startTime.slice(0, 5) : "N/A"}
+                          {item.startTime ? item.startTime.slice(0, 5) : 'N/A'}
                         </td>
                         <td>
-                          {item.endTime ? item.endTime.slice(0, 5) : "N/A"}
+                          {item.endTime ? item.endTime.slice(0, 5) : 'N/A'}
                         </td>
                       </>
                     ) : (
@@ -351,7 +351,7 @@ const SearchComponent = ({
                     <td>{item.phone}</td>
                     <td>{formatGender(item.gender)}</td>
                     {showSelectButton ? (
-                      <td colSpan={2} style={{ textAlign: "center" }}>
+                      <td colSpan={2} style={{ textAlign: 'center' }}>
                         <button
                           className="select-btn"
                           onClick={() => onSelect(item)}
@@ -366,7 +366,7 @@ const SearchComponent = ({
                             className="action-btn"
                             onClick={() =>
                               navigate(
-                                userType === "admin"
+                                userType === 'admin'
                                   ? `/${userType}/manage-users/${entityType}/${item.idUser}`
                                   : `/${userType}/${entityType}/${item.idUser}`,
                               )
@@ -379,8 +379,8 @@ const SearchComponent = ({
                             />
                           </button>
                         </td>
-                        {(entityType === "nutritionists" ||
-                          entityType === "patients") && (
+                        {(entityType === 'nutritionists' ||
+                          entityType === 'patients') && (
                           <td>
                             <div className="toggle-container">
                               <ToggleSwitch
@@ -430,10 +430,10 @@ const SearchComponent = ({
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
             >
-              {"<"}
+              {'<'}
             </button>
             <span>
-              Página {currentPage} de{" "}
+              Página {currentPage} de{' '}
               {Math.ceil(results.length / ITEMS_PER_PAGE)}
             </span>
             <button
@@ -450,7 +450,7 @@ const SearchComponent = ({
                 currentPage === Math.ceil(results.length / ITEMS_PER_PAGE)
               }
             >
-              {">"}
+              {'>'}
             </button>
           </div>
         )}
@@ -466,9 +466,9 @@ const SearchComponent = ({
         </Modal.Header>
 
         <Modal.Body>
-          {entityType === "nutritionists"
-            ? "¿Estás seguro de que quieres eliminar este nutricionista? Se borrarán todas las citas asociadas."
-            : "¿Estás seguro de que quieres eliminar este auxiliar?"}
+          {entityType === 'nutritionists'
+            ? '¿Estás seguro de que quieres eliminar este nutricionista? Se borrarán todas las citas asociadas.'
+            : '¿Estás seguro de que quieres eliminar este auxiliar?'}
         </Modal.Body>
 
         <Modal.Footer>
