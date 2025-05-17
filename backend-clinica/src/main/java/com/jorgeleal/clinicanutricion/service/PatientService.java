@@ -15,8 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class PatientService {
-    private static final Logger logger = LoggerFactory.getLogger(AppointmentService.class);
-
+    private static final Logger logger = LoggerFactory.getLogger(PatientService.class);
     @Autowired
     private PatientRepository patientRepository;
 
@@ -78,6 +77,7 @@ public class PatientService {
         return patient;
     }
 
+    @Transactional
     public Patient createPatient(PatientDTO dto) {
         try {
             if (userService.mailExists(dto.getMail())) {

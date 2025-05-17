@@ -85,17 +85,24 @@ public class NutritionistController {
 
     @PutMapping("/profile")
     public ResponseEntity<?> updateProfile(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody Map<String, Object> updates) {
-        //Extrae el ID del usuario desde el JWT
-        String idCognito = jwt.getClaimAsString("sub");
-        if (idCognito == null || idCognito.isEmpty()) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", "ID de usuario no encontrado en el token"));
-        }
+        try{
+            String idCognito = jwt.getClaimAsString("sub");
+            if (idCognito == null || idCognito.isEmpty()) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("error", "ID de usuario no encontrado en el token"));
+            }
 
-        NutritionistDTO nutritionistDTO = objectMapper.convertValue(updates, NutritionistDTO.class);
-        Long idUser = userService.getUserByCognitoId(idCognito).getIdUser();
-        return ResponseEntity.ok(nutritionistService.updateNutritionist(idUser, nutritionistDTO));
+            NutritionistDTO nutritionistDTO = objectMapper.convertValue(updates, NutritionistDTO.class);
+            Long idUser = userService.getUserByCognitoId(idCognito).getIdUser();
+            return ResponseEntity.ok(nutritionistService.updateNutritionist(idUser, nutritionistDTO));
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error interno: " + e.getMessage()));
+        }
     }
 
     @GetMapping
