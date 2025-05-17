@@ -466,9 +466,21 @@ const SearchComponent = ({
         </Modal.Header>
 
         <Modal.Body>
-          {entityType === 'nutritionists'
-            ? '¿Estás seguro de que quieres eliminar este nutricionista? Se borrarán todas las citas asociadas.'
-            : '¿Estás seguro de que quieres eliminar este auxiliar?'}
+          {entityType === 'nutritionists' && (
+            <>
+              ¿Estás seguro de que quieres eliminar este nutricionista? Se
+              borrarán todas las citas asociadas.
+            </>
+          )}
+          {entityType === 'auxiliaries' && (
+            <>¿Estás seguro de que quieres eliminar este auxiliar?</>
+          )}
+          {entityType === 'patients' && (
+            <>
+              ¿Estás seguro de que quieres eliminar este paciente? Se borrarán
+              todas las citas asociadas.
+            </>
+          )}
         </Modal.Body>
 
         <Modal.Footer>
