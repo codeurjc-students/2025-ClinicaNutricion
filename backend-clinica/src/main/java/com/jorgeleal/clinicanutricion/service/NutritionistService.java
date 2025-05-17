@@ -139,7 +139,7 @@ public class NutritionistService {
     
     public List<NutritionistDTO> getNutritionistsByFilters(String name, String surname, String fullName, String phone, String email, Boolean active) {
         List<Nutritionist> nutritionists;
-    
+
         if (fullName != null && !fullName.trim().isEmpty()) {
             nutritionists = nutritionistRepository.findByFullName(fullName);
         } else { 

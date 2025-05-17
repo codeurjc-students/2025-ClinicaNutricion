@@ -28,6 +28,10 @@ jobs:
         working-directory: backend-clinica
         run: mvn test
 
+      - name: Integration tests
+        working-directory: backend-clinica
+        run: mvn test -Dtest=*IntegrationTest
+
       - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4

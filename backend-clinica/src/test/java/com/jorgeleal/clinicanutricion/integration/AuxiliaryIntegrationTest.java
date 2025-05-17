@@ -65,7 +65,8 @@ public class AuxiliaryIntegrationTest {
 
         // Stub de CognitoService
         when(cognitoService.createCognitoUser(any(UserDTO.class)))
-            .thenReturn("fake-cog-id");
+            .thenReturn("cognito-id-1")
+            .thenReturn("cognito-id-2");
         doNothing().when(cognitoService).updateCognitoUser(any(UserDTO.class));
         doNothing().when(cognitoService).deleteCognitoUser(anyString());
 
@@ -168,11 +169,10 @@ public class AuxiliaryIntegrationTest {
                 .content(objectMapper.writeValueAsString(updates))
             )
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.name").value("Ana"))
-            .andExpect(jsonPath("$.surname").value("García"))
-            .andExpect(jsonPath("$.mail").value("test@example.com"));
+            .andExpect(jsonPath("$.user.name").value("Ana"))
+            .andExpect(jsonPath("$.user.surname").value("García"))
+            .andExpect(jsonPath("$.user.mail").value("test@example.com"));
 
-        // Verificar llamada a CognitoService.updateCognitoUser(...)
         verify(cognitoService, times(1)).updateCognitoUser(any(UserDTO.class));
     }
 
@@ -196,6 +196,31 @@ public class AuxiliaryIntegrationTest {
             .andExpect(status().isForbidden());
     }
 
+    @Test
+    void getAllAuxiliaries_Unauthorized_NoToken() throws Exception {
+        mockMvc.perform(get("/auxiliaries"))
+               .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void getAllAuxiliaries_Forbidden_AsPatient() throws Exception {
+        mockMvc.perform(get("/auxiliaries")
+                .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_PATIENT")))
+            )
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void getAllAuxiliaries_NoResults() throws Exception {
+        // vaciamos la tabla para que lance excepción
+        auxiliaryRepository.deleteAll();
+        mockMvc.perform(get("/auxiliaries")
+                .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
+            )
+            .andExpect(status().isInternalServerError())
+            .andExpect(jsonPath("$.error").value("No se encontraron auxiliares"));
+    }
+
     // -------------------
     // GET /auxiliaries/{id}
     // -------------------
@@ -214,6 +239,21 @@ public class AuxiliaryIntegrationTest {
                 .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_AUXILIARY")))
             )
             .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void getAuxiliaryById_NotFound() throws Exception {
+        mockMvc.perform(get("/auxiliaries/{id}", 999L)
+                .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
+            )
+            .andExpect(status().isInternalServerError())
+            .andExpect(jsonPath("$.error").value("Error interno: Auxiliar no encontrado"));
+    }
+
+    @Test
+    void getAuxiliaryById_Unauthorized_NoToken() throws Exception {
+        mockMvc.perform(get("/auxiliaries/{id}", existingUser.getIdUser()))
+               .andExpect(status().isUnauthorized());
     }
 
     // -------------------
@@ -259,6 +299,31 @@ public class AuxiliaryIntegrationTest {
                 .value("El correo electrónico ya está registrado."));
     }
 
+    @Test
+    void createAuxiliary_Forbidden_AsPatient() throws Exception {
+        AuxiliaryDTO dto = new AuxiliaryDTO();
+        dto.setName("X"); dto.setSurname("Y");
+        dto.setBirthDate(LocalDate.of(1990,1,1));
+        dto.setMail("a@mail.com"); dto.setPhone("+34111222333");
+        dto.setGender(Gender.MASCULINO);
+
+        mockMvc.perform(post("/auxiliaries")
+                .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_PATIENT")))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto))
+            )
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void createAuxiliary_Unauthorized_NoToken() throws Exception {
+        mockMvc.perform(post("/auxiliaries")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}")
+            )
+            .andExpect(status().isUnauthorized());
+    }
+
     // -------------------
     // PUT /auxiliaries/{id}
     // -------------------
@@ -284,6 +349,27 @@ public class AuxiliaryIntegrationTest {
     }
 
     @Test
+    void updateAuxiliary_NotFound() throws Exception {
+        AuxiliaryDTO dto = new AuxiliaryDTO();
+        dto.setName("X"); dto.setSurname("Y");
+        dto.setBirthDate(LocalDate.of(1990,1,1));
+        dto.setMail("no@mail.com"); dto.setPhone("+34111222333");
+        dto.setGender(Gender.MASCULINO);
+
+        mockMvc.perform(put("/auxiliaries/{id}", 999L)
+                .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto))
+            )
+            .andExpect(status().isInternalServerError())
+            .andExpect(jsonPath("$.error").value("El Auxiliar con ID 999 no existe."));
+    }
+
+    // -------------------
+    // DELETE /auxiliaries/{id}
+    // -------------------
+
+    @Test
     void deleteAuxiliary_Success_AsAdmin() throws Exception {
         mockMvc.perform(delete("/auxiliaries/{id}", existingUser.getIdUser())
                 .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
@@ -305,5 +391,11 @@ public class AuxiliaryIntegrationTest {
 
         // Sigue existiendo
         assertTrue(auxiliaryRepository.findByUserIdUser(existingUser.getIdUser()).isPresent());
+    }
+
+    @Test
+    void deleteAuxiliary_Unauthorized_NoToken() throws Exception {
+        mockMvc.perform(delete("/auxiliaries/{id}", existingUser.getIdUser()))
+               .andExpect(status().isUnauthorized());
     }
 }

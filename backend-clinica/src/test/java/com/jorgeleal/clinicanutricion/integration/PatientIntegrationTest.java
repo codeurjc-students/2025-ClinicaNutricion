@@ -171,6 +171,41 @@ public class PatientIntegrationTest {
         verify(cognitoService, never()).createCognitoUser(any());
     }
 
+    @Test
+    void createPatient_Unauthorized_NoToken() throws Exception {
+        PatientDTO dto = new PatientDTO();
+        dto.setName("Test");
+        dto.setSurname("User");
+        dto.setBirthDate(LocalDate.of(1990, 1, 1));
+        dto.setMail("foo@example.com");
+        dto.setPhone("+34123456789");
+        dto.setGender(Gender.MASCULINO);
+
+        mockMvc.perform(post("/patients")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto))
+            )
+            .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void createPatient_Forbidden_AsPatient() throws Exception {
+        PatientDTO dto = new PatientDTO();
+        dto.setName("Test");
+        dto.setSurname("User");
+        dto.setBirthDate(LocalDate.of(1990, 1, 1));
+        dto.setMail("foo@example.com");
+        dto.setPhone("+34123456789");
+        dto.setGender(Gender.MASCULINO);
+
+        mockMvc.perform(post("/patients")
+                .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_PATIENT")))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto))
+            )
+            .andExpect(status().isForbidden());
+    }
+
     // -------------------
     // GET /patients
     // -------------------
@@ -185,6 +220,20 @@ public class PatientIntegrationTest {
                 .value("test@example.com"));
     }
 
+    @Test
+    void getAllPatients_Unauthorized_NoToken() throws Exception {
+        mockMvc.perform(get("/patients"))
+            .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void getAllPatients_Forbidden_AsPatient() throws Exception {
+        mockMvc.perform(get("/patients")
+                .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_PATIENT")))
+            )
+            .andExpect(status().isForbidden());
+    }
+
     // -------------------
     // GET /patients/{id}
     // -------------------
@@ -194,8 +243,7 @@ public class PatientIntegrationTest {
                 .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_AUXILIARY")))
             )
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.user.mail")
-                .value("test@example.com"))
+            .andExpect(jsonPath("$.user.mail").value("test@example.com"))
             .andExpect(jsonPath("$.active").value(true))
             .andExpect(jsonPath("$.user.name").value("Test"));
     }
@@ -204,6 +252,22 @@ public class PatientIntegrationTest {
     void getPatientById_Unauthorized_NoToken() throws Exception {
         mockMvc.perform(get("/patients/{id}", existingPatient.getUser().getIdUser()))
             .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void getPatientById_NotFound() throws Exception {
+        mockMvc.perform(get("/patients/{id}", 999999)
+                .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_AUXILIARY")))
+            )
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void getPatientById_Forbidden_AsPatient() throws Exception {
+        mockMvc.perform(get("/patients/{id}", existingPatient.getUser().getIdUser())
+                .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_PATIENT")))
+            )
+            .andExpect(status().isForbidden());
     }
 
     // -------------------
@@ -228,6 +292,41 @@ public class PatientIntegrationTest {
             .andExpect(jsonPath("$.user.name")
                 .value("Modificado"))
             .andExpect(jsonPath("$.active").value(true));
+    }
+
+    @Test
+    void updatePatient_Unauthorized_NoToken() throws Exception {
+        PatientDTO update = new PatientDTO();
+        update.setName("Modificado");
+        update.setSurname("User");
+        update.setBirthDate(LocalDate.of(1990, 1, 1));
+        update.setMail("test@example.com");
+        update.setPhone("+34123456789");
+        update.setGender(Gender.MASCULINO);
+
+        mockMvc.perform(put("/patients/{id}", existingPatient.getUser().getIdUser())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(update))
+            )
+            .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void updatePatient_Forbidden_AsPatient() throws Exception {
+        PatientDTO update = new PatientDTO();
+        update.setName("Modificado");
+        update.setSurname("User");
+        update.setBirthDate(LocalDate.of(1990, 1, 1));
+        update.setMail("test@example.com");
+        update.setPhone("+34123456789");
+        update.setGender(Gender.MASCULINO);
+
+        mockMvc.perform(put("/patients/{id}", existingPatient.getUser().getIdUser())
+                .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_PATIENT")))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(update))
+            )
+            .andExpect(status().isForbidden());
     }
 
     // -------------------
