@@ -110,8 +110,15 @@ public class PatientController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ROLE_NUTRITIONIST', 'ROLE_ADMIN', 'ROLE_AUXILIARY')")
-    public ResponseEntity<Patient> getPatientById(@PathVariable Long id) {
-        return ResponseEntity.ok(patientService.getPatientById(id));
+    public ResponseEntity<?> getPatientById(@PathVariable Long id) {
+        try {
+            Patient patient = patientService.getPatientById(id);
+            return ResponseEntity.ok(patient);
+        } catch (RuntimeException e) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 
     @GetMapping("/{id}/appointments/pending")
@@ -126,15 +133,9 @@ public class PatientController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ROLE_NUTRITIONIST', 'ROLE_ADMIN', 'ROLE_AUXILIARY')")
-    public ResponseEntity<?> createPatient(@RequestBody PatientDTO dto) {
-        try {
+    public ResponseEntity<Patient> createPatient(@RequestBody PatientDTO dto) {
             Patient patient = patientService.createPatient(dto);
             return ResponseEntity.ok(patient);
-        } catch (RuntimeException e) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", e.getMessage()));
-        }
     }
 
     @PutMapping("/{id}")

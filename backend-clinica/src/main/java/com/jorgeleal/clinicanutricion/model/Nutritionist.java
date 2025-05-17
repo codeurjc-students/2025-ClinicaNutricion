@@ -36,7 +36,7 @@ public class Nutritionist {
     @Column(name = "max_active_appointments", nullable = false)
     private int maxActiveAppointments;
 
-    @Column(name = "active", columnDefinition = "TINYINT(1)", nullable = false)
+    @Column(name = "active", nullable = false)
     private boolean active = true;
 
     public int getAppointmentDuration() {

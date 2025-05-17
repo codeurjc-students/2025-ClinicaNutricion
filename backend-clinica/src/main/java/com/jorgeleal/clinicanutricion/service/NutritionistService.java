@@ -6,12 +6,15 @@ import com.jorgeleal.clinicanutricion.repository.NutritionistRepository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.time.LocalTime;
 
 @Service
 public class NutritionistService {
+    private static final Logger logger = LoggerFactory.getLogger(NutritionistService.class);
 
     @Autowired
     private NutritionistRepository nutritionistRepository;
@@ -79,18 +82,23 @@ public class NutritionistService {
         return userDTO;
     }
     
-    
+    @Transactional
     public NutritionistDTO createNutritionist(NutritionistDTO dto) {
-        if (userService.mailExists(dto.getMail())) {
-            throw new RuntimeException("El correo electrónico ya está registrado.");
+        try {
+            if (userService.mailExists(dto.getMail())) {
+                throw new RuntimeException("El correo electrónico ya está registrado.");
+            }
+            Nutritionist nutritionist = convertToDomain(dto);
+            String idCognito = cognitoService.createCognitoUser(convertToUserDTO(dto));
+            nutritionist.setActive(true);
+            User user = nutritionist.getUser();
+            user.setCognitoId(idCognito);
+            nutritionist.setUser(userService.saveUser(user));
+            return convertToDTO(nutritionistRepository.save(nutritionist));
+        } catch (Exception e) {
+            logger.error("Error al crear el nutricionista: {}", e.getMessage());
+            throw new RuntimeException("Error al crear el nutricionista: " + e.getMessage());
         }
-        Nutritionist nutritionist = convertToDomain(dto);
-        String idCognito = cognitoService.createCognitoUser(convertToUserDTO(dto));
-        nutritionist.setActive(true);
-        User user = nutritionist.getUser();
-        user.setCognitoId(idCognito);
-        nutritionist.setUser(userService.saveUser(user));
-        return convertToDTO(nutritionistRepository.save(nutritionist));
     }
 
     public Nutritionist getNutritionistById(Long id) {
@@ -131,7 +139,7 @@ public class NutritionistService {
     
     public List<NutritionistDTO> getNutritionistsByFilters(String name, String surname, String fullName, String phone, String email, Boolean active) {
         List<Nutritionist> nutritionists;
-    
+
         if (fullName != null && !fullName.trim().isEmpty()) {
             nutritionists = nutritionistRepository.findByFullName(fullName);
         } else { 
