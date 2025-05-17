@@ -16,7 +16,7 @@ const MainPatientScreen = () => {
     auth.signoutRedirect({
       extraQueryParams: {
         client_id: auth.settings.client_id,
-        logout_uri: window.location.origin + "/",
+        logout_uri: window.location.origin + '/',
       },
     });
   };
@@ -28,10 +28,11 @@ const MainPatientScreen = () => {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         });
-        if (!response.ok) throw new Error("Error obteniendo el perfil del paciente");
+        if (!response.ok)
+          throw new Error('Error obteniendo el perfil del paciente');
         const data = await response.json();
         setPatient({
           idUser: data.id,
@@ -49,10 +50,18 @@ const MainPatientScreen = () => {
   return (
     <div className="main-patient-screen">
       <header className="header d-flex justify-content-between align-items-center">
-        <Link to="/patients/profile" className="profile-button" aria-label="Ir a mi perfil">
+        <Link
+          to="/patients/profile"
+          className="profile-button"
+          aria-label="Ir a mi perfil"
+        >
           <img src={profileLogo} alt="Perfil" />
         </Link>
-        <button className="logout-icon-button" onClick={handleLogout} aria-label="Cerrar sesión">
+        <button
+          className="logout-icon-button"
+          onClick={handleLogout}
+          aria-label="Cerrar sesión"
+        >
           <img src={logOutIcon} alt="Salir" />
         </button>
       </header>
@@ -61,7 +70,7 @@ const MainPatientScreen = () => {
         <div className="buttons-container row justify-content-center">
           {/*Pedir cita*/}
           <div className="col-12 col-md-6 mb-3 mx-md-auto">
-            <Link to="/patients/nutritionist-selection"state={{ patient }}>
+            <Link to="/patients/nutritionist-selection" state={{ patient }}>
               <button className="btn btn-primary w-100">Pedir cita</button>
             </Link>
           </div>
@@ -69,14 +78,18 @@ const MainPatientScreen = () => {
           {/*Citas pendientes*/}
           <div className="col-12 col-md-6 mb-3 mx-md-auto">
             <Link to="/patients/appointments/pending" state={{ patient }}>
-              <button className="btn btn-primary w-100">Citas pendientes</button>
+              <button className="btn btn-primary w-100">
+                Citas pendientes
+              </button>
             </Link>
           </div>
 
           {/*Historial de citas*/}
           <div className="col-12 col-md-6 mx-md-auto">
             <Link to="/patients/appointments/history" state={{ patient }}>
-              <button className="btn btn-primary w-100">Historial de citas</button>
+              <button className="btn btn-primary w-100">
+                Historial de citas
+              </button>
             </Link>
           </div>
         </div>

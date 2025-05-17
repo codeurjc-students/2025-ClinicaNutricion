@@ -12,7 +12,7 @@ const ProfileButton = () => {
           <Button
             variant="outline-success"
             className="rounded-circle"
-            onClick={() => navigate('/profile')} 
+            onClick={() => navigate('/profile')}
           >
             <i className="bi bi-person"></i>
           </Button>

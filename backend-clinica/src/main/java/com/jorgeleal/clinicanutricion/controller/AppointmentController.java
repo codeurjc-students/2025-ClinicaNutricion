@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/appointments")
@@ -22,11 +23,17 @@ public class AppointmentController {
     @Autowired
     private AppointmentService appointmentService;
  
-    @GetMapping("/{id}")
-    public ResponseEntity<AppointmentDTO> getAppointmentById(@PathVariable String id) {
-        AppointmentDTO appointment = appointmentService.getAppointmentById(id);
-        return ResponseEntity.ok(appointment);
-    }    
+@GetMapping("/{id}")
+    public ResponseEntity<?> getAppointmentById(@PathVariable String id) {
+        try {
+            AppointmentDTO appointment = appointmentService.getAppointmentById(id);
+            return ResponseEntity.ok(appointment);
+        } catch (RuntimeException e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
 
     @GetMapping("/nutritionist/{idNutritionist}")
     public ResponseEntity<List<AppointmentDTO>> getAppointmentsByNutritionist(@PathVariable Long idNutritionist) {
@@ -41,27 +48,47 @@ public class AppointmentController {
     }
     
     @PostMapping
-    public ResponseEntity<AppointmentDTO> createAppointment(@RequestBody AppointmentDTO appointmentDTO) {
+    public ResponseEntity<?> createAppointment(@RequestBody AppointmentDTO appointmentDTO) {
         Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
     
         List<String> allowedRoles = List.of("ROLE_ADMIN", "ROLE_NUTRITIONIST", "ROLE_AUXILIARY", "ROLE_PATIENT");
 
         if (authorities.stream().map(GrantedAuthority::getAuthority).noneMatch(allowedRoles::contains)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return ResponseEntity.ok(appointmentService.createAppointment(appointmentDTO));
+        try {
+            AppointmentDTO created = appointmentService.createAppointment(appointmentDTO);
+            return ResponseEntity.ok(created);
+        } catch (RuntimeException e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ROLE_AUXILIARY', 'ROLE_NUTRITIONIST', 'ROLE_ADMIN')")
-    public ResponseEntity<Appointment> updateAppointment(@PathVariable String id, @RequestBody AppointmentDTO appointmentDTO) {
-        return ResponseEntity.ok(appointmentService.updateAppointment(id, appointmentDTO));
+    public ResponseEntity<?> updateAppointment(@PathVariable String id, @RequestBody AppointmentDTO appointmentDTO) {
+        try {
+            Appointment updated = appointmentService.updateAppointment(id, appointmentDTO);
+            return ResponseEntity.ok(updated);
+        } catch (RuntimeException e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAppointment(@PathVariable String id) {
-        appointmentService.deleteAppointment(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> deleteAppointment(@PathVariable String id) {
+        try{
+            appointmentService.deleteAppointment(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 }

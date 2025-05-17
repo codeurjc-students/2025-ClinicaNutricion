@@ -1,90 +1,89 @@
 .rbc-header {
-    color: white;
-    font-size: 14px !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 36px !important;
-    background: #17405d;
-  }
-  
-  .rbc-allday-cell {
-    display: none;
-  }
-  
-  .rbc-time-header-cell .rbc-today {
-    background-color: #04aa6d !important;
-  }
-  
-  .rbc-time-slot {
-    color: #74a4c3;
-    z-index: 1;
-    min-height: var(--calendar-slot-height) !important;
-    font-size: var(--calendar-font-size) !important;
-  }
+  color: #fff;
+  font-size: 14px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px !important;
+  background: #17405d;
+}
 
-  .rbc-time-slot:not(.rbc-today .rbc-time-slot) {
-    background-color: #eff4f7;
-  }
-  
-  /*Event Styles*/
-  .rbc-event,
-  .rbc-background-event {
-    z-index: 2;
-    padding: 0px !important;
-    border: none !important;
-    width: 100% !important;
-    min-width: 100% !important;
-    max-width: 100% !important;
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-  }
-  
-  .rbc-event-label {
-    display: none !important;
-  }
-  
-  .rbc-events-container {
-    width: 100% !important;
-  }
-  
-  /*Timeslots Customization*/
-  .rbc-day-slot .rbc-time-slot:after {
-    content: "";
-    border-top: 1px solid #fbb3ec;
-    display: block;
-  }
+.rbc-allday-cell {
+  display: none;
+}
 
-  .rbc-event {
-    min-height: 5px;
-    width: 100% !important;
-    left: 0% !important;
-  }
-  
-  .navigation-container {
-    display: flex;
-    align-items: center;
-    background-color: transparent;
-    color: rgb(46, 69, 17);
-    border-radius: 8px;
-    padding: 5px 15px; /* Más padding para mayor separación */
-    gap: 10px; /* Añade espacio entre las flechas y la fecha */
+.rbc-time-header-cell .rbc-today {
+  background-color: #04aa6d !important;
+}
+
+.rbc-time-slot {
+  color: #74a4c3;
+  z-index: 1;
+  min-height: var(--calendar-slot-height) !important;
+  font-size: var(--calendar-font-size) !important;
+}
+
+.rbc-time-slot:not(.rbc-today .rbc-time-slot) {
+  background-color: #eff4f7;
+}
+
+.rbc-event,
+.rbc-background-event {
+  z-index: 2;
+  padding: 0 !important;
+  border: none !important;
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.rbc-event-label {
+  display: none !important;
+}
+
+.rbc-events-container {
+  width: 100% !important;
+}
+
+/* Timeslots */
+.rbc-day-slot .rbc-time-slot::after {
+  content: '';
+  border-top: 1px solid #fbb3ec;
+  display: block;
+}
+
+.rbc-event {
+  min-height: 5px;
+  width: 100% !important;
+  left: 0% !important;
+}
+
+.navigation-container {
+  display: flex;
+  align-items: center;
+  background-color: transparent;
+  color: rgb(46 69 17);
+  border-radius: 8px;
+  padding: 5px 15px;
+  gap: 10px;
 }
 
 .nav-button {
-    background-color: transparent;
-    border: none;
-    color: white;
-    font-size: 18px;
-    padding: 5px 12px; /* Más padding horizontal */
-    margin: 0 5px; /* Espacio adicional entre flechas y fecha */
+  background-color: transparent;
+  border: none;
+  color: #fff;
+  font-size: 18px;
+  padding: 5px 12px;
+  margin: 0 5px;
 }
 
 .navigation-container .date-display {
-    font-weight: bold;
-    margin: 0 8px; /* Espaciado adecuado entre la fecha y los botones */
+  font-weight: bold;
+  margin: 0 8px;
 }
 
 .zoom-container {
@@ -118,8 +117,8 @@
 }
 
 .blockout-event {
-  background-color: #c7c4c4 !important; 
-  color: white;
+  background-color: #c7c4c4 !important;
+  color: #fff;
   width: 100%;
   height: 100%;
   display: flex;
@@ -128,32 +127,31 @@
   text-align: center;
   padding: 0;
   border-radius: 5px;
-  border: 1.5px solid rgb(62, 62, 62);
+  border: 1.5px solid rgb(62 62 62);
   box-sizing: border-box;
 }
 
 .appointment-event {
   background-color: #4caf50 !important;
-  color: white;
+  color: #fff;
   width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 0;
-  border-radius: 5px;
   padding: 5px;
-  border: 1.5px solid rgb(35, 69, 40);
+  border-radius: 5px;
+  border: 1.5px solid rgb(35 69 40);
   box-sizing: border-box;
 }
 
 .custom-day-header {
   background-color: #17405d;
-  color: white;
+  color: #fff;
   font-size: 18px;
   font-weight: bold;
   text-align: center;
   padding: 8px;
-  margin-top: 10px; 
+  margin-top: 10px;
 }

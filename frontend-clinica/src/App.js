@@ -1,22 +1,18 @@
-import React from "react";
-import { useAuth } from "react-oidc-context";
-import AppRoutes from "./routes";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "./styles/global.css";
-import logo from "./assets/sidebar/LogoClinicaPrincipal.png";
-import "./styles/pages/Login.css";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import React from 'react';
+import { useAuth } from 'react-oidc-context';
+import AppRoutes from './routes';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './styles/global.css';
+import logo from './assets/sidebar/LogoClinicaPrincipal.png';
+import './styles/pages/Login.css';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const App = () => {
   const auth = useAuth();
-  const {client_id, redirect_uri, response_type, scope} = auth.settings;
+  const { client_id, redirect_uri, response_type, scope } = auth.settings;
   const handleRegister = () => {
     const base = process.env.REACT_APP_COGNITO_REGISTER_BASE_URL;
-    if (!base) {
-      alert("Falta configurar REACT_APP_COGNITO_REGISTER_BASE_URL en .env");
-      return;
-    }
     const signupUrl =
       `${base}` +
       `?client_id=${encodeURIComponent(client_id)}` +
@@ -34,12 +30,15 @@ const App = () => {
 
         <button
           className="btn btn-success login-btn"
-          onClick={() => auth.signinRedirect()}>
+          onClick={() => auth.signinRedirect()}
+        >
           Iniciar Sesión
         </button>
 
-        <button className="btn btn-outline-primary register-btn"
-          onClick={handleRegister}>
+        <button
+          className="btn btn-outline-primary register-btn"
+          onClick={handleRegister}
+        >
           Registrarse
         </button>
       </div>

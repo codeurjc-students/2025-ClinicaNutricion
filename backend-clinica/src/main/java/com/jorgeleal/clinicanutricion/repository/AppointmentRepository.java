@@ -62,4 +62,9 @@ public interface AppointmentRepository extends JpaRepository<Appointment, String
     @Transactional
     @Query("DELETE FROM Appointment a WHERE a.nutritionist.idUser = :nutritionistId")
     void deleteByNutritionistIdUser(@Param("nutritionistId") Long nutritionistId);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Appointment a WHERE a.patient.idUser = :patientId")
+    void deleteByPatientIdUser(@Param("patientId") Long patientId);
 }

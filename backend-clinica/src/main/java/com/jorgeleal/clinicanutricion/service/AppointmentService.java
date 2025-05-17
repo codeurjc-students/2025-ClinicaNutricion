@@ -29,6 +29,9 @@ public class AppointmentService {
     @Autowired
     private PatientService patientService;
 
+    @Autowired
+    private EmailService emailService;
+
     private AppointmentDTO convertToDTO(Appointment appointment) {
         AppointmentDTO dto = new AppointmentDTO();
         dto.setIdAppointment(appointment.getIdAppointment());
@@ -84,7 +87,22 @@ public class AppointmentService {
         }
 
         Appointment appointment = convertToDomain(dto);
-        return convertToDTO(appointmentRepository.save(appointment));
+        Appointment saved = appointmentRepository.save(appointment);
+        AppointmentDTO result  = convertToDTO(saved);
+        Patient patient  =patientService.getPatientById(dto.getIdPatient());
+
+        if(dto.getType() == AppointmentType.APPOINTMENT) {
+            emailService.sendAppointmentConfirmation(
+                patient.getUser().getMail(),
+                patient.getUser().getName(),
+                saved.getDate(),
+                saved.getStartTime(),
+                result.getNutritionist().getName(),
+                result.getNutritionist().getSurname()
+            );
+        }
+
+        return result;
     }
     
 
@@ -176,6 +194,11 @@ public class AppointmentService {
     @Transactional
     public void deleteAppointmentsByNutritionist(Long nutritionistId) {
         appointmentRepository.deleteByNutritionistIdUser(nutritionistId);
+    }
+
+    @Transactional
+    public void deleteAppointmentsByPatient(Long patientId) {
+        appointmentRepository.deleteByPatientIdUser(patientId);
     }
 
     public List<String> getAvailableSlots(Long nutritionistId, String timeRange, LocalDate selectedDate) {

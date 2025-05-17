@@ -84,6 +84,7 @@ public class AuxiliaryService {
         return auxiliary;
     }
 
+    @Transactional
     public Auxiliary createAuxiliary(AuxiliaryDTO dto) {
         if (userService.mailExists(dto.getMail())) {
             throw new RuntimeException("El correo electrónico ya está registrado.");
@@ -96,6 +97,7 @@ public class AuxiliaryService {
         return auxiliaryRepository.save(auxiliary);
     }
 
+    @Transactional
     public Auxiliary updateAuxiliary(Long id, AuxiliaryDTO dto) {
         Auxiliary existingAuxiliary = auxiliaryRepository.findByUserIdUser(id).orElse(null);
         if (existingAuxiliary == null) {

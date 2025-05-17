@@ -23,14 +23,17 @@ const AppointmentConfirmation = () => {
           `${BASE_URL}/patients/${patient.idUser}/appointments/pending`,
           {
             headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
-          }
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          },
         );
-        if (!response.ok) throw new Error('No se pudieron cargar las citas pendientes');
+        if (!response.ok)
+          throw new Error('No se pudieron cargar las citas pendientes');
         const data = await response.json();
-        const count = data.filter(a => a.idNutritionist === nutritionist.idUser).length;
+        const count = data.filter(
+          (a) => a.idNutritionist === nutritionist.idUser,
+        ).length;
         setPendingCount(count);
       } catch (error) {
         console.error(error);
@@ -44,15 +47,17 @@ const AppointmentConfirmation = () => {
     if (!selectedTime || !selectedDate || !patient) return;
 
     const start = new Date(`${selectedDate}T${selectedTime}:00`);
-    const end = new Date(start.getTime() + nutritionist.appointmentDuration * 60000);
+    const end = new Date(
+      start.getTime() + nutritionist.appointmentDuration * 60000,
+    );
 
     const newAppointment = {
       idNutritionist: nutritionist.idUser,
       idPatient: patient.idUser,
-      date: moment(start).format("YYYY-MM-DD"),
-      startTime: moment(start).format("HH:mm"),
-      endTime: moment(end).format("HH:mm"),
-      type: "APPOINTMENT",
+      date: moment(start).format('YYYY-MM-DD'),
+      startTime: moment(start).format('HH:mm'),
+      endTime: moment(end).format('HH:mm'),
+      type: 'APPOINTMENT',
     };
 
     setLoading(true);
@@ -61,7 +66,7 @@ const AppointmentConfirmation = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(newAppointment),
       });
@@ -82,8 +87,8 @@ const AppointmentConfirmation = () => {
     }
   };
 
-  const reachedMax = pendingCount !== null
-    && pendingCount >= nutritionist.maxActiveAppointments;
+  const reachedMax =
+    pendingCount !== null && pendingCount >= nutritionist.maxActiveAppointments;
 
   return (
     <div className="appointment-confirmation">
@@ -93,21 +98,32 @@ const AppointmentConfirmation = () => {
       <div className="content-wrapper">
         <h2>Confirmar cita</h2>
         <div>
-          <p><strong>Paciente:</strong> {patient ? `${patient.name} ${patient.surname}` : 'No seleccionado'}</p>
-          <p><strong>Nutricionista:</strong> {nutritionist ? `${nutritionist.name} ${nutritionist.surname}` : 'No seleccionado'}</p>
-          <p><strong>Fecha:</strong> {selectedDate ? moment(selectedDate).format('YYYY-MM-DD') : 'No seleccionada'}</p>
-          <p><strong>Hora:</strong> {selectedTime || 'No seleccionada'}</p>
+          <p>
+            <strong>Paciente:</strong>{' '}
+            {patient ? `${patient.name} ${patient.surname}` : 'No seleccionado'}
+          </p>
+          <p>
+            <strong>Nutricionista:</strong>{' '}
+            {nutritionist
+              ? `${nutritionist.name} ${nutritionist.surname}`
+              : 'No seleccionado'}
+          </p>
+          <p>
+            <strong>Fecha:</strong>{' '}
+            {selectedDate
+              ? moment(selectedDate).format('YYYY-MM-DD')
+              : 'No seleccionada'}
+          </p>
+          <p>
+            <strong>Hora:</strong> {selectedTime || 'No seleccionada'}
+          </p>
         </div>
 
         <button
           className="btn-confirm"
           onClick={createAppointment}
           disabled={
-            loading ||
-            !selectedDate ||
-            !selectedTime ||
-            !patient ||
-            reachedMax
+            loading || !selectedDate || !selectedTime || !patient || reachedMax
           }
         >
           {loading ? 'Creando cita...' : 'Continuar'}
@@ -115,8 +131,10 @@ const AppointmentConfirmation = () => {
 
         {reachedMax && (
           <p className="error-text">
-            Actualmente tienes {pendingCount} citas pendientes con este nutricionista,
-            que es el número máximo permitido. Para poder volver a pedir una cita con {nutritionist.name} {nutritionist.surname}, por favor espera a que alguna concluya.
+            Actualmente tienes {pendingCount} citas pendientes con este
+            nutricionista, que es el número máximo permitido. Para poder volver
+            a pedir una cita con {nutritionist.name} {nutritionist.surname}, por
+            favor espera a que alguna concluya.
           </p>
         )}
       </div>

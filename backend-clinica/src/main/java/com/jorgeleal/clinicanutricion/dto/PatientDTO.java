@@ -24,7 +24,6 @@ public class PatientDTO {
     
     @NotNull
     @Past(message = "La fecha de nacimiento debe ser una fecha pasada.")
-    @Min(value = 1900, message = "El año de nacimiento no puede ser menor a 1900.")
     private LocalDate birthDate;
     
     @NotNull

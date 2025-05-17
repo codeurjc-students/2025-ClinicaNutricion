@@ -1,4 +1,3 @@
-/*Contenedor principal*/
 .main-patient-screen {
   flex: 1;
   width: 100%;
@@ -14,7 +13,6 @@
   box-sizing: border-box;
 }
 
-/*Header*/
 .header {
   width: 100%;
   position: absolute;
@@ -25,7 +23,6 @@
   justify-content: flex-start;
 }
 
-/*Wrapper que centra y limita ancho*/
 .content-wrapper {
   width: 100%;
   max-width: 480px;
@@ -36,7 +33,6 @@
   box-sizing: border-box;
 }
 
-/*Profile button*/
 .profile-button {
   background: none;
   border: none;
@@ -62,12 +58,11 @@
 }
 
 .logout-icon-button img {
-  width: 45x;
+  width: 45px;
   height: 45px;
   transition: opacity 0.3s ease;
 }
 
-/*Botones principales*/
 .buttons-container {
   display: flex;
   flex-wrap: wrap;
@@ -76,7 +71,7 @@
   width: 100%;
 }
 
-@media (min-width: 768px) {
+@media (width >= 768px) {
   .buttons-container .col-md-6 {
     flex: 0 0 48%;
   }
@@ -93,16 +88,18 @@
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
+
 .buttons-container .btn-primary {
   background-color: #5bb28a;
   justify-content: center;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .content-wrapper {
     max-width: 90vw;
     padding: 0 5vw;
   }
+
   .buttons-container .btn {
     font-size: 16px;
     padding: 12px;
