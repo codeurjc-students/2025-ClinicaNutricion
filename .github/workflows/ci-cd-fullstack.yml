@@ -103,10 +103,13 @@ jobs:
       - name: Upload and register new EB version
         working-directory: backend-clinica
         run: |
-          aws s3 cp target/clinicanutricion-0.0.1-SNAPSHOT.jar s3://${{ secrets.EB_S3_BUCKET }}/clinicanutricion-0.0.1-SNAPSHOT.jar
+          VERSION_LABEL="v-${{ github.run_number }}-${{ github.sha }}"
+          echo "Usando version-label: $VERSION_LABEL"
+          aws s3 cp target/clinicanutricion-0.0.1-SNAPSHOT.jar \
+            s3://${{ secrets.EB_S3_BUCKET }}/clinicanutricion-0.0.1-SNAPSHOT.jar
           aws elasticbeanstalk create-application-version \
             --application-name ${{ secrets.EB_APPLICATION_NAME }} \
-            --version-label "v-${{ github.run_number }}" \
+            --version-label "$VERSION_LABEL" \
             --source-bundle S3Bucket="${{ secrets.EB_S3_BUCKET }}",S3Key="clinicanutricion-0.0.1-SNAPSHOT.jar"
 
       - name: Update EB environment
