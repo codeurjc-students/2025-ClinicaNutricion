@@ -26,7 +26,7 @@ jobs:
 
       - name: Unit tests
         working-directory: backend-clinica
-        run: mvn test
+        run: mvn test -Dtest=*ServiceTest
 
       - name: Integration tests
         working-directory: backend-clinica

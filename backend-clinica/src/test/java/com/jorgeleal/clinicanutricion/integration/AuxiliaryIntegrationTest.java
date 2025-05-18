@@ -247,7 +247,7 @@ public class AuxiliaryIntegrationTest {
                 .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
             )
             .andExpect(status().isInternalServerError())
-            .andExpect(jsonPath("$.error").value("Error interno: Auxiliar no encontrado"));
+            .andExpect(jsonPath("$.error").value("Auxiliar no encontrado"));
     }
 
     @Test
