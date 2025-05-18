@@ -112,7 +112,7 @@ class NutritionistServiceTest {
         when(userService.mailExists(dto.getMail())).thenReturn(true);
         RuntimeException ex = assertThrows(RuntimeException.class,
             () -> service.createNutritionist(dto));
-        assertEquals("El correo electrónico ya está registrado.", ex.getMessage());
+        assertEquals("Error al crear el nutricionista: El correo electrónico ya está registrado.", ex.getMessage());
         verify(cognitoService, never()).createCognitoUser(any());
         verify(nutritionistRepository, never()).save(any());
     }
