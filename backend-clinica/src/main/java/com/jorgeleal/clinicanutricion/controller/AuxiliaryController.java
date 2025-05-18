@@ -109,8 +109,12 @@ public class AuxiliaryController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Auxiliary> getAuxiliaryById(@PathVariable Long id) {
+    public ResponseEntity<?> getAuxiliaryById(@PathVariable Long id) {
+        try {
         return ResponseEntity.ok(auxiliaryService.getAuxiliaryById(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
+        }
     }
 
     @PostMapping

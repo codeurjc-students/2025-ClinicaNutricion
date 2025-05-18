@@ -335,7 +335,9 @@ public class NutritionistIntegrationTest {
     // -------------------
     @Test
     void getNutritionistById_Success() throws Exception {
-        mockMvc.perform(get("/nutritionists/{id}", existingUser.getIdUser()))
+        mockMvc.perform(get("/nutritionists/{id}", existingUser.getIdUser())
+                .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_PATIENT")))
+            )
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.user.mail").value("ana@example.com"));
     }
