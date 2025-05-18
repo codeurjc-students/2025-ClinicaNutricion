@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -112,10 +114,10 @@ class PatientServiceTest {
     }
 
     @Test
-    void getPatientById_whenNotExists_returnsNull() {
+    void getPatientById_whenNotExists_throwsException() {
         when(patientRepository.findByUserIdUser(1L)).thenReturn(Optional.empty());
-
-        assertNull(service.getPatientById(1L));
+        RuntimeException ex = assertThrows(RuntimeException.class,() -> service.getPatientById(1L));
+        assertEquals("Paciente no encontrado", ex.getMessage());
     }
 
     @Test
