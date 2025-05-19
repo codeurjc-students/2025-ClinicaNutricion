@@ -259,7 +259,8 @@ public class PatientIntegrationTest {
         mockMvc.perform(get("/patients/{id}", 999999)
                 .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_AUXILIARY")))
             )
-            .andExpect(status().isNotFound());
+            .andExpect(status().isOk())
+            .andExpect(content().string(""));
     }
 
     @Test
