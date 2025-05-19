@@ -1,6 +1,5 @@
 package com.jorgeleal.clinicanutricion.dto; 
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jorgeleal.clinicanutricion.model.Gender; 
 import jakarta.validation.constraints.*; 
 import lombok.Getter; 
@@ -50,11 +49,9 @@ public class NutritionistDTO {
     private int maxActiveAppointments;
 
     @NotNull(message = "Debes introducir la hora de inicio.")
-    @JsonFormat(pattern = "HH:mm")
     private LocalTime startTime;
 
     @NotNull(message = "Debes introducir la hora de fin.")
-    @JsonFormat(pattern = "HH:mm")
     private LocalTime endTime;
 
     @SuppressWarnings("PMD.UnusedPrivateMethod") // PMD no detecta métodos invocados por anotaciones
