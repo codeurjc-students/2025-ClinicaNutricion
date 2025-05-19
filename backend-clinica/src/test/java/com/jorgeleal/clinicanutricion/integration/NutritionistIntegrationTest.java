@@ -347,8 +347,7 @@ public class NutritionistIntegrationTest {
         mockMvc.perform(get("/nutritionists/{id}", 999999)
                 .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_PATIENT")))
             )
-            .andExpect(status().isOk())
-            .andExpect(content().string(""));
+            .andExpect(status().isNotFound());
     }
 
     @Test
