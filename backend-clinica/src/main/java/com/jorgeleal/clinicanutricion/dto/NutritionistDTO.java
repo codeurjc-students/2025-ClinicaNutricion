@@ -57,6 +57,7 @@ public class NutritionistDTO {
     @JsonFormat(pattern = "HH:mm")
     private LocalTime endTime;
 
+    @SuppressWarnings("PMD.UnusedPrivateMethod") // PMD no detecta métodos invocados por anotaciones
     @AssertTrue(message = "La hora de inicio y fin deben estar entre 09:00 - 20:00 y la hora de fin debe ser mayor a la de inicio.")
     private boolean isTimeWindowValid() {
         if (startTime == null || endTime == null) {
