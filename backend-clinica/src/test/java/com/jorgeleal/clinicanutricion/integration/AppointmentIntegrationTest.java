@@ -24,6 +24,8 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -125,7 +127,6 @@ public class AppointmentIntegrationTest {
             .andExpect(jsonPath("$.error").value("Cita no encontrada"));
     }
 
-
     @Test
     void getAppointmentById_Success() throws Exception {
         // Primero creamos directamente una cita en la BD
@@ -143,6 +144,22 @@ public class AppointmentIntegrationTest {
             .andExpect(jsonPath("$.idAppointment").value(appointment.getIdAppointment()))
             .andExpect(jsonPath("$.idNutritionist").value(nutritionistUser.getIdUser()))
             .andExpect(jsonPath("$.idPatient").value(patientUser.getIdUser()));
+    }
+
+    @Test
+    void getBlockoutById_Success() throws Exception {
+        Appointment blockout = new Appointment();
+        blockout.setNutritionist(nutritionist);
+        blockout.setDate(LocalDate.of(2025, 6, 3));
+        blockout.setStartTime(LocalTime.of(13, 0));
+        blockout.setEndTime(LocalTime.of(14, 0));
+        blockout.setType(AppointmentType.BLOCKOUT);
+        blockout = appointmentRepository.save(blockout);
+
+        mockMvc.perform(get("/appointments/{id}", blockout.getIdAppointment()))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.type").value("BLOCKOUT"))
+            .andExpect(jsonPath("$.idPatient").doesNotExist());
     }
 
     // ----------------------------------------
@@ -187,6 +204,26 @@ public class AppointmentIntegrationTest {
     // ----------------------------------------
     // POST /appointments
     // ----------------------------------------
+
+    @Test
+    void createBlockout_Success_NoEmail() throws Exception {
+        AppointmentDTO dto = new AppointmentDTO();
+        dto.setIdNutritionist(nutritionistUser.getIdUser());
+        dto.setDate(LocalDate.of(2025, 6, 4));
+        dto.setStartTime(LocalTime.of(14, 0));
+        dto.setEndTime(LocalTime.of(14, 30));
+        dto.setType(AppointmentType.BLOCKOUT);
+
+        mockMvc.perform(post("/appointments")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto))
+                .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_AUXILIARY"))))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.type").value("BLOCKOUT"))
+            .andExpect(jsonPath("$.idPatient").doesNotExist());
+
+        verify(emailService, never()).sendAppointmentConfirmation(any(), any(), any(), any(), any(), any());
+    }
 
     @Test
     void createAppointment_UnauthorizedWithoutRole() throws Exception {
@@ -411,5 +448,20 @@ public class AppointmentIntegrationTest {
                 .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_NUTRITIONIST")))
             )
             .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    void deleteBlockout_Success() throws Exception {
+        Appointment toDelete = appointmentRepository.save(new Appointment(
+            null, nutritionist, null,
+            LocalDate.of(2025,5,27), LocalTime.of(8,0), LocalTime.of(8,30), AppointmentType.BLOCKOUT
+        ));
+
+        mockMvc.perform(delete("/appointments/{id}", toDelete.getIdAppointment())
+                .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
+            )
+            .andExpect(status().isNoContent());
+
+        assertThat(appointmentRepository.existsById(toDelete.getIdAppointment())).isFalse();
     }
 }

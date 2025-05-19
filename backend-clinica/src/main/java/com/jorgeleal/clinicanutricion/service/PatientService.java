@@ -98,7 +98,7 @@ public class PatientService {
     }
 
     public Patient getPatientById(Long id) {
-        return patientRepository.findByUserIdUser(id).orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
+        return patientRepository.findByUserIdUser(id).orElse(null);
     }
 
     public Patient updatePatient(Long id, PatientDTO dto) {

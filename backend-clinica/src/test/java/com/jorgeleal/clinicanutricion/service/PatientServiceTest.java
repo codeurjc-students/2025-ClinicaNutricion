@@ -120,13 +120,15 @@ class PatientServiceTest {
     }
 
     @Test
-    void getPatientById_whenNotExists_throwsException() {
+    void getPatientById_whenNotExists_returnsNull() {
         // Arrange
         when(patientRepository.findByUserIdUser(1L)).thenReturn(Optional.empty());
 
-        // Act and Assert
-        RuntimeException ex = assertThrows(RuntimeException.class,() -> service.getPatientById(1L));
-        assertEquals("Paciente no encontrado", ex.getMessage());
+        // Act
+        Patient result = service.getPatientById(1L);
+
+        // Assert
+        assertNull(result, "Se esperaba null cuando el paciente no existe");
     }
 
     @Test

@@ -91,7 +91,7 @@ public class AdminAuxiliaryIntegrationTest {
     // ------------------------------------------------
 
     @Test
-    void getProfile_BadRequest_NoSub() throws Exception {
+    void getProfileAdmin_BadRequest_NoSub() throws Exception {
         mockMvc.perform(get("/admin/profile")
                 .with(jwt()
                     .jwt(j -> j.claim("sub", "")) // Sub vacío
@@ -103,7 +103,7 @@ public class AdminAuxiliaryIntegrationTest {
     }
 
     @Test
-    void getProfile_NotFound_UserDoesNotExist() throws Exception {
+    void getProfileAdmin_NotFound_UserDoesNotExist() throws Exception {
         adminAuxRepository.deleteAll();
         userRepository.deleteAll();
 
@@ -118,7 +118,7 @@ public class AdminAuxiliaryIntegrationTest {
     }
 
     @Test
-    void getProfile_Success_AsAdmin() throws Exception {
+    void getProfileAdmin_Success_AsAdmin() throws Exception {
         mockMvc.perform(get("/admin/profile")
                 .with(jwt()
                     .jwt(j -> j.claim("sub", "cognito-admin"))
@@ -133,7 +133,7 @@ public class AdminAuxiliaryIntegrationTest {
     }
 
     @Test
-    void getProfile_Forbidden_WithoutAdminRole() throws Exception {
+    void getProfileAdmin_Forbidden_WithoutAdminRole() throws Exception {
         mockMvc.perform(get("/admin/profile")
                 .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_PATIENT")))
             )
@@ -141,7 +141,7 @@ public class AdminAuxiliaryIntegrationTest {
     }
 
     @Test
-    void getProfile_Unauthorized_NoToken() throws Exception {
+    void getProfileAdmin_Unauthorized_NoToken() throws Exception {
         mockMvc.perform(get("/admin/profile"))
             .andExpect(status().isUnauthorized());
     }
@@ -151,7 +151,7 @@ public class AdminAuxiliaryIntegrationTest {
     // ------------------------------------------------
 
     @Test
-    void updateProfile_BadRequest_NoSub() throws Exception {
+    void updateProfileAdmin_BadRequest_NoSub() throws Exception {
         var updates = Map.of(
             "name", "Nuevo",
             "surname", "Admin",
@@ -174,7 +174,7 @@ public class AdminAuxiliaryIntegrationTest {
     }
 
     @Test
-    void updateProfile_InternalServerError_AdminAuxNotFound() throws Exception {
+    void updateProfileAdmin_InternalServerError_AdminAuxNotFound() throws Exception {
         adminAuxRepository.deleteAll();
         var updates = Map.of(
             "name", "Nuevo",
@@ -198,7 +198,7 @@ public class AdminAuxiliaryIntegrationTest {
     }
 
     @Test
-    void updateProfile_Success_AsAdmin() throws Exception {
+    void updateProfileAdmin_Success_AsAdmin() throws Exception {
         var updates = Map.of(
             "name","NuevoAdmin",
             "surname","Actualizado",
@@ -225,7 +225,7 @@ public class AdminAuxiliaryIntegrationTest {
     }
 
     @Test
-    void updateProfile_Forbidden_WithoutAdminRole() throws Exception {
+    void updateProfileAdmin_Forbidden_WithoutAdminRole() throws Exception {
         var updates = Map.of(
             "name","Otro",
             "surname","User",
