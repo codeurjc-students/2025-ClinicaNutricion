@@ -31,8 +31,10 @@ class AuxiliaryServiceTest {
 
     @Mock
     private AuxiliaryRepository auxiliaryRepository;
+
     @Mock
     private UserService userService;
+
     @Mock
     private CognitoService cognitoService;
 
@@ -42,6 +44,7 @@ class AuxiliaryServiceTest {
 
     @BeforeEach
     void setUp() {
+        // Se inicializa el DTO de prueba
         dto = new AuxiliaryDTO();
         dto.setIdUser(1L);
         dto.setName("Laura");
@@ -51,6 +54,7 @@ class AuxiliaryServiceTest {
         dto.setPhone("+34626457823");
         dto.setGender(Gender.FEMENINO);
 
+        // Se inicializa la entidad auxiliar y el usuario asociado
         user = new User();
         user.setIdUser(1L);
         user.setName(dto.getName());
@@ -67,14 +71,14 @@ class AuxiliaryServiceTest {
 
     @Test
     void getAuxiliariesByFilters_whenFound_returnsDtoList() {
-        //Arrange
+        // Arrange
         when(auxiliaryRepository.findByUserFilters("Laura", "Martínez", dto.getPhone(), dto.getMail()))
             .thenReturn(List.of(auxiliary));
 
-        //Act
+        // Act
         List<AuxiliaryDTO> list = service.getAuxiliariesByFilters("Laura", "Martínez", dto.getPhone(), dto.getMail());
 
-        //Assert
+        // Assert
         assertEquals(1, list.size());
         AuxiliaryDTO result = list.get(0);
         assertEquals(dto.getIdUser(), result.getIdUser());
@@ -84,11 +88,11 @@ class AuxiliaryServiceTest {
 
     @Test
     void getAuxiliariesByFilters_whenEmpty_throwsRuntimeException() {
-        //Arrange
+        // Arrange
         when(auxiliaryRepository.findByUserFilters(any(), any(), any(), any()))
             .thenReturn(List.of());
 
-        //Act y Assert
+        // Act and Assert
         RuntimeException ex = assertThrows(RuntimeException.class,
             () -> service.getAuxiliariesByFilters("x", "y", "z", "w"));
         assertEquals("No se encontraron auxiliares", ex.getMessage());
@@ -96,22 +100,24 @@ class AuxiliaryServiceTest {
 
     @Test
     void getAuxiliaryById_whenExists_returnsAuxiliary() {
-        //Arrange
+        // Arrange
         when(auxiliaryRepository.findByUserIdUser(1L))
             .thenReturn(Optional.of(auxiliary));
 
-        //Act
+        // Act
         Auxiliary found = service.getAuxiliaryById(1L);
 
-        //Assert
+        // Assert
         assertSame(auxiliary, found);
     }
 
     @Test
     void getAuxiliaryById_whenNotFound_throwsRuntimeException() {
+        // Arrange
         when(auxiliaryRepository.findByUserIdUser(2L))
             .thenReturn(Optional.empty());
 
+        // Act and Assert
         RuntimeException ex = assertThrows(RuntimeException.class,
             () -> service.getAuxiliaryById(2L));
         assertEquals("Auxiliar no encontrado", ex.getMessage());
@@ -119,38 +125,35 @@ class AuxiliaryServiceTest {
 
     @Test
     void createAuxiliary_whenEmailUnique_savesAndReturnsAuxiliary() {
-        //Arrange
+        // Arrange
         when(userService.mailExists(dto.getMail())).thenReturn(false);
-        //Stub de la creación de un nuevo usuario en Cognito
-        when(cognitoService.createCognitoUser(any(UserDTO.class))).thenReturn("cog-123");
-        //Stub que asigna el id de Cognito al usuario
+        when(cognitoService.createCognitoUser(any(UserDTO.class))).thenReturn("cognito-123");
         when(userService.saveUser(any(User.class))).thenAnswer(invocation -> {
-            User u = invocation.getArgument(0);
-            u.setCognitoId("cog-123");
-            return u;
+            User user = invocation.getArgument(0);
+            user.setCognitoId("cognito-123");
+            return user;
         });
-        //Stub que simula la creación del auxiliar
         when(auxiliaryRepository.save(any(Auxiliary.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        //Act
+        // Act
         Auxiliary created = service.createAuxiliary(dto);
 
-        //Assert
+        // Assert
         assertNotNull(created);
-        assertEquals("cog-123", created.getUser().getCognitoId());
-        verify(cognitoService).createCognitoUser(argThat(ud ->
-            ud.getMail().equals(dto.getMail()) &&
-            ud.getUserType().equals("auxiliary")
+        assertEquals("cognito-123", created.getUser().getCognitoId());
+        verify(cognitoService).createCognitoUser(argThat(userDto ->
+            userDto.getMail().equals(dto.getMail()) &&
+            userDto.getUserType().equals("auxiliary")
         ));
         verify(auxiliaryRepository).save(any(Auxiliary.class));
     }
 
     @Test
     void createAuxiliary_whenEmailExists_throwsRuntimeException() {
-        //Arrange
+        // Arrange
         when(userService.mailExists(dto.getMail())).thenReturn(true);
 
-        //Act y Assert
+        // Act and Assert
         RuntimeException ex = assertThrows(RuntimeException.class,
             () -> service.createAuxiliary(dto));
         assertEquals("El correo electrónico ya está registrado.", ex.getMessage());
@@ -160,34 +163,35 @@ class AuxiliaryServiceTest {
 
     @Test
     void updateAuxiliary_whenExists_updatesAndReturnsAuxiliary() {
-        //Arrange
+        // Arrange
         when(auxiliaryRepository.findByUserIdUser(1L)).thenReturn(Optional.of(auxiliary));
         when(auxiliaryRepository.save(auxiliary)).thenReturn(auxiliary);
         when(userService.updateUser(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        //Cambios en el DTO
         dto.setName("Laura2");
         dto.setSurname("Gómez");
-        dto.setPhone("+34987654321");
+        dto.setPhone("+34687654321");
 
-        //Act
+        // Act
         Auxiliary updated = service.updateAuxiliary(1L, dto);
 
-        //Assert
+        // Assert
         assertEquals("Laura2", updated.getUser().getName());
         assertEquals("Gómez", updated.getUser().getSurname());
-        assertEquals("+34987654321", updated.getUser().getPhone());
+        assertEquals("+34687654321", updated.getUser().getPhone());
         verify(userService).updateUser(updated.getUser());
         verify(cognitoService).updateCognitoUser(argThat(updatedCognito ->
-            updatedCognito.getName().equals("Laura2") && updatedCognito.getPhone().equals("+34987654321")
+            updatedCognito.getName().equals("Laura2") && updatedCognito.getPhone().equals("+34687654321")
         ));
         verify(auxiliaryRepository).save(auxiliary);
     }
 
     @Test
     void updateAuxiliary_whenNotExists_throwsRuntimeException() {
+        // Arrange
         when(auxiliaryRepository.findByUserIdUser(5L)).thenReturn(Optional.empty());
 
+        // Act and Assert
         RuntimeException ex = assertThrows(RuntimeException.class,
             () -> service.updateAuxiliary(5L, dto));
         assertTrue(ex.getMessage().contains("no existe"));
@@ -196,13 +200,13 @@ class AuxiliaryServiceTest {
 
     @Test
     void deleteAuxiliary_whenExists_deletesInRepoAndCognitoAndUser() {
-        //Arrange
+        // Arrange
         when(auxiliaryRepository.findByUserIdUser(1L)).thenReturn(Optional.of(auxiliary));
 
-        //Act
+        // Act
         service.deleteAuxiliary(1L);
 
-        //Assert
+        // Assert
         verify(cognitoService).deleteCognitoUser(dto.getMail());
         verify(auxiliaryRepository).deleteByIdUser(1L);
         verify(userService).deleteUser(1L);
@@ -210,8 +214,10 @@ class AuxiliaryServiceTest {
 
     @Test
     void deleteAuxiliary_whenNotExists_throwsRuntimeException() {
+        // Arrange
         when(auxiliaryRepository.findByUserIdUser(2L)).thenReturn(Optional.empty());
 
+        // Act and Assert
         RuntimeException ex = assertThrows(RuntimeException.class,
             () -> service.deleteAuxiliary(2L));
         assertTrue(ex.getMessage().contains("no existe"));

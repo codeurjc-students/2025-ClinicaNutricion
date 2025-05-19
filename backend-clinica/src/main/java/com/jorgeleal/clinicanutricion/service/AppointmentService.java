@@ -12,13 +12,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Service
 public class AppointmentService {
-
-    private static final Logger logger = LoggerFactory.getLogger(AppointmentService.class);
 
     @Autowired
     private AppointmentRepository appointmentRepository;
@@ -56,14 +52,12 @@ public class AppointmentService {
         return dto;
     }
 
-
     private Appointment convertToDomain(AppointmentDTO dto) {
         Nutritionist nutritionist = nutritionistService.getNutritionistById(dto.getIdNutritionist());
         Patient patient = null;
         if (dto.getType() == AppointmentType.APPOINTMENT) {
             patient = patientService.getPatientById(dto.getIdPatient());
         }
-
         return new Appointment(
                 dto.getIdAppointment(),
                 nutritionist,
@@ -75,7 +69,6 @@ public class AppointmentService {
         );
     }
     
-
     @Transactional
     public AppointmentDTO createAppointment(AppointmentDTO dto) {
         if (hasConflict(dto)) {
@@ -101,7 +94,6 @@ public class AppointmentService {
                 result.getNutritionist().getSurname()
             );
         }
-
         return result;
     }
     
@@ -179,7 +171,6 @@ public class AppointmentService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
         } catch (Exception ex) {
-            logger.error("Error al obtener citas pendientes para el paciente id={} a partir de {} {}: ", patientId, today, now, ex);
             return Collections.emptyList();
         }
     }
@@ -231,19 +222,18 @@ public class AppointmentService {
                 throw new IllegalArgumentException("Franja horaria no válida");
         }
 
-        //Ajustar con horas de trabajo
+        // Ajustar con horas de trabajo
         LocalTime startHour = rangeStart.isBefore(workStart) ? workStart : rangeStart;
         LocalTime endHour   = rangeEnd.isAfter(workEnd)   ? workEnd   : rangeEnd;
 
-        //Validamos que la hora de inicio sea anterior a la hora de fin
+        // Validamos que la hora de inicio sea anterior a la hora de fin
         if (!startHour.isBefore(endHour)) {
             return Collections.emptyList();
         }
 
-        //Obtenemos las citas existentes
         List<AppointmentDTO> appointments = getAppointmentsByNutritionistAndDate(nutritionistId, selectedDate);
 
-        //Generamos los huecos disponibles
+        // Generamos los huecos disponibles
         List<String> availableSlots = new ArrayList<>();
         LocalTime currentTime = startHour;
         while (currentTime.isBefore(endHour)) {
@@ -260,7 +250,6 @@ public class AppointmentService {
             }
             currentTime = currentTime.plusMinutes(appointmentDuration);
         }
-
         return availableSlots;
     }
 }

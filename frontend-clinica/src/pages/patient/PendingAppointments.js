@@ -18,6 +18,7 @@ const PendingAppointments = () => {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [appointmentToCancel, setAppointmentToCancel] = useState(null);
 
+  // Se obtiene la lista de citas pendientes del paciente autenticado
   useEffect(() => {
     if (!patient?.idUser) return;
 
@@ -46,6 +47,7 @@ const PendingAppointments = () => {
     fetchPending();
   }, [BASE_URL, token, patient?.idUser]);
 
+  // Abre el modal de confirmación de cancelación
   const openCancelModal = (id) => {
     setAppointmentToCancel(id);
     setShowCancelModal(true);
@@ -56,6 +58,7 @@ const PendingAppointments = () => {
     setShowCancelModal(false);
   };
 
+  // Cancela la cita seleccionada
   const confirmCancel = async () => {
     try {
       const response = await fetch(
@@ -90,9 +93,7 @@ const PendingAppointments = () => {
         <br />
         <h2>Próximas citas</h2>
 
-        {loading ? (
-          <p>Cargando...</p>
-        ) : appointments.length > 0 ? (
+        {loading ? null : appointments.length > 0 ? (
           <>
             <p className="text-dark mb-2">
               <strong>
@@ -103,6 +104,7 @@ const PendingAppointments = () => {
             </p>
             <ul className="list-group">
               {appointments.map((a) => {
+                // Formateo de fecha y hora
                 const rawDay = moment(a.date).format('dddd');
                 const rest = moment(a.date).format(' D [de] MMMM YYYY');
                 const day = rawDay.charAt(0).toUpperCase() + rawDay.slice(1);

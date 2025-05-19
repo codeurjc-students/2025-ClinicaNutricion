@@ -12,6 +12,7 @@ const MainPatientScreen = () => {
 
   const [patient, setPatient] = useState(null);
 
+  // Cierre de sesión
   const handleLogout = () => {
     auth.signoutRedirect({
       extraQueryParams: {
@@ -21,6 +22,7 @@ const MainPatientScreen = () => {
     });
   };
 
+  // Se obtiene el perfil del paciente autenticado
   useEffect(() => {
     const fetchPatientData = async () => {
       try {
@@ -50,6 +52,7 @@ const MainPatientScreen = () => {
   return (
     <div className="main-patient-screen">
       <header className="header d-flex justify-content-between align-items-center">
+        {/* Icono para ir al perfil del paciente */}
         <Link
           to="/patients/profile"
           className="profile-button"
@@ -57,6 +60,8 @@ const MainPatientScreen = () => {
         >
           <img src={profileLogo} alt="Perfil" />
         </Link>
+
+        {/* Botón de cierre de sesión */}
         <button
           className="logout-icon-button"
           onClick={handleLogout}
@@ -80,15 +85,6 @@ const MainPatientScreen = () => {
             <Link to="/patients/appointments/pending" state={{ patient }}>
               <button className="btn btn-primary w-100">
                 Citas pendientes
-              </button>
-            </Link>
-          </div>
-
-          {/*Historial de citas*/}
-          <div className="col-12 col-md-6 mx-md-auto">
-            <Link to="/patients/appointments/history" state={{ patient }}>
-              <button className="btn btn-primary w-100">
-                Historial de citas
               </button>
             </Link>
           </div>

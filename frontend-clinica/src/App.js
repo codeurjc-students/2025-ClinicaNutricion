@@ -11,6 +11,8 @@ import 'react-toastify/dist/ReactToastify.css';
 const App = () => {
   const auth = useAuth();
   const { client_id, redirect_uri, response_type, scope } = auth.settings;
+
+  // Construye y redirige al formulario de registro de Cognito
   const handleRegister = () => {
     const base = process.env.REACT_APP_COGNITO_REGISTER_BASE_URL;
     const signupUrl =

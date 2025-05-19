@@ -13,6 +13,7 @@ const Sidebar = () => {
   const auth = useAuth();
   const roles = auth.user?.profile['cognito:groups'] || [];
 
+  // Ocultar el sidebar en ciertas rutas
   const hideSidebar =
     location.pathname === '/' || location.pathname.startsWith('/patient');
 
@@ -54,7 +55,7 @@ const Sidebar = () => {
   };
 
   if (hideSidebar) {
-    return null;
+    return null; // evitar renderizar el sidebar
   }
 
   const menuOptions = getMenuOptions();
@@ -67,6 +68,7 @@ const Sidebar = () => {
 
       <hr className="sidebar-separator" />
 
+      {/* Botones de navegación según rol */}
       {menuOptions.map((option, index) => (
         <NavLink
           key={index}

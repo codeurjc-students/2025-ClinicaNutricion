@@ -26,11 +26,14 @@ const NewAppointmentModal = ({ show, onClose, onConfirm, selectedTime }) => {
 
   return (
     <Modal show={show} onHide={onClose} centered size="lg">
+      {/* Encabezado del modal con título y botón de cierre */}
       <Modal.Header closeButton>
         <Modal.Title className="text-success text-align">
           Crear Nueva Cita
         </Modal.Title>
       </Modal.Header>
+
+      {/* Cuerpo del modal con información de fecha/hora y componente de búsqueda */}
       <Modal.Body>
         <p className="appointment-text">
           Selecciona un paciente para la cita programada el{' '}
@@ -48,6 +51,8 @@ const NewAppointmentModal = ({ show, onClose, onConfirm, selectedTime }) => {
           />
         </div>
       </Modal.Body>
+
+      {/* Pie del modal con botones de cancelar y confirmar */}
       <Modal.Footer>
         <Button className="cancel-button" onClick={onClose}>
           Cancelar

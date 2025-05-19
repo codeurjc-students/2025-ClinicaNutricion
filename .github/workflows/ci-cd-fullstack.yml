@@ -7,7 +7,7 @@ on:
       - develop
 
 jobs:
-  # Backend: análisis estático y unit tests
+  # Backend: análisis estático, unit tests y test de integración
   test-backend:
     runs-on: ubuntu-latest
     steps:
@@ -67,7 +67,7 @@ jobs:
         run: npm run format:check
         working-directory: frontend-clinica
 
-  # 3. Backend: empaquetado y deploy Elastic Beanstalk
+  # Backend: empaquetado, deploy a Elastic Beanstalk y Smoke Test
   deploy-backend:
     needs: test-backend
     runs-on: ubuntu-latest

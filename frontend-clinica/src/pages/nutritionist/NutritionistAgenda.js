@@ -7,6 +7,7 @@ const NutritionistAgenda = () => {
   const [nutritionist, setNutritionist] = useState(null);
   const token = localStorage.getItem('token');
 
+  // Se obtiene el perfil del nutricionista autenticado
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -22,7 +23,7 @@ const NutritionistAgenda = () => {
           throw new Error('Error obteniendo el perfil del nutricionista');
 
         const data = await response.json();
-
+        // Se mapea la respuesta a formato esperado por el calendario
         setNutritionist({
           idUser: data.id,
           name: data.name,
@@ -40,7 +41,7 @@ const NutritionistAgenda = () => {
   }, [BASE_URL, token]);
 
   if (!nutritionist) {
-    return <div>Loading...</div>;
+    return <div>Cargando...</div>;
   }
 
   return (
@@ -48,6 +49,8 @@ const NutritionistAgenda = () => {
       <h2 className="nutritionist-title">
         Agenda de {nutritionist.name} {nutritionist.surname}
       </h2>
+
+      {/* Componente de calendario recibe configuración del nutricionista */}
       <NutritionistCalendar
         nutritionistId={nutritionist.idUser}
         appointmentDuration={nutritionist.appointmentDuration}

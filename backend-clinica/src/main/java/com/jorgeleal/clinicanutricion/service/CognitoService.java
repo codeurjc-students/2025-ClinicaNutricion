@@ -23,10 +23,9 @@ public class CognitoService {
         .region(Region.EU_WEST_3)
         .build();
 
-
     public String createCognitoUser(UserDTO userDTO) {
         String groupName = userDTO.getUserType();
-        String temporaryPassword = "Contraseña123!";
+        String temporaryPassword = "Contraseña123!"; // Contraseña temporal
     
         try {
             AdminCreateUserRequest createUserRequest = AdminCreateUserRequest.builder()
@@ -61,7 +60,6 @@ public class CognitoService {
             throw new RuntimeException("El usuario con el correo " + userDTO.getMail() + " ya existe.");
         }
     }
-        
 
     public void updateCognitoUser(UserDTO userDTO) {
         AdminUpdateUserAttributesRequest updateRequest = AdminUpdateUserAttributesRequest.builder()
@@ -99,6 +97,7 @@ public class CognitoService {
         cognitoClient.adminAddUserToGroup(request);
     }
 
+    // Deshabilita la cuenta del usuario especificado en el User Pool de Cognito
     public void disableUser(String username) {
         AdminDisableUserRequest request = AdminDisableUserRequest.builder()
             .userPoolId(userPoolId)
@@ -107,6 +106,7 @@ public class CognitoService {
         cognitoClient.adminDisableUser(request);
     }
 
+    // Habilita la cuenta del usuario especificado en el User Pool de Cognito
     public void enableUser(String username) {
         AdminEnableUserRequest request = AdminEnableUserRequest.builder()
             .userPoolId(userPoolId)
@@ -115,6 +115,7 @@ public class CognitoService {
         cognitoClient.adminEnableUser(request);
     }
 
+    // Desconexión global de todas las sesiones activas del usuario en Cognito
     public void globalSignOut(String username) {
         cognitoClient.adminUserGlobalSignOut(AdminUserGlobalSignOutRequest.builder()
             .userPoolId(userPoolId)

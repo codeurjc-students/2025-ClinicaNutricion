@@ -6,11 +6,13 @@ const ManagePatients = ({ userType }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Construye ruta base según tipo de usuario
   const basePath =
     userType === 'admin'
       ? '/admin/manage-users/patients'
       : `/${userType}/patients`;
 
+  // Determina si estamos en una subpágina para mostrar o no determinados elementos de la pagina
   const isSubPage =
     location.pathname.includes('/create') ||
     location.pathname.includes('/search') ||

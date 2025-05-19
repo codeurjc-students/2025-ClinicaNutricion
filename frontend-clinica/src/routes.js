@@ -16,14 +16,15 @@ import ManageUsers from './pages/admin/ManageUsers';
 import AdminAgenda from './pages/admin/AdminAgenda';
 import NutritionistAgenda from './pages/nutritionist/NutritionistAgenda';
 import PendingAppointments from './pages/patient/PendingAppointments';
+import Unauthorized from './pages/Unauthorized';
 
 const AppRoutes = () => {
   const auth = useAuth();
 
+  // Redirige al login al no estar autenticado
   if (!auth.isAuthenticated) return <Navigate to="/" />;
 
   const roles = auth.user?.profile['cognito:groups'] || [];
-
   const getUserType = () => {
     if (roles.includes('admin')) return 'admin';
     if (roles.includes('nutritionist')) return 'nutritionists';
@@ -34,6 +35,7 @@ const AppRoutes = () => {
 
   const userType = getUserType();
 
+  // Reirige a una pagina de unauthorized si el usuario no tiene permisos
   const ProtectedRoute = ({ children, allowedRoles }) => {
     if (!roles.some((role) => allowedRoles.includes(role))) {
       return <Navigate to="/unauthorized" />;
@@ -45,6 +47,7 @@ const AppRoutes = () => {
     <div className="main-container">
       <Sidebar />
       <Routes>
+        <Route path="/unauthorized" element={<Unauthorized />} />
         <Route
           path="/:userType/profile"
           element={

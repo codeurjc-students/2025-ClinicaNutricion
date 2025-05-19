@@ -133,15 +133,23 @@ public class PatientController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ROLE_NUTRITIONIST', 'ROLE_ADMIN', 'ROLE_AUXILIARY')")
-    public ResponseEntity<Patient> createPatient(@RequestBody PatientDTO dto) {
+    public ResponseEntity<?> createPatient(@RequestBody PatientDTO dto) {
+        try {
             Patient patient = patientService.createPatient(dto);
             return ResponseEntity.ok(patient);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        }
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ROLE_NUTRITIONIST', 'ROLE_ADMIN', 'ROLE_AUXILIARY')")
-    public ResponseEntity<Patient> updatePatient(@PathVariable Long id, @RequestBody PatientDTO dto) {
-        return ResponseEntity.ok(patientService.updatePatient(id, dto));
+    public ResponseEntity<?> updatePatient(@PathVariable Long id, @RequestBody PatientDTO dto) {
+        try {
+            return ResponseEntity.ok(patientService.updatePatient(id, dto));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        }
     }
 
     @PutMapping("/{id}/status")

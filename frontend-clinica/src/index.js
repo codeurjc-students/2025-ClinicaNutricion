@@ -8,6 +8,7 @@ import {
 } from 'react-router-dom';
 import App from './App';
 
+// Configuración OIDC para Cognito
 const cognitoAuthConfig = {
   authority: process.env.REACT_APP_COGNITO_AUTHORITY,
   client_id: process.env.REACT_APP_COGNITO_CLIENT_ID,
@@ -29,9 +30,9 @@ const AuthRedirect = () => {
     if (auth.isAuthenticated) {
       const token = auth.user?.access_token;
       if (token) {
-        localStorage.setItem('token', token);
+        localStorage.setItem('token', token); // Se guarda el token
       }
-      // Redirige solo si el usuario se encuentra en "/"
+      // Se redirige según el grupo de Cognito
       if (location.pathname === '/') {
         const roles = auth.user?.profile['cognito:groups'] || [];
         if (roles.includes('admin')) {

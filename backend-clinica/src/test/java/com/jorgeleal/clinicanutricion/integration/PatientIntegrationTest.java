@@ -70,17 +70,17 @@ public class PatientIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        //Limpiar base de datos
+        // Limpieza de base de datos
         patientRepository.deleteAll();
         userRepository.deleteAll();
 
-        //Se preparan mocks de CognitoService
+        // Mock de CognitoService para aislar las llamadas externas
         when(cognitoService.createCognitoUser(any(UserDTO.class)))
             .thenReturn("cognito-id-1", "cognito-id-2");
         doNothing().when(cognitoService).enableUser(anyString());
         doNothing().when(cognitoService).disableUser(anyString());
 
-        //Creamos un usuario y paciente de prueba
+        // Creamos un paciente
         existingUser = new User();
         existingUser.setName("Test");
         existingUser.setSurname("User");
@@ -105,7 +105,7 @@ public class PatientIntegrationTest {
     void getProfile_BadRequest_NoSub() throws Exception {
         mockMvc.perform(get("/patients/profile")
                 .with(jwt()
-                    .jwt(j -> j.claim("sub","")) //Sub vacío
+                    .jwt(j -> j.claim("sub","")) // Sub vacío
                     .authorities(new SimpleGrantedAuthority("ROLE_PATIENT")))
             )
             .andExpect(status().isBadRequest())
@@ -381,7 +381,6 @@ public class PatientIntegrationTest {
             )
             .andExpect(status().isOk());
 
-        // DB real: patientRepository updateó active
         Patient updated = patientRepository
             .findById(existingPatient.getUser().getIdUser())
             .orElseThrow();
@@ -419,10 +418,7 @@ public class PatientIntegrationTest {
             .andDo(print())
             .andExpect(status().isForbidden());
 
-        // El paciente sigue existiendo en la BD
         assertTrue(patientRepository.findById(patientId).isPresent());
-
-        // Verificamos que NO se llamó a appointmentService
         verify(appointmentService, never()).deleteAppointmentsByPatient(anyLong());
     }
 }

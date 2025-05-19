@@ -24,15 +24,18 @@ class AdminAuxiliaryServiceTest {
     @InjectMocks
     private AdminAuxiliaryService service;
 
-    @Mock private AdminAuxiliaryRepository repository;
-    @Mock private UserService userService;
+    @Mock 
+    private AdminAuxiliaryRepository repository;
+
+    @Mock
+    private UserService userService;
 
     private AdminAuxiliary admin;
     private AdminAuxiliaryDTO dto;
 
     @BeforeEach
     void setUp() {
-        //DTO
+        // Se inicializa el DTO de prueba
         dto = new AdminAuxiliaryDTO();
         dto.setName("María");
         dto.setSurname("Pérez");
@@ -40,7 +43,7 @@ class AdminAuxiliaryServiceTest {
         dto.setPhone("+34123456789");
         dto.setGender(Gender.FEMENINO);
 
-        //Entidad admin
+        // Se inicializa la entidad admin y el usuario asociado
         admin = new AdminAuxiliary();
         User user = new User();
         user.setIdUser(99L);
@@ -54,15 +57,15 @@ class AdminAuxiliaryServiceTest {
 
     @Test
     void updateAdminAuxiliary_whenExists_updatesAndSaves() {
-        //Arrange
+        // Arrange
         when(repository.findByUserIdUser(99L)).thenReturn(Optional.of(admin));
         when(repository.save(admin)).thenReturn(admin);
         when(userService.updateUser(any(User.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        //Act
+        // Act
         AdminAuxiliary result = service.updateAdminAuxiliary(99L, dto);
 
-        //Assert con los campos actualizados
+        // Assert con los campos actualizados
         assertEquals("María", result.getUser().getName());
         assertEquals("Pérez", result.getUser().getSurname());
         assertEquals("+34123456789", result.getUser().getPhone());
@@ -73,15 +76,15 @@ class AdminAuxiliaryServiceTest {
 
     @Test
     void updateAdminAuxiliary_whenNotExists_throwsException() {
-        //Arrange
+        // Arrange
         when(repository.findByUserIdUser(123L)).thenReturn(Optional.empty());
 
-        //Act y Assert
+        //Act and Assert
         RuntimeException ex = assertThrows(RuntimeException.class,
             () -> service.updateAdminAuxiliary(123L, dto));
         assertTrue(ex.getMessage().contains("no existe"));
         
-        verify(userService, never()).updateUser(any()); //No debe llamar a userService ni a repository.save
+        verify(userService, never()).updateUser(any());
         verify(repository, never()).save(any());
     }
 }

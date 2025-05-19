@@ -41,14 +41,14 @@ class NutritionistServiceTest {
 
     @BeforeEach
     void setUp() {
-        //DTO nutricionista
+        // Se inicializa el DTO de prueba
         dto = new NutritionistDTO();
         dto.setIdUser(5L);
         dto.setName("Ana");
         dto.setSurname("López");
         dto.setBirthDate(LocalDate.of(1980, 1, 1));
-        dto.setMail("ana@example.com");
-        dto.setPhone("+34111222333");
+        dto.setMail("ana@gmail.com");
+        dto.setPhone("+34626309387");
         dto.setGender(Gender.FEMENINO);
         dto.setActive(false);
         dto.setAppointmentDuration(30);
@@ -56,7 +56,7 @@ class NutritionistServiceTest {
         dto.setEndTime(LocalTime.of(16, 0));
         dto.setMaxActiveAppointments(5);
 
-        //Nutricionista
+        // Se inicializa la entidad nutricionista y el usuario asociado
         user = new User();
         user.setIdUser(5L);
         user.setName(dto.getName());
@@ -78,12 +78,12 @@ class NutritionistServiceTest {
 
     @Test
     void createNutritionist_whenMailUnique_returnsDTO() {
-        //Arrange
+        // Arrange
         when(userService.mailExists(dto.getMail())).thenReturn(false);
-        when(cognitoService.createCognitoUser(any(UserDTO.class))).thenReturn("cog-999");
+        when(cognitoService.createCognitoUser(any(UserDTO.class))).thenReturn("cognito-999");
         when(userService.saveUser(any(User.class))).thenAnswer(invocation -> {
             User user = invocation.getArgument(0);
-            user.setCognitoId("cog-999");
+            user.setCognitoId("cognito-999");
             return user;
         });
         when(nutritionistRepository.save(any(Nutritionist.class)))
@@ -93,10 +93,10 @@ class NutritionistServiceTest {
                 return nutritionist;
             });
 
-        //Act
+        // Act
         NutritionistDTO result = service.createNutritionist(dto);
 
-        //Assert
+        // Assert
         assertNotNull(result);
         assertEquals(5L, result.getIdUser());
         assertTrue(result.isActive());
@@ -109,7 +109,10 @@ class NutritionistServiceTest {
 
     @Test
     void createNutritionist_whenMailExists_throws() {
+        // Arrange
         when(userService.mailExists(dto.getMail())).thenReturn(true);
+
+        // Act and Assert
         RuntimeException ex = assertThrows(RuntimeException.class,
             () -> service.createNutritionist(dto));
         assertEquals("Error al crear el nutricionista: El correo electrónico ya está registrado.", ex.getMessage());
@@ -119,14 +122,22 @@ class NutritionistServiceTest {
 
     @Test
     void getNutritionistById_whenExists_returnsNutritionistDomain() {
+        // Arrange
         when(nutritionistRepository.findByUserIdUser(5L)).thenReturn(Optional.of(nutritionist));
+        
+        // Act
         Nutritionist found = service.getNutritionistById(5L);
+
+        // Assert
         assertSame(nutritionist, found);
     }
 
     @Test
     void getNutritionistById_whenNotExists_throws() {
+        // Arrange
         when(nutritionistRepository.findByUserIdUser(1L)).thenReturn(Optional.empty());
+
+        // Act and Assert
         RuntimeException ex = assertThrows(RuntimeException.class,
             () -> service.getNutritionistById(1L));
         assertEquals("Nutricionista no encontrado", ex.getMessage());
@@ -134,15 +145,18 @@ class NutritionistServiceTest {
 
     @Test
     void updateNutritionist_whenExists_updatesAndReturnsDTO() {
+        // Arrange
         when(nutritionistRepository.findByUserIdUser(5L)).thenReturn(Optional.of(nutritionist));
         when(nutritionistRepository.save(nutritionist)).thenReturn(nutritionist);
-        //userService.updateUser y cognitoService.updateCognitoUser devuelven void
-        //Cambios en el DTO
+        // userService.updateUser y cognitoService.updateCognitoUser devuelven void
+
         dto.setName("Ana2");
         dto.setAppointmentDuration(45);
 
+        // Act
         NutritionistDTO updated = service.updateNutritionist(5L, dto);
 
+        // Assert
         assertEquals("Ana2", updated.getName());
         assertEquals(45, updated.getAppointmentDuration());
         verify(userService).updateUser(nutritionist.getUser());
@@ -154,7 +168,10 @@ class NutritionistServiceTest {
 
     @Test
     void updateNutritionist_whenNotExists_throws() {
+        // Arrange
         when(nutritionistRepository.findByUserIdUser(2L)).thenReturn(Optional.empty());
+
+        // Act and Assert
         RuntimeException ex = assertThrows(RuntimeException.class,
             () -> service.updateNutritionist(2L, dto));
         assertEquals("Nutricionista no encontrado", ex.getMessage());
@@ -162,28 +179,43 @@ class NutritionistServiceTest {
 
     @Test
     void getNutritionistsByFilters_withFullName_usesFindByFullName() {
+        // Arrange
         when(nutritionistRepository.findByFullName("Ana López")).thenReturn(List.of(nutritionist));
+
+        // Act
         List<NutritionistDTO> list = service.getNutritionistsByFilters(
             null, null, "Ana López", null, null, null);
+
+        // Assert
         assertEquals(1, list.size());
         verify(nutritionistRepository).findByFullName("Ana López");
     }
 
     @Test
     void getNutritionistsByFilters_withoutFullName_usesFindByUserFilters() {
+        // Arrange
         when(nutritionistRepository.findByUserFilters("Ana", "López", dto.getPhone(), dto.getMail(), dto.isActive()))
             .thenReturn(List.of(nutritionist));
+
+        // Act
         List<NutritionistDTO> list = service.getNutritionistsByFilters(
             "Ana", "López", "", dto.getPhone(), dto.getMail(), dto.isActive());
+
+        // Assert
         assertEquals(1, list.size());
         verify(nutritionistRepository).findByUserFilters("Ana", "López", dto.getPhone(), dto.getMail(), dto.isActive());
     }
 
     @Test
     void changeNutritionistStatus_enable_usesEnable() {
+        // Arrange
         nutritionist.setActive(false);
         when(nutritionistRepository.findByUserIdUser(5L)).thenReturn(Optional.of(nutritionist));
+
+        // Act
         service.changeNutritionistStatus(5L, true);
+
+        // Assert
         assertTrue(nutritionist.isActive());
         verify(nutritionistRepository).save(nutritionist);
         verify(cognitoService).enableUser(dto.getMail());
@@ -191,9 +223,14 @@ class NutritionistServiceTest {
 
     @Test
     void changeNutritionistStatus_disable_usesDisableAndSignOut() {
+        // Arrange
         nutritionist.setActive(true);
         when(nutritionistRepository.findByUserIdUser(5L)).thenReturn(Optional.of(nutritionist));
+
+        // Act
         service.changeNutritionistStatus(5L, false);
+
+        // Assert
         assertFalse(nutritionist.isActive());
         verify(nutritionistRepository).save(nutritionist);
         verify(cognitoService).disableUser(dto.getMail());
@@ -202,8 +239,13 @@ class NutritionistServiceTest {
 
     @Test
     void deleteNutritionist_whenExists_deletesEverything() {
+        // Arrange
         when(nutritionistRepository.findByUserIdUser(5L)).thenReturn(Optional.of(nutritionist));
+
+        // Act
         service.deleteNutritionist(5L);
+
+        // Assert
         verify(cognitoService).deleteCognitoUser(dto.getMail());
         verify(nutritionistRepository).delete(nutritionist);
         verify(userService).deleteUser(5L);
@@ -211,7 +253,10 @@ class NutritionistServiceTest {
 
     @Test
     void deleteNutritionist_whenNotExists_throws() {
+        // Arrange
         when(nutritionistRepository.findByUserIdUser(3L)).thenReturn(Optional.empty());
+
+        // Act and Assert
         RuntimeException ex = assertThrows(RuntimeException.class,
             () -> service.deleteNutritionist(3L));
         assertTrue(ex.getMessage().contains("no existe"));
@@ -219,23 +264,34 @@ class NutritionistServiceTest {
 
     @Test
     void getNutritionistsByTimeRange_allHours_returnsAll() {
+        // Arrange
         when(nutritionistRepository.findAll()).thenReturn(List.of(nutritionist));
+
+        // Act
         List<NutritionistDTO> list = service.getNutritionistsByTimeRange("a cualquier hora");
+
+        // Assert
         assertEquals(1, list.size());
         verify(nutritionistRepository).findAll();
     }
 
     @Test
     void getNutritionistsByTimeRange_morning_usesFindByAvailableTimeRange() {
+        // Arrange
         when(nutritionistRepository.findByAvailableTimeRange(LocalTime.of(9,0), LocalTime.of(12,0)))
             .thenReturn(List.of(nutritionist));
+
+        // Act
         List<NutritionistDTO> list = service.getNutritionistsByTimeRange("mañana");
+
+        // Assert
         assertEquals(1, list.size());
         verify(nutritionistRepository).findByAvailableTimeRange(LocalTime.of(9,0), LocalTime.of(12,0));
     }
 
     @Test
     void getNutritionistsByTimeRange_invalid_throws() {
+        // Act and Assert
         assertThrows(IllegalArgumentException.class,
             () -> service.getNutritionistsByTimeRange("noche"));
     }

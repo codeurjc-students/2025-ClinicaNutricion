@@ -8,7 +8,7 @@ import { useAuth } from 'react-oidc-context';
 
 const UserForm = ({ isEditMode = false, userType }) => {
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
-  const { id } = useParams(); //Obtener el ID para el modo edición
+  const { id } = useParams(); // Obtener el ID para el modo edición
   const location = useLocation();
   const auth = useAuth();
   const token = auth.user?.access_token;
@@ -17,7 +17,7 @@ const UserForm = ({ isEditMode = false, userType }) => {
   const isProfilePage = location.pathname.includes('/profile');
   const [showSuccess, setShowSuccess] = useState(false);
 
-  //Definir datos iniciales
+  // Definir datos iniciales según el tipo de usuario
   const initialFormData = {
     name: '',
     surname: '',
@@ -38,7 +38,7 @@ const UserForm = ({ isEditMode = false, userType }) => {
 
   const [formData, setFormData] = useState(initialFormData);
 
-  //Cargar datos del usuario autenticado o del usuario con ID específico
+  // Carga datos existentes si está en modo edición o perfil
   useEffect(() => {
     if (isEditMode) {
       const isProfileUrl = location.pathname.includes('/profile');
@@ -61,7 +61,6 @@ const UserForm = ({ isEditMode = false, userType }) => {
             formattedData = { ...data };
           } else {
             formattedData = { ...data.user };
-
             if (userType === 'nutritionists') {
               formattedData = {
                 ...formattedData,
@@ -72,18 +71,17 @@ const UserForm = ({ isEditMode = false, userType }) => {
               };
             }
           }
-
           setFormData(formattedData);
         })
         .catch((error) => console.error('Error obteniendo usuario:', error));
     }
   }, [isEditMode, id, userType, token, BASE_URL, location.pathname]);
 
+  // Actualiza campo y resetea error específico
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     if (name === 'maxActiveAppointments') {
-      //Si el valor ingresado es menor que 1, lo ajustamos a 1
+      // Si el valor ingresado es menor que 1, lo ajustamos a 1
       if (value < 1) {
         setFormData({ ...formData, [name]: 1 });
         setValidationErrors({
@@ -95,13 +93,13 @@ const UserForm = ({ isEditMode = false, userType }) => {
     }
 
     setFormData({ ...formData, [name]: value });
-    setValidationErrors({ ...validationErrors, [name]: '' }); //Limpiar los errores al cambiar el valor
+    setValidationErrors({ ...validationErrors, [name]: '' }); // Limpiar los errores al cambiar el valor
   };
 
+  // Validación de los campos del formulario
   const validateForm = () => {
     const errors = {};
-
-    //Validación de nombre y apellidos
+    // Validación de nombre y apellidos
     if (!formData.name) {
       errors.name = 'Debes introducir tu nombre.';
     } else {
@@ -122,7 +120,7 @@ const UserForm = ({ isEditMode = false, userType }) => {
       }
     }
 
-    //Validación de fecha de nacimiento
+    // Validación de fecha de nacimiento
     if (!formData.birthDate) {
       errors.birthDate = 'Debes introducir tu fecha de nacimiento.';
     } else {
@@ -143,7 +141,7 @@ const UserForm = ({ isEditMode = false, userType }) => {
       }
     }
 
-    //Validación de teléfono
+    // Validación de teléfono
     if (!formData.phone) {
       errors.phone = 'Debes introducir tu número de telefono.';
     } else {
@@ -155,7 +153,7 @@ const UserForm = ({ isEditMode = false, userType }) => {
     }
 
     if (userType === 'nutritionists') {
-      //Validación de hora de inicio
+      // Validación de hora de inicio
       if (!formData.startTime) {
         errors.startTime = 'Debes introducir la hora de inicio.';
       } else {
@@ -165,7 +163,7 @@ const UserForm = ({ isEditMode = false, userType }) => {
         }
       }
 
-      //Validación de hora de fin
+      // Validación de hora de inicio y fin
       if (!formData.endTime) {
         errors.endTime = 'Debes introducir la hora de fin.';
       } else {
@@ -183,11 +181,11 @@ const UserForm = ({ isEditMode = false, userType }) => {
         }
       }
     }
-
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
+  // Manejo del envío del formulario según si es edición de usuario o registro
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -239,6 +237,7 @@ const UserForm = ({ isEditMode = false, userType }) => {
     }
   };
 
+  // Título del formulario según el tipo de usuario
   const titles = {
     patients: isEditMode ? 'Editar Paciente' : 'Registrar Paciente',
     nutritionists: isEditMode
@@ -417,6 +416,7 @@ const UserForm = ({ isEditMode = false, userType }) => {
         </Form>
       </Container>
 
+      {/* Notificación de éxito al guardar */}
       {showSuccess && (
         <SuccessNotification
           message="¡Guardado con éxito!"

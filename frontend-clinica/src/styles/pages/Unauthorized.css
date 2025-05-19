@@ -1,0 +1,22 @@
+.unauthorized-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.unauthorized-page h1 {
+  margin: 0 0 0.5em;
+  font-size: 2.5rem;
+  color: #2c3e50;
+}
+
+.unauthorized-page p {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #555;
+}

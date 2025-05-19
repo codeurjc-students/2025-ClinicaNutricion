@@ -38,8 +38,4 @@ public class Nutritionist {
 
     @Column(name = "active", nullable = false)
     private boolean active = true;
-
-    public int getAppointmentDuration() {
-        return appointmentDuration;
-    }
 }

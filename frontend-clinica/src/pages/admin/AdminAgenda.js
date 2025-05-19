@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Form, Spinner } from 'react-bootstrap';
 import NutritionistCalendar from '../../components/NutritionistCalendar';
 import '../../styles/pages/AdminAgenda.css';
+import logoImg from '../../assets/sidebar/LogoClinicaPrincipal.png';
 
 const AdminAgenda = () => {
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
@@ -10,7 +11,10 @@ const AdminAgenda = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-
+  /** 
+  Cada vez que se cambia el valor en el buscador, se hace una nueva consulta
+  para buscar nutricionistas que coincidan con el término de búsqueda
+**/
   useEffect(() => {
     const fetchNutritionists = async () => {
       try {
@@ -49,10 +53,11 @@ const AdminAgenda = () => {
     fetchNutritionists();
   }, [searchTerm, BASE_URL]);
 
+  // Maneja cambios en el input del buscador
   const handleSearchChange = (e) => {
     const value = e.target.value;
     if (selectedNutritionist) {
-      setSelectedNutritionist(null);
+      setSelectedNutritionist(null); // Si ya había uno seleccionado se limpia la selección al editar
       setSearchTerm('');
     } else {
       setSearchTerm(value);
@@ -61,6 +66,14 @@ const AdminAgenda = () => {
 
   return (
     <Container className="admin-agenda-container">
+      {/* Logo de la clínica mientras no se haya seleccionado un nutricionista */}
+      {!selectedNutritionist && (
+        <div className="admin-agenda-logo-bg">
+          <img src={logoImg} alt="Logo Clínica" />
+        </div>
+      )}
+
+      {/* Título dinámico según el nutricionista */}
       <h2 className="text-center">
         {selectedNutritionist
           ? `Agenda de ${selectedNutritionist.name} ${selectedNutritionist.surname}`
@@ -83,9 +96,11 @@ const AdminAgenda = () => {
           onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
         />
         {loading && (
+          // Spinner mientras se espera a una respuesta
           <Spinner animation="border" variant="success" className="spinner" />
         )}
         {showDropdown && searchTerm.trim() && nutritionists.length > 0 && (
+          // Lista de sugerencias (máximo 6)
           <div className="dropdown-suggestions">
             {nutritionists.slice(0, 6).map((nutri) => (
               <div
@@ -103,6 +118,7 @@ const AdminAgenda = () => {
         )}
       </Form.Group>
 
+      {/* Al seleccionar el nutricionista se muestra el calendario con sus citas */}
       {selectedNutritionist && (
         <NutritionistCalendar
           nutritionistId={selectedNutritionist.idUser}

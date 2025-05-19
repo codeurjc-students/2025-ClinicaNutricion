@@ -13,6 +13,7 @@ const NutritionistSelection = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Al cambiar la franja horaria se obtienen los nutricionistas disponibles
   useEffect(() => {
     const fetchNutritionists = async () => {
       try {
@@ -36,10 +37,10 @@ const NutritionistSelection = () => {
 
         if (!response.ok) throw new Error('Error en la respuesta del servidor');
         const data = await response.json();
-        setFilteredNutritionists(data);
+        setFilteredNutritionists(data); // Guarda lista filtrada
       } catch (error) {
         console.error('Error cargando nutricionistas:', error);
-        setFilteredNutritionists([]);
+        setFilteredNutritionists([]); // En error, limpiar lista
       } finally {
         setLoading(false);
       }
@@ -48,16 +49,19 @@ const NutritionistSelection = () => {
     fetchNutritionists();
   }, [selectedTime, BASE_URL]);
 
+  // Actualiza la franja horaria seleccionada
   const handleTimeChange = (e) => {
     setSelectedTime(e.target.value);
   };
 
+  // Marca el nutricionista elegido de entre los filtrados
   const handleNutritionistChange = (e) => {
     const selected = e.target.value;
     const nutritionist = filteredNutritionists.find((n) => n.name === selected);
     setSelectedNutritionist(nutritionist || null);
   };
 
+  // Navega al selector de hora con el nutricionista y paciente
   const handleSelectButtonClick = () => {
     if (selectedNutritionist) {
       navigate('/patients/time-selection', {
@@ -91,6 +95,7 @@ const NutritionistSelection = () => {
           </select>
         </div>
 
+        {/* Selector de nutricionista filtrado por franja horaria */}
         <div className="select-nutritionist">
           <label htmlFor="nutritionist">Selecciona un nutricionista</label>
           <select
@@ -115,6 +120,7 @@ const NutritionistSelection = () => {
           </select>
         </div>
 
+        {/* Botón para confirmar selección */}
         <button
           disabled={!selectedNutritionist}
           className={`select-button ${selectedNutritionist ? 'active' : 'inactive'}`}

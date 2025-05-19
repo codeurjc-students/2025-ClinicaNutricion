@@ -7,6 +7,7 @@ import deleteIcon from '../assets/icons/delete-icon.png';
 import ToggleSwitch from './ToggleSwitch';
 import { toast } from 'react-toastify';
 
+// Formateo de fechas a DD/MM/YYYY
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A';
   const date = new Date(dateString);
@@ -22,7 +23,7 @@ const formatGender = (gender) => {
   return gender.charAt(0).toUpperCase() + gender.slice(1).toLowerCase();
 };
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 10; // Límite de filas por página en la tabla
 
 const SearchComponent = ({
   entityType,
@@ -33,6 +34,7 @@ const SearchComponent = ({
   onlyActivePatients = false,
 }) => {
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+  // Filtros de búsqueda y estado de resultados/paginación
   const [filters, setFilters] = useState({
     name: '',
     surname: '',
@@ -48,10 +50,12 @@ const SearchComponent = ({
   const [auxToDelete, setAuxToDelete] = useState(null);
   const navigate = useNavigate();
 
+  // Actualiza filtros al cambiar inputs
   const handleFilterChange = (e) => {
     setFilters({ ...filters, [e.target.name]: e.target.value });
   };
 
+  // Limpia filtros y resultados
   const handleClearFilters = () => {
     setFilters({
       name: '',
@@ -72,6 +76,7 @@ const SearchComponent = ({
     return '';
   };
 
+  // Realiza la petición GET con los filtros activos
   const handleSearch = async () => {
     try {
       const filtersWithoutActive = onlyActivePatients
@@ -90,6 +95,7 @@ const SearchComponent = ({
         return;
       }
 
+      // Obliga a tener al menos un filtro no vacío
       const hasFilters = Object.values(filtersWithoutActive).some(
         (value) => value.trim() !== '',
       );
@@ -100,15 +106,14 @@ const SearchComponent = ({
       }
 
       setSearched(true);
-
       const token = localStorage.getItem('token');
       if (!token) throw new Error('No se encontró un token de autenticación.');
 
+      // Construye query con los filtros
       const queryParams = new URLSearchParams({
         ...filtersWithoutActive,
         active: parseActiveFilter(filtersWithoutActive.active),
       }).toString();
-
       const response = await fetch(`${BASE_URL}/${entityType}?${queryParams}`, {
         method: 'GET',
         headers: {
@@ -116,7 +121,6 @@ const SearchComponent = ({
           'Content-Type': 'application/json',
         },
       });
-
       if (!response.ok)
         throw new Error(
           `Error en la búsqueda: ${response.status} ${response.statusText}`,
@@ -130,6 +134,7 @@ const SearchComponent = ({
     }
   };
 
+  // Actualiza el estado del usuario (activo/inactivo)
   const handleToggleUserStatus = async (idUser, isActive) => {
     try {
       const token = localStorage.getItem('token');
@@ -159,6 +164,7 @@ const SearchComponent = ({
     }
   };
 
+  // Elimina usuario y lo quita de la tabla
   const handleDeleteUser = async (idUser) => {
     try {
       const token = localStorage.getItem('token');
@@ -182,22 +188,21 @@ const SearchComponent = ({
     }
   };
 
-  //Modal borrar usuario
+  // Modal borrar usuario
   const openDeleteModal = (idUser) => {
     setAuxToDelete(idUser);
     setShowDeleteModal(true);
   };
-
   const closeDeleteModal = () => {
     setShowDeleteModal(false);
     setAuxToDelete(null);
   };
-
   const confirmDelete = async () => {
     await handleDeleteUser(auxToDelete);
     closeDeleteModal();
   };
 
+  // Cálculo de paginación para renderizar la tabla
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const paginatedResults = results.slice(startIndex, endIndex);
@@ -214,7 +219,7 @@ const SearchComponent = ({
               : 'Auxiliares'}
         </h2>
 
-        {/* Mensaje de error */}
+        {/* Mensaje de error si no hay un filtro activo */}
         {errorMessage && (
           <p className="error-message text-center">{errorMessage}</p>
         )}
@@ -353,7 +358,7 @@ const SearchComponent = ({
                     {showSelectButton ? (
                       <td colSpan={2} style={{ textAlign: 'center' }}>
                         <button
-                          className="select-btn"
+                          className="search-btn"
                           onClick={() => onSelect(item)}
                         >
                           Seleccionar
@@ -455,7 +460,8 @@ const SearchComponent = ({
           </div>
         )}
       </div>
-      {/*Modal de confirmación*/}
+
+      {/* Modal de confirmación */}
       <Modal
         show={showDeleteModal}
         onHide={() => setShowDeleteModal(false)}
@@ -464,7 +470,6 @@ const SearchComponent = ({
         <Modal.Header closeButton>
           <Modal.Title>Confirmar eliminación</Modal.Title>
         </Modal.Header>
-
         <Modal.Body>
           {entityType === 'nutritionists' && (
             <>
@@ -482,7 +487,6 @@ const SearchComponent = ({
             </>
           )}
         </Modal.Body>
-
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
             Cancelar

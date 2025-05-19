@@ -41,7 +41,7 @@ class AppointmentServiceTest {
 
     @BeforeEach
     void setUp() {
-        //Inicializar el DTO de prueba
+        // Se inicializa el DTO
         dto = new AppointmentDTO();
         dto.setIdAppointment(null);
         dto.setIdNutritionist(10L);
@@ -54,25 +54,23 @@ class AppointmentServiceTest {
 
     @Test
     void createAppointment_whenNoConflictAndTypeIsAppointment_shouldSaveAndSendEmail() {
-        //Arrange
+        // Arrange
         when(appointmentRepository.findConflictAppointments(10L, dto.getDate(), dto.getStartTime(), dto.getEndTime()))
             .thenReturn(Collections.emptyList());
         when(appointmentRepository.save(any(Appointment.class))).thenAnswer(invocation -> {
             Appointment a = invocation.getArgument(0);
-            a.setIdAppointment("apt-1");
+            a.setIdAppointment("appointment-1");
             return a;
         });
 
-        //Stub patientService
         Patient patient = new Patient();
         User user = new User(); 
-        user.setMail("p@c.es"); 
+        user.setMail("prueba@gmail.com"); 
         user.setName("Luis");
         patient.setUser(user);
         patient.setIdUser(20L);
         when(patientService.getPatientById(20L)).thenReturn(patient);
 
-        //Stub Nutritionist a DTO
         NutritionistDTO nutritionistDto = new NutritionistDTO();
         nutritionistDto.setIdUser(10L);
         nutritionistDto.setName("Ana");
@@ -84,34 +82,33 @@ class AppointmentServiceTest {
         when(nutritionistService.getNutritionistById(10L))
             .thenReturn(nutritionistDomain);
 
-        //Act
+        // Act
         AppointmentDTO result = service.createAppointment(dto);
 
-        //Assert
+        // Assert
         assertNotNull(result);
-        assertEquals("apt-1", result.getIdAppointment());
+        assertEquals("appointment-1", result.getIdAppointment());
         assertEquals(10L, result.getIdNutritionist());
         assertEquals(20L, result.getIdPatient());
         verify(appointmentRepository).save(any(Appointment.class));
         verify(emailService).sendAppointmentConfirmation(
-                eq("p@c.es"), eq("Luis"),
+                eq("prueba@gmail.com"), eq("Luis"),
                 eq(dto.getDate()), eq(dto.getStartTime()),
                 eq("Ana"), eq("García"));
     }
 
     @Test
     void createAppointment_whenNoConflictAndTypeIsBlockout_shouldSaveWithoutEmail() {
-        //Arrange
+        // Arrange
         dto.setType(AppointmentType.BLOCKOUT);
         when(appointmentRepository.findConflictAppointments(anyLong(), any(), any(), any()))
             .thenReturn(Collections.emptyList());
         when(appointmentRepository.save(any(Appointment.class))).thenAnswer(invocation -> {
             Appointment a = invocation.getArgument(0);
-            a.setIdAppointment("blk-1");
+            a.setIdAppointment("blockout-1");
             return a;
         });
 
-        //Stub Nutritionist a DTO
         NutritionistDTO nutritionistDto = new NutritionistDTO();
         nutritionistDto.setIdUser(10L);
         nutritionistDto.setName("Ana");
@@ -123,24 +120,24 @@ class AppointmentServiceTest {
         when(nutritionistService.getNutritionistById(10L))
             .thenReturn(nutritionistDomain);
 
-        //Act
+        // Act
         AppointmentDTO result = service.createAppointment(dto);
 
-        //Assert
-        assertEquals("blk-1", result.getIdAppointment());
+        // Assert
+        assertEquals("blockout-1", result.getIdAppointment());
         assertNull(result.getIdPatient());
         verify(emailService, never()).sendAppointmentConfirmation(any(), any(), any(), any(), any(), any()); //Parametros de envio de email
     }
 
     @Test
     void createAppointment_whenConflict_shouldThrow() {
-        //Arrange
+        // Arrange
         when(appointmentRepository.findConflictAppointments(anyLong(), any(), any(), any()))
             .thenReturn(List.of(new Appointment()));
 
-        //Act & Assert
+        // Act and Assert
         RuntimeException ex = assertThrows(RuntimeException.class, () -> service.createAppointment(dto));
-        assertTrue(ex.getMessage().contains("Conflicto")); //Excepción de conflicto
+        assertTrue(ex.getMessage().contains("Conflicto"));
         verify(appointmentRepository, never()).save(any());
     }
 
@@ -162,25 +159,25 @@ class AppointmentServiceTest {
             .thenReturn(false); //Simular que no hay conflictos en el horario
         when(appointmentRepository.save(existing)).thenReturn(existing);
 
-        //Act
+        // Act
         Appointment updated = service.updateAppointment("u1", dto);
-
-        //Assert
+ 
+        // Assert
         assertEquals("u1", updated.getIdAppointment());
         verify(appointmentRepository).save(existing);
     }
 
     @Test
     void updateAppointment_whenNotFound_shouldThrow() {
-        when(appointmentRepository.findById("noexiste")).thenReturn(Optional.empty());
+        when(appointmentRepository.findById("falseId")).thenReturn(Optional.empty());
         RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> service.updateAppointment("noexiste", dto));
+                () -> service.updateAppointment("falseId", dto));
         assertEquals("Cita no encontrada", ex.getMessage());
     }
 
     @Test
     void updateAppointment_whenOverlap_shouldThrow() {
-        //Arrange
+        // Arrange
         Appointment existing = new Appointment();
         existing.setIdAppointment("o1");
         Nutritionist nutritionist = new Nutritionist(); nutritionist.setIdUser(10L);
@@ -188,9 +185,9 @@ class AppointmentServiceTest {
         when(appointmentRepository.findById("o1")).thenReturn(Optional.of(existing));
         when(appointmentRepository.existsByNutritionistIdAndDateAndTimeRange(
                 eq(10L), any(), any(), any(), eq("o1")))
-            .thenReturn(true); //Simular que ya existe una cita en el rango de tiempo
+            .thenReturn(true); // Se simula que ya existe una cita en el rango de tiempo
 
-        //Act y Assert
+        // Act and Assert
         RuntimeException ex = assertThrows(RuntimeException.class,
                 () -> service.updateAppointment("o1", dto));
         assertTrue(ex.getMessage().contains("Conflicto de horario"));
@@ -210,9 +207,9 @@ class AppointmentServiceTest {
 
     @Test
     void deleteAppointment_whenNotExists_shouldThrow() {
-        when(appointmentRepository.existsById("noexiste")).thenReturn(false);
+        when(appointmentRepository.existsById("falseId")).thenReturn(false);
         RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> service.deleteAppointment("noexiste"));
+                () -> service.deleteAppointment("falseId"));
         assertEquals("Cita no encontrada", ex.getMessage());
     }
 
@@ -236,10 +233,10 @@ class AppointmentServiceTest {
 
         when(appointmentRepository.findById("g1")).thenReturn(Optional.of(a));
 
-        //Act
+        // Act
         AppointmentDTO dtoResult = service.getAppointmentById("g1");
 
-        //Assert
+        // Assert
         assertEquals("g1", dtoResult.getIdAppointment());
         assertNotNull(dtoResult.getPatient());
         assertEquals("Patricio", dtoResult.getPatient().getName());
@@ -253,7 +250,7 @@ class AppointmentServiceTest {
 
     @Test
     void getAppointmentsByNutritionist_shouldReturnListDTO() {
-        //Arrange
+        // Arrange
         Appointment a1 = new Appointment(); a1.setIdAppointment("n1");
         Nutritionist nutritionist = new Nutritionist(); 
         nutritionist.setIdUser(10L); 
@@ -261,17 +258,17 @@ class AppointmentServiceTest {
         when(appointmentRepository.findByNutritionist_IdUserOrderByDateAscStartTimeAsc(10L))
             .thenReturn(List.of(a1));
 
-        //Act
+        // Act
         List<AppointmentDTO> list = service.getAppointmentsByNutritionist(10L);
 
-        //Assert
+        // Assert
         assertEquals(1, list.size());
         assertEquals("n1", list.get(0).getIdAppointment());
     }
 
     @Test
     void getAppointmentsByPatient_shouldReturnListDTO() {
-        //Arrange
+        // Arrange
         Appointment a2 = new Appointment(); 
         a2.setIdAppointment("p2");
         Nutritionist nutritionist = new Nutritionist();
@@ -285,10 +282,10 @@ class AppointmentServiceTest {
         nutritionistDto.setSurname("García");
         when(nutritionistService.getNutritionistByIdDTO(10L)).thenReturn(nutritionistDto);
 
-        //Act
+        // Act
         List<AppointmentDTO> list = service.getAppointmentsByPatient(20L);
 
-        //Assert
+        // Assert
         assertEquals(1, list.size());
         assertEquals("p2", list.get(0).getIdAppointment());
         assertEquals(10L, list.get(0).getIdNutritionist());
@@ -314,10 +311,10 @@ class AppointmentServiceTest {
         when(nutritionistService.getNutritionistByIdDTO(10L))
             .thenReturn(nutriDto);
 
-        //Act
+        // Act
         List<AppointmentDTO> list = service.getPendingAppointmentsByPatient(20L);
 
-        //Assert
+        // Assert
         assertEquals(1, list.size());
         assertEquals("pending1", list.get(0).getIdAppointment());
     }
@@ -328,7 +325,7 @@ class AppointmentServiceTest {
         when(appointmentRepository.findPendingByPatientAndDateTime(anyLong(), any(), any()))
             .thenThrow(new RuntimeException("DB error"));
 
-        //Act
+        // Act
         List<AppointmentDTO> list = service.getPendingAppointmentsByPatient(20L);
 
         //Assert
@@ -337,19 +334,19 @@ class AppointmentServiceTest {
 
     @Test
     void deleteAppointmentsByNutritionist_shouldInvokeRepository() {
-        //Act
+        // Act
         service.deleteAppointmentsByNutritionist(10L);
 
-        //Assert
+        // Assert
         verify(appointmentRepository).deleteByNutritionistIdUser(10L);
     }
 
     @Test
     void deleteAppointmentsByPatient_shouldInvokeRepository() {
-        //Act
+        // Act
         service.deleteAppointmentsByPatient(30L);
 
-        //Assert
+        // Assert
         verify(appointmentRepository).deleteByPatientIdUser(30L);
     }
 
@@ -364,7 +361,7 @@ class AppointmentServiceTest {
         when(nutritionistService.getNutritionistById(10L))
             .thenReturn(nutritionistDomain);
 
-        //Stub de la conversión a DTO del nutricionista
+        // Stub de la conversión a DTO del nutricionista
         NutritionistDTO nutriDto = new NutritionistDTO();
         nutriDto.setIdUser(10L);
         nutriDto.setName("Ana");
@@ -372,7 +369,7 @@ class AppointmentServiceTest {
         when(nutritionistService.getNutritionistByIdDTO(10L))
             .thenReturn(nutriDto);
 
-        //Ahora la cita existente con nutricionista y fecha
+        // Ahora la cita existente con nutricionista y fecha
         Appointment appt = new Appointment();
         appt.setIdAppointment("x1");
         appt.setDate(dto.getDate());
@@ -384,12 +381,12 @@ class AppointmentServiceTest {
             .findByNutritionist_IdUserAndDateOrderByStartTimeAsc(eq(10L), eq(dto.getDate())))
         .thenReturn(List.of(appt));
 
-        //Act
+        // Act
         List<String> slots = service.getAvailableSlots(10L, "mañana", dto.getDate());
 
-        //Assert: no 09:00, sí 09:30, 10:00, 10:30, 11:00, 11:30
-        assertFalse(slots.contains("09:00")); //No debe incluir el hueco ocupado
-        assertTrue(slots.contains("09:30")); //Debe incluir el primer hueco libre después de las 9:00
+        // Assert
+        assertFalse(slots.contains("09:00")); // No debe incluir el hueco ocupado
+        assertTrue(slots.contains("09:30")); // Debe incluir el primer hueco libre después de las 9:00
         assertTrue(slots.contains("10:00"));
         assertTrue(slots.contains("10:30"));
         assertTrue(slots.contains("11:00"));
@@ -399,22 +396,27 @@ class AppointmentServiceTest {
 
     @Test
     void getAvailableSlots_invalidRange_shouldThrow() {
+        // Arrange
         when(nutritionistService.getNutritionistById(10L)).thenReturn(new Nutritionist());
+
+        // Act and Assert
         assertThrows(IllegalArgumentException.class,
                 () -> service.getAvailableSlots(10L, "noche", dto.getDate()));
-        //Se lanza una excepción si la franja horaria no es válida
     }
 
     @Test
     void getAvailableSlots_rangeNoWorkHours_shouldReturnEmptyList() {
+        // Arrange
         Nutritionist nutritionist = new Nutritionist();
         nutritionist.setStartTime(LocalTime.of(14, 0));
         nutritionist.setEndTime(LocalTime.of(15, 0));
         nutritionist.setAppointmentDuration(60);
         when(nutritionistService.getNutritionistById(10L)).thenReturn(nutritionist);
 
-        //Se busca un hueco por la mañana entre las 9 y 12, pero el nutricionista trabaja de 14 a 15
+        // Act (Se busca un hueco por la mañana entre las 9 y 12, pero el nutricionista trabaja de 14 a 15)
         List<String> slots = service.getAvailableSlots(10L, "mañana", dto.getDate());
+        
+        // Assert
         assertTrue(slots.isEmpty());
     }
 }

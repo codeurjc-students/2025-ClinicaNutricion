@@ -55,13 +55,12 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                // Permisos para autenticación
-                .requestMatchers("/auth/**", "/**","/health").permitAll()
+                .requestMatchers("/**","/health").permitAll()
 
-                // Permisos para obtener información de administradores
+                // Administradores
                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
 
-                // Permisos para obtener información de nutricionistas
+                // Nutricionistas
                 .requestMatchers("/nutritionists/profile").hasAuthority("ROLE_NUTRITIONIST")
                 .requestMatchers(HttpMethod.GET, "/nutritionists").authenticated()
                 .requestMatchers(HttpMethod.GET, "/nutritionists/{id}").authenticated()
@@ -69,18 +68,18 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/nutritionists/{id}").hasAuthority("ROLE_ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/nutritionists/{id}").hasAuthority("ROLE_ADMIN")
 
-                // Permisos para obtener información de auxiliares
+                // Auxiliares
                 .requestMatchers("/auxiliaries/profile").hasAuthority("ROLE_AUXILIARY")
                 .requestMatchers(HttpMethod.GET, "/auxiliaries/{id}").hasAuthority("ROLE_ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/auxiliaries/{id}").hasAuthority("ROLE_ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/auxiliaries/{id}").hasAuthority("ROLE_ADMIN")
 
-                // Permisos para obtener información de pacientes
+                // Pacientes
                 .requestMatchers("/patients/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_NUTRITIONIST", "ROLE_AUXILIARY", "ROLE_PATIENT")
                 .requestMatchers("/patients/{id}").hasAnyAuthority("ROLE_ADMIN", "ROLE_NUTRITIONIST", "ROLE_AUXILIARY")
                 .requestMatchers(HttpMethod.DELETE, "/patients/{id}").hasAnyAuthority("ROLE_ADMIN", "ROLE_NUTRITIONIST", "ROLE_AUXILIARY")
 
-                // Permisos para obtener citas
+                // Citas
                 .requestMatchers(HttpMethod.GET, "/appointments/{id}").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/appointments/{id}").authenticated()
                 .requestMatchers(HttpMethod.GET, "/appointments/nutritionist/{id}").hasAnyAuthority("ROLE_NUTRITIONIST", "ROLE_ADMIN", "ROLE_AUXILIARY")

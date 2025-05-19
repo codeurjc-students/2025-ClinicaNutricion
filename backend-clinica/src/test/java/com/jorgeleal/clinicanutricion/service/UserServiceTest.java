@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,13 +30,14 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
+        // Se inicializa el usuario
         user = new User();
         user.setIdUser(42L);
-        user.setCognitoId("cog-42");
+        user.setCognitoId("cognito-42");
         user.setName("Juan");
         user.setSurname("Pérez");
         user.setBirthDate(LocalDate.of(1990, 5, 20));
-        user.setMail("juanperez@example.com");
+        user.setMail("juanperez@gmail.com");
         user.setPhone("+34123456789");
         user.setGender(Gender.MASCULINO);
         user.setUserType(UserType.PATIENT);
@@ -43,46 +45,59 @@ class UserServiceTest {
 
     @Test
     void saveUser_shouldDelegateToRepositoryAndReturnSaved() {
+        // Arrange
         when(repository.save(user)).thenReturn(user);
 
+        // Act
         User saved = service.saveUser(user);
 
+        // Assert
         assertSame(user, saved);
         verify(repository).save(user);
     }
 
     @Test
     void getUserByIdUser_whenExists_returnsUser() {
+        // Arrange
         when(repository.findByIdUser(42L)).thenReturn(Optional.of(user));
 
+        // Act
         User found = service.getUserByIdUser(42L);
 
+        // Assert
         assertSame(user, found);
         verify(repository).findByIdUser(42L);
     }
 
     @Test
     void getUserByIdUser_whenNotExists_returnsNull() {
+        // Arrange
         when(repository.findByIdUser(1L)).thenReturn(Optional.empty());
-
+        
+        // Act
         User found = service.getUserByIdUser(1L);
 
+        // Assert
         assertNull(found);
         verify(repository).findByIdUser(1L);
     }
 
     @Test
     void getUserByCognitoId_shouldReturnRepositoryResult() {
-        when(repository.findByCognitoId("cog-42")).thenReturn(user);
+        // Arrange
+        when(repository.findByCognitoId("cognito-42")).thenReturn(user);
 
-        User found = service.getUserByCognitoId("cog-42");
+        // Act
+        User found = service.getUserByCognitoId("cognito-42");
 
+        // Assert
         assertSame(user, found);
-        verify(repository).findByCognitoId("cog-42");
+        verify(repository).findByCognitoId("cognito-42");
     }
 
     @Test
     void updateUser_whenExists_updatesFieldsAndSaves() {
+        // Arrange
         User updated = new User();
         updated.setIdUser(42L);
         updated.setName("Juanito");
@@ -95,8 +110,10 @@ class UserServiceTest {
         when(repository.findByIdUser(42L)).thenReturn(Optional.of(user));
         when(repository.save(any(User.class))).thenAnswer(inv -> inv.getArgument(0));
 
+        // Act
         User result = service.updateUser(updated);
 
+        // Assert
         assertEquals("Juanito", result.getName());
         assertEquals("Gómez", result.getSurname());
         assertEquals(LocalDate.of(1985, 1, 1), result.getBirthDate());
@@ -108,11 +125,12 @@ class UserServiceTest {
 
     @Test
     void updateUser_whenNotExists_throwsRuntimeException() {
+        // Arrange
         User updated = new User();
         updated.setIdUser(99L);
-
         when(repository.findByIdUser(99L)).thenReturn(Optional.empty());
 
+        // Act and Assert
         RuntimeException ex = assertThrows(RuntimeException.class,
             () -> service.updateUser(updated));
         assertTrue(ex.getMessage().contains("no existe"));
@@ -122,30 +140,39 @@ class UserServiceTest {
 
     @Test
     void deleteUser_shouldCallRepositoryDeleteById() {
-        doNothing().when(repository).deleteById(42L); //deleteById devuelve void
+        // Arrange
+        doNothing().when(repository).deleteById(42L); // Devuelve void
 
+        // Act
         service.deleteUser(42L);
 
+        // Assert
         verify(repository).deleteById(42L);
     }
 
     @Test
     void mailExists_whenTrue() {
-        when(repository.existsByMail("a@b.com")).thenReturn(true);
+        // Arrange
+        when(repository.existsByMail("prueba@gmail.com")).thenReturn(true);
 
-        boolean exists = service.mailExists("a@b.com");
+        // Act
+        boolean exists = service.mailExists("prueba@gmail.com");
 
+        // Assert
         assertTrue(exists);
-        verify(repository).existsByMail("a@b.com");
+        verify(repository).existsByMail("prueba@gmail.com");
     }
 
     @Test
     void mailExists_whenFalse() {
-        when(repository.existsByMail("c@d.com")).thenReturn(false);
+        // Arrange
+        when(repository.existsByMail("prueba@gmail.com")).thenReturn(false);
 
-        boolean exists = service.mailExists("c@d.com");
+        // Act
+        boolean exists = service.mailExists("prueba@gmail.com");
 
+        // Assert
         assertFalse(exists);
-        verify(repository).existsByMail("c@d.com");
+        verify(repository).existsByMail("prueba@gmail.com");
     }
 }

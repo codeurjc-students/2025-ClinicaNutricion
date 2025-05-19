@@ -14,7 +14,7 @@ const AppointmentConfirmation = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
 
-  //Carga número de citas pendientes para este paciente y nutricionista
+  // Carga número de citas pendientes para este paciente y nutricionista
   useEffect(() => {
     if (!patient || !nutritionist) return;
     const fetchPending = async () => {
@@ -31,6 +31,7 @@ const AppointmentConfirmation = () => {
         if (!response.ok)
           throw new Error('No se pudieron cargar las citas pendientes');
         const data = await response.json();
+        // Filtra las citas pendientes para contar solo las del nutricionista seleccionado
         const count = data.filter(
           (a) => a.idNutritionist === nutritionist.idUser,
         ).length;
@@ -43,9 +44,11 @@ const AppointmentConfirmation = () => {
     fetchPending();
   }, [BASE_URL, patient, nutritionist, token]);
 
+  // Crea la cita con los datos seleccionados
   const createAppointment = async () => {
     if (!selectedTime || !selectedDate || !patient) return;
 
+    // Se calcula la fecha y hora de fin según la duración de citas del nutricionista
     const start = new Date(`${selectedDate}T${selectedTime}:00`);
     const end = new Date(
       start.getTime() + nutritionist.appointmentDuration * 60000,
@@ -87,6 +90,7 @@ const AppointmentConfirmation = () => {
     }
   };
 
+  // Verifica si el paciente ha alcanzado el número máximo de citas activas con el nutricionista
   const reachedMax =
     pendingCount !== null && pendingCount >= nutritionist.maxActiveAppointments;
 
@@ -119,6 +123,7 @@ const AppointmentConfirmation = () => {
           </p>
         </div>
 
+        {/* Botón para confirmar la cita (deshabilitado si falta info o se alcanzó el número máximo de citas)*/}
         <button
           className="btn-confirm"
           onClick={createAppointment}
@@ -129,6 +134,7 @@ const AppointmentConfirmation = () => {
           {loading ? 'Creando cita...' : 'Continuar'}
         </button>
 
+        {/* Mensaje de error si el paciente ha alcanzado el número máximo de citas */}
         {reachedMax && (
           <p className="error-text">
             Actualmente tienes {pendingCount} citas pendientes con este

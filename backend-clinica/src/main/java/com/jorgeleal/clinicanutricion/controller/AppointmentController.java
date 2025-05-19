@@ -49,11 +49,10 @@ public class AppointmentController {
     
     @PostMapping
     public ResponseEntity<?> createAppointment(@RequestBody AppointmentDTO appointmentDTO) {
-        Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
-    
+        Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities(); // Se obtienen los roles del usuario autenticado
         List<String> allowedRoles = List.of("ROLE_ADMIN", "ROLE_NUTRITIONIST", "ROLE_AUXILIARY", "ROLE_PATIENT");
 
-        if (authorities.stream().map(GrantedAuthority::getAuthority).noneMatch(allowedRoles::contains)) {
+        if (authorities.stream().map(GrantedAuthority::getAuthority).noneMatch(allowedRoles::contains)) { // Se verifica si el usuario tiene alguno de los roles permitidos
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 

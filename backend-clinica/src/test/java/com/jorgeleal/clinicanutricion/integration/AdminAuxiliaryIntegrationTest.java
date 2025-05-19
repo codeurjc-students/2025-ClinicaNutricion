@@ -59,17 +59,17 @@ public class AdminAuxiliaryIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        // Limpieza de BD
+        // Limpieza de base de datos
         adminAuxRepository.deleteAll();
         userRepository.deleteAll();
 
-        // Mock de CognitoService para aislar llamadas externas
+        // Mock de CognitoService para aislar las llamadas externas
         when(cognitoService.createCognitoUser(any())).thenReturn("fake-cognito-admin");
         doNothing().when(cognitoService).enableUser(any());
         doNothing().when(cognitoService).disableUser(any());
         doNothing().when(cognitoService).deleteCognitoUser(any());
 
-        // Creamos un usuario con rol ADMIN
+        // Se crea un Administrador
         existingUser = new User();
         existingUser.setName("Admin");
         existingUser.setSurname("One");
@@ -81,7 +81,6 @@ public class AdminAuxiliaryIntegrationTest {
         existingUser.setCognitoId("cognito-admin");
         existingUser = userRepository.save(existingUser);
 
-        // Asociamos ese usuario al repositorio admin_auxiliary
         existingAdminAux = new AdminAuxiliary();
         existingAdminAux.setUser(existingUser);
         adminAuxRepository.save(existingAdminAux);
@@ -95,7 +94,7 @@ public class AdminAuxiliaryIntegrationTest {
     void getProfile_BadRequest_NoSub() throws Exception {
         mockMvc.perform(get("/admin/profile")
                 .with(jwt()
-                    .jwt(j -> j.claim("sub", ""))            // sub vacío
+                    .jwt(j -> j.claim("sub", "")) // Sub vacío
                     .authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
             )
             .andExpect(status().isBadRequest())
@@ -105,7 +104,6 @@ public class AdminAuxiliaryIntegrationTest {
 
     @Test
     void getProfile_NotFound_UserDoesNotExist() throws Exception {
-        // borramos usuario para forzar NOT_FOUND
         adminAuxRepository.deleteAll();
         userRepository.deleteAll();
 
@@ -154,19 +152,21 @@ public class AdminAuxiliaryIntegrationTest {
 
     @Test
     void updateProfile_BadRequest_NoSub() throws Exception {
+        var updates = Map.of(
+            "name", "Nuevo",
+            "surname", "Admin",
+            "birthDate", "1980-01-01",
+            "mail", "admin@example.com",
+            "phone", "+34123456789",
+            "gender", "MASCULINO"
+        );
+
         mockMvc.perform(put("/admin/profile")
                 .with(jwt()
                     .jwt(j -> j.claim("sub", ""))
                     .authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(Map.of(
-                    "name", "Nuevo",
-                    "surname", "Admin",
-                    "birthDate", "1980-01-01",
-                    "mail", "admin@example.com",
-                    "phone", "+34123456789",
-                    "gender", "MASCULINO"
-                )))
+                .content(objectMapper.writeValueAsString(updates))
             )
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.error")
@@ -175,22 +175,22 @@ public class AdminAuxiliaryIntegrationTest {
 
     @Test
     void updateProfile_InternalServerError_AdminAuxNotFound() throws Exception {
-        // borramos solo el registro admin_auxiliary
         adminAuxRepository.deleteAll();
+        var updates = Map.of(
+            "name", "Nuevo",
+            "surname", "Admin",
+            "birthDate", "1980-01-01",
+            "mail", "admin@example.com",
+            "phone", "+34123456789",
+            "gender", "MASCULINO"
+        );
 
         mockMvc.perform(put("/admin/profile")
                 .with(jwt()
                     .jwt(j -> j.claim("sub", "cognito-admin"))
                     .authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(Map.of(
-                    "name", "Nuevo",
-                    "surname", "Admin",
-                    "birthDate", "1980-01-01",
-                    "mail", "admin@example.com",
-                    "phone", "+34123456789",
-                    "gender", "MASCULINO"
-                )))
+                .content(objectMapper.writeValueAsString(updates))
             )
             .andExpect(status().isInternalServerError())
             .andExpect(jsonPath("$.error")
@@ -199,13 +199,13 @@ public class AdminAuxiliaryIntegrationTest {
 
     @Test
     void updateProfile_Success_AsAdmin() throws Exception {
-        Map<String, Object> updates = Map.of(
-            "name",      "NuevoAdmin",
-            "surname",   "Actualizado",
-            "birthDate", "1980-01-01",
-            "mail",      "admin@example.com",
-            "phone",     "+34123456789",
-            "gender",    "MASCULINO"
+        var updates = Map.of(
+            "name","NuevoAdmin",
+            "surname","Actualizado",
+            "birthDate","1980-01-01",
+            "mail","admin@example.com",
+            "phone","+34123456789",
+            "gender","MASCULINO"
         );
 
         mockMvc.perform(put("/admin/profile")
@@ -219,7 +219,6 @@ public class AdminAuxiliaryIntegrationTest {
             .andExpect(jsonPath("$.user.name").value("NuevoAdmin"))
             .andExpect(jsonPath("$.user.surname").value("Actualizado"));
 
-        // Comprobamos en BD que el cambio persiste
         var saved = adminAuxRepository.findByUserIdUser(existingUser.getIdUser()).orElseThrow();
         assertEquals("NuevoAdmin", saved.getUser().getName());
         assertEquals("Actualizado", saved.getUser().getSurname());
@@ -227,17 +226,19 @@ public class AdminAuxiliaryIntegrationTest {
 
     @Test
     void updateProfile_Forbidden_WithoutAdminRole() throws Exception {
+        var updates = Map.of(
+            "name","Otro",
+            "surname","User",
+            "birthDate","1980-01-01",
+            "mail","x@example.com",
+            "phone","+34123456789",
+            "gender","MASCULINO"
+        );
+        
         mockMvc.perform(put("/admin/profile")
                 .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_PATIENT")))
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(Map.of(
-                    "name",      "Otro",
-                    "surname",   "User",
-                    "birthDate", "1980-01-01",
-                    "mail",      "x@example.com",
-                    "phone",     "+34123456789",
-                    "gender",    "MASCULINO"
-                )))
+                .content(objectMapper.writeValueAsString(updates))
             )
             .andExpect(status().isForbidden());
     }

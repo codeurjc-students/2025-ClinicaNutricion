@@ -56,6 +56,7 @@ const NutritionistCalendar = ({
   const maxTime = workEnd.toDate();
   const today = moment().startOf('day');
 
+  // Carga las citas del nutricionista al cambiar de fecha o de ID
   const fetchAppointments = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
@@ -95,7 +96,7 @@ const NutritionistCalendar = ({
     if (nutritionistId) fetchAppointments();
   }, [nutritionistId, currentDate, fetchAppointments]);
 
-  // Drag and Drop
+  // Drag and Drop del calendario
   const handleEventDrop = async ({ event, start, end }) => {
     const originalAppointments = [...appointments];
     if (moment(start).isBefore(today)) {
@@ -131,6 +132,7 @@ const NutritionistCalendar = ({
     }
   };
 
+  // Crea cita o bloqueo si la fecha es válida
   const createAppointmentOrBlockout = async (
     type,
     patient = null,
@@ -169,6 +171,7 @@ const NutritionistCalendar = ({
     }
   };
 
+  // Formato del encabezado dinámico según vista (día, semana o mes)
   const formatDateHeader = () => {
     if (view === Views.DAY) {
       return (
@@ -193,9 +196,13 @@ const NutritionistCalendar = ({
     );
   };
 
+  // Actualiza la fecha seleccionada desde el DatePicker
   const handleDateChange = (date) => setCurrentDate(date);
+
+  // Vuelve al día de hoy
   const goToToday = () => setCurrentDate(new Date());
 
+  // Navega adelante o atrás en los días, semanas o meses según la vista
   const navigateDate = (direction) => {
     const newDate = moment(currentDate).add(
       direction,
@@ -204,11 +211,13 @@ const NutritionistCalendar = ({
     setCurrentDate(newDate.toDate());
   };
 
+  // Prepara y muestra el modal de nueva cita
   const handleNewAppointment = () => {
     setSelectedTime(contextMenuInfo.selectedTime);
     setShowModal(true);
   };
 
+  // Valida y crea la cita tras seleccionar paciente
   const handleConfirmAppointment = (patient) => {
     if (!selectedTime) {
       toast.error('Error: No se ha definido una hora para la cita.');
@@ -218,6 +227,7 @@ const NutritionistCalendar = ({
     setShowModal(false);
   };
 
+  // Borra el evento seleccionado y actualiza la vista
   const handleDeleteEvent = async () => {
     if (!contextMenuInfo?.event) return;
 
@@ -248,6 +258,7 @@ const NutritionistCalendar = ({
     setContextMenuInfo(null);
   };
 
+  // Muestra menú al hacer clic derecho en slot o evento
   const handleRightClick = (e, value, event = null) => {
     e.preventDefault();
     if (moment(value).isBefore(today)) return;
@@ -264,6 +275,7 @@ const NutritionistCalendar = ({
     setContextMenuInfo(null);
   };
 
+  // Cambia la altura de los slots según el zoom
   useEffect(() => {
     document.documentElement.style.setProperty(
       '--calendar-slot-height',
@@ -271,6 +283,7 @@ const NutritionistCalendar = ({
     );
   }, [zoom]);
 
+  // Cierra el menú contextual al hacer clic fuera de él
   useEffect(() => {
     const handleClickOutside = () => closeContextMenu();
     document.addEventListener('click', handleClickOutside);
@@ -279,6 +292,7 @@ const NutritionistCalendar = ({
     };
   }, []);
 
+  // Personaliza cómo se muestran las citas o bloqueos en el calendario
   const components = {
     event: ({ event }) => (
       <div

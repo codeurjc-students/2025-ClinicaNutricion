@@ -19,6 +19,7 @@ const TimeSelection = () => {
   const token = localStorage.getItem('token');
   const today = new Date();
 
+  // Fetch de huecos libres según nutricionista, franja y fecha
   const fetchAvailableSlots = useCallback(async () => {
     try {
       setLoading(true);
@@ -37,21 +38,23 @@ const TimeSelection = () => {
 
       if (!response.ok) throw new Error('Error al obtener los huecos libres');
       const data = await response.json();
-      setAvailableSlots(data);
+      setAvailableSlots(data); // Se guardan los huecos libres
     } catch (error) {
       console.error('Error al obtener los huecos libres:', error);
-      setAvailableSlots([]);
+      setAvailableSlots([]); // En caso de error, se limpian los huecos
     } finally {
       setLoading(false);
     }
   }, [nutritionist, selectedDate, timeRange, BASE_URL, token]);
 
+  // Refresca cuando cambia nutricionista o fecha
   useEffect(() => {
     if (nutritionist && selectedDate) {
       fetchAvailableSlots();
     }
   }, [nutritionist, selectedDate, timeRange, fetchAvailableSlots]);
 
+  // Se actualiza la fecha seleccionada y se resetea la hora al cambiar la fecha
   const handleDateChange = (date) => {
     if (date !== selectedDate) {
       setSelectedDate(date);
@@ -59,6 +62,7 @@ const TimeSelection = () => {
     }
   };
 
+  // Se marca o desmarca la hora seleccionada
   const handleTimeSelection = (time) => {
     if (selectedTime === time) {
       setSelectedTime(null);
@@ -67,9 +71,9 @@ const TimeSelection = () => {
     }
   };
 
+  // Se muestra el modal para seleccionar más horas
   const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
-
   const handleTimeSelectionInModal = (time) => {
     const newAvailableSlots = availableSlots.filter((slot) => slot !== time);
     newAvailableSlots.unshift(time);
@@ -80,7 +84,7 @@ const TimeSelection = () => {
 
   const formattedDate = selectedDate.toLocaleDateString('en-CA');
 
-  //Filtramos las horas si la fecha seleccionada es hoy
+  // Se filtran las horas pasadas si la fecha seleccionada es hoy
   const filterAvailableSlots = () => {
     if (selectedDate.toLocaleDateString() === today.toLocaleDateString()) {
       const currentTime = today.getHours() * 60 + today.getMinutes();
@@ -102,6 +106,7 @@ const TimeSelection = () => {
       </header>
 
       <div className="content-wrapper">
+        {/* Información del nutricionista */}
         <div className="nutritionist-info">
           <h5>Nutricionista seleccionado:</h5>
           <p>
@@ -112,6 +117,7 @@ const TimeSelection = () => {
         </div>
 
         <div className="calendar-container">
+          {/* Calendario para elegir la fecha */}
           <Calendar
             onChange={handleDateChange}
             value={selectedDate}
@@ -119,10 +125,9 @@ const TimeSelection = () => {
           />
         </div>
 
+        {/* Lista de botones con las horas disponibles (Se muestran 7 como máximo) */}
         <div className="time-list">
-          {loading ? (
-            <p>Cargando...</p>
-          ) : filteredSlots.length > 0 ? (
+          {loading ? null : filteredSlots.length > 0 ? (
             <div className="time-buttons-container">
               <div className="time-button-container">
                 {filteredSlots
@@ -148,6 +153,7 @@ const TimeSelection = () => {
           )}
         </div>
 
+        {/* Modal con todos los huecos disponibles */}
         <Modal show={showModal} onHide={handleCloseModal} centered>
           <Modal.Header closeButton>
             <Modal.Title>Seleccionar una hora</Modal.Title>
@@ -167,6 +173,7 @@ const TimeSelection = () => {
           </Modal.Body>
         </Modal>
 
+        {/* Botón para confirmar fecha y hora */}
         <Link
           to="/patients/appointment-confirmation"
           state={{
