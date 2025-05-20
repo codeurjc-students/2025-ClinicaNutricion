@@ -4,15 +4,12 @@ import io.github.cdimascio.dotenv.Dotenv;
 
 public class EnvLoader {
     public static void loadEnv() {
+        // Inicializa la configuración de variables de entorno para la aplicación.
         String env = System.getenv("APP_ENV");
-        Dotenv dotenv;
         if (env == null) {
-            dotenv = Dotenv.load();
-            dotenv.entries().forEach(entry -> System.setProperty(entry.getKey(), entry.getValue()));
+            Dotenv.load().entries().forEach(entry -> System.setProperty(entry.getKey(), entry.getValue()));
         } else {
-            dotenv = Dotenv.configure()
-                    .ignoreIfMissing()
-                    .load();
+            Dotenv.configure().ignoreIfMissing().load();
         }
     }
 }

@@ -13,6 +13,7 @@ const NutritionistSelection = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Al cambiar la franja horaria se obtienen los nutricionistas disponibles
   useEffect(() => {
     const fetchNutritionists = async () => {
       try {
@@ -30,16 +31,16 @@ const NutritionistSelection = () => {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         });
 
         if (!response.ok) throw new Error('Error en la respuesta del servidor');
         const data = await response.json();
-        setFilteredNutritionists(data);
+        setFilteredNutritionists(data); // Guarda lista filtrada
       } catch (error) {
         console.error('Error cargando nutricionistas:', error);
-        setFilteredNutritionists([]);
+        setFilteredNutritionists([]); // En error, limpiar lista
       } finally {
         setLoading(false);
       }
@@ -48,20 +49,27 @@ const NutritionistSelection = () => {
     fetchNutritionists();
   }, [selectedTime, BASE_URL]);
 
+  // Actualiza la franja horaria seleccionada
   const handleTimeChange = (e) => {
     setSelectedTime(e.target.value);
   };
 
+  // Marca el nutricionista elegido de entre los filtrados
   const handleNutritionistChange = (e) => {
     const selected = e.target.value;
-    const nutritionist = filteredNutritionists.find(n => n.name === selected);
+    const nutritionist = filteredNutritionists.find((n) => n.name === selected);
     setSelectedNutritionist(nutritionist || null);
   };
 
+  // Navega al selector de hora con el nutricionista y paciente
   const handleSelectButtonClick = () => {
     if (selectedNutritionist) {
       navigate('/patients/time-selection', {
-        state: { patient, nutritionist: selectedNutritionist, timeRange: selectedTime }
+        state: {
+          patient,
+          nutritionist: selectedNutritionist,
+          timeRange: selectedTime,
+        },
       });
     }
   };
@@ -74,7 +82,12 @@ const NutritionistSelection = () => {
       <div className="content-wrapper">
         <div className="select-time">
           <label htmlFor="time-range">Selecciona una franja horaria</label>
-          <select id="time-range" value={selectedTime} onChange={handleTimeChange} className="form-control">
+          <select
+            id="time-range"
+            value={selectedTime}
+            onChange={handleTimeChange}
+            className="form-control"
+          >
             <option value="a cualquier hora">A cualquier hora</option>
             <option value="mañana">Por la mañana (9:00 - 12:00)</option>
             <option value="mediodía">A medio día (12:00 - 16:00)</option>
@@ -82,6 +95,7 @@ const NutritionistSelection = () => {
           </select>
         </div>
 
+        {/* Selector de nutricionista filtrado por franja horaria */}
         <div className="select-nutritionist">
           <label htmlFor="nutritionist">Selecciona un nutricionista</label>
           <select
@@ -99,14 +113,17 @@ const NutritionistSelection = () => {
                 </option>
               ))
             ) : (
-              <option>No hay nutricionistas disponibles para esta franja horaria</option>
+              <option>
+                No hay nutricionistas disponibles para esta franja horaria
+              </option>
             )}
           </select>
         </div>
 
+        {/* Botón para confirmar selección */}
         <button
-          disabled={!selectedNutritionist} 
-          className={`select-button ${selectedNutritionist ? "active" : "inactive"}`}
+          disabled={!selectedNutritionist}
+          className={`select-button ${selectedNutritionist ? 'active' : 'inactive'}`}
           onClick={handleSelectButtonClick}
         >
           Seleccionar

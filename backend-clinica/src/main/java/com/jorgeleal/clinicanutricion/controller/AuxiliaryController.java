@@ -94,20 +94,27 @@ public class AuxiliaryController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    public ResponseEntity<List<AuxiliaryDTO>> getAllAuxiliaries(
+    public ResponseEntity<?> getAllAuxiliaries(
         @RequestParam(required = false) String name,
         @RequestParam(required = false) String surname,
         @RequestParam(required = false) String phone,
         @RequestParam(required = false) String email) {
-
-        List<AuxiliaryDTO> auxiliaries = auxiliaryService.getAuxiliariesByFilters(name, surname, phone, email);
-        return ResponseEntity.ok(auxiliaries);
+        try {
+            List<AuxiliaryDTO> auxiliaries = auxiliaryService.getAuxiliariesByFilters(name, surname, phone, email);
+            return ResponseEntity.ok(auxiliaries);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
+        }
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Auxiliary> getAuxiliaryById(@PathVariable Long id) {
+    public ResponseEntity<?> getAuxiliaryById(@PathVariable Long id) {
+        try {
         return ResponseEntity.ok(auxiliaryService.getAuxiliaryById(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
+        }
     }
 
     @PostMapping
@@ -123,8 +130,12 @@ public class AuxiliaryController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Auxiliary> updateAuxiliary(@PathVariable Long id, @RequestBody AuxiliaryDTO dto) {
-        return ResponseEntity.ok(auxiliaryService.updateAuxiliary(id, dto));
+    public ResponseEntity<?> updateAuxiliary(@PathVariable Long id, @RequestBody AuxiliaryDTO dto) {
+        try {
+            return ResponseEntity.ok(auxiliaryService.updateAuxiliary(id, dto));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
+        }
     }
 
     @DeleteMapping("/{id}")

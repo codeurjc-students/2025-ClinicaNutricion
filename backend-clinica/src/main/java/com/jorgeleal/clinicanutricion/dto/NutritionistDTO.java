@@ -41,8 +41,31 @@ public class NutritionistDTO {
     
     @NotNull
     private Gender gender;
+
+    @NotNull
     private int appointmentDuration;
-    private LocalTime startTime;
-    private LocalTime endTime;
+
+    @NotNull
     private int maxActiveAppointments;
+
+    @NotNull(message = "Debes introducir la hora de inicio.")
+    private LocalTime startTime;
+
+    @NotNull(message = "Debes introducir la hora de fin.")
+    private LocalTime endTime;
+
+    @SuppressWarnings("PMD.UnusedPrivateMethod") // PMD no detecta métodos invocados por anotaciones
+    @AssertTrue(message = "La hora de inicio y fin deben estar entre 09:00 - 20:00 y la hora de fin debe ser mayor a la de inicio.")
+    private boolean isTimeWindowValid() {
+        if (startTime == null || endTime == null) {
+            return true; 
+        }
+        LocalTime min = LocalTime.of(9, 0);
+        LocalTime max = LocalTime.of(20, 0);
+        return !startTime.isBefore(min)
+            && !endTime.isBefore(min)
+            && !startTime.isAfter(max)
+            && !endTime.isAfter(max)
+            && endTime.isAfter(startTime);
+    }
 }

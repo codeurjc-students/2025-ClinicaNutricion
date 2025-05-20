@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jorgeleal.clinicanutricion.model.*;
 import com.jorgeleal.clinicanutricion.service.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,6 @@ import java.util.HashMap;
 @RestController
 @RequestMapping("/patients")
 public class PatientController {
-
     @Autowired
     private PatientService patientService;
 
@@ -110,8 +110,15 @@ public class PatientController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ROLE_NUTRITIONIST', 'ROLE_ADMIN', 'ROLE_AUXILIARY')")
-    public ResponseEntity<Patient> getPatientById(@PathVariable Long id) {
-        return ResponseEntity.ok(patientService.getPatientById(id));
+    public ResponseEntity<?> getPatientById(@PathVariable Long id) {
+        try {
+            Patient patient = patientService.getPatientById(id);
+            return ResponseEntity.ok(patient);
+        } catch (RuntimeException e) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 
     @GetMapping("/{id}/appointments/pending")
@@ -131,16 +138,18 @@ public class PatientController {
             Patient patient = patientService.createPatient(dto);
             return ResponseEntity.ok(patient);
         } catch (RuntimeException e) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
         }
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ROLE_NUTRITIONIST', 'ROLE_ADMIN', 'ROLE_AUXILIARY')")
-    public ResponseEntity<Patient> updatePatient(@PathVariable Long id, @RequestBody PatientDTO dto) {
-        return ResponseEntity.ok(patientService.updatePatient(id, dto));
+    public ResponseEntity<?> updatePatient(@PathVariable Long id, @RequestBody PatientDTO dto) {
+        try {
+            return ResponseEntity.ok(patientService.updatePatient(id, dto));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        }
     }
 
     @PutMapping("/{id}/status")
@@ -151,5 +160,17 @@ public class PatientController {
         }
         patientService.changePatientStatus(id, active);
         return ResponseEntity.ok().build();
-    }     
+    }
+    
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> deletePatient(@PathVariable Long id) {
+        try {
+            appointmentService.deleteAppointmentsByPatient(id);
+            patientService.deletePatient(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        }
+    }
 }

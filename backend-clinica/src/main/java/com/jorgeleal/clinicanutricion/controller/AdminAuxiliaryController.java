@@ -31,7 +31,6 @@ public class AdminAuxiliaryController {
     @GetMapping("/profile")
     public ResponseEntity<Map<String, Object>> getProfile(@AuthenticationPrincipal Jwt jwt) {
         try {
-            // Extrae el ID del usuario desde el JWT (Cognito usa "sub")
             String idCognito = jwt.getClaimAsString("sub");
             if (idCognito == null || idCognito.isEmpty()) {
                 return ResponseEntity
@@ -39,7 +38,6 @@ public class AdminAuxiliaryController {
                         .body(Map.of("error", "ID de usuario no encontrado en el token"));
             }
     
-            // Busca al usuario en la base de datos
             User user = userService.getUserByCognitoId(idCognito);
             if (user == null) {
                 return ResponseEntity
@@ -47,7 +45,6 @@ public class AdminAuxiliaryController {
                         .body(Map.of("error", "Usuario no encontrado"));
             }
     
-            // Construye la respuesta con los datos del usuario
             Map<String, Object> response = new HashMap<>();
             response.put("id", user.getIdUser());
             response.put("name", user.getName());
@@ -71,7 +68,6 @@ public class AdminAuxiliaryController {
     @PutMapping("/profile")
     public ResponseEntity<?> updateProfile(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody Map<String, Object> updates) {
         try {
-            // Extrae el ID del usuario desde el JWT (Cognito usa "sub")
             String idCognito = jwt.getClaimAsString("sub");
             if (idCognito == null || idCognito.isEmpty()) {
                 return ResponseEntity
