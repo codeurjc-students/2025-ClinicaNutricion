@@ -66,7 +66,7 @@ public class AppointmentIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        // Limpiar BD
+        // Se limpia la base de datos antes de cada test
         appointmentRepository.deleteAll();
         nutritionistRepository.deleteAll();
         patientRepository.deleteAll();
@@ -77,7 +77,7 @@ public class AppointmentIntegrationTest {
             anyString(), anyString(), any(LocalDate.class), any(LocalTime.class), anyString(), anyString()
         );
 
-        // Creamos un nutricionista
+        // Se crea un nutricionista
         nutritionistUser = new User();
         nutritionistUser.setName("Nutri");
         nutritionistUser.setSurname("One");
@@ -98,7 +98,7 @@ public class AppointmentIntegrationTest {
         nutritionist.setActive(true);
         nutritionistRepository.save(nutritionist);
 
-        // Creamos un paciente
+        // Se crea un paciente
         patientUser = new User();
         patientUser.setName("Patient");
         patientUser.setSurname("One");
@@ -129,7 +129,6 @@ public class AppointmentIntegrationTest {
 
     @Test
     void getAppointmentById_Success() throws Exception {
-        // Primero creamos directamente una cita en la BD
         Appointment appointment = new Appointment();
         appointment.setNutritionist(nutritionist);
         appointment.setPatient(patient);
@@ -185,7 +184,6 @@ public class AppointmentIntegrationTest {
 
     @Test
     void getAppointmentsByNutritionist_Success() throws Exception {
-        // crear dos citas para este nutricionista
         Appointment a1 = new Appointment(null, nutritionist, patient,
             LocalDate.of(2025,5,20), LocalTime.of( 9,0), LocalTime.of( 9,30), AppointmentType.APPOINTMENT);
         Appointment a2 = new Appointment(null, nutritionist, patient,
@@ -226,7 +224,7 @@ public class AppointmentIntegrationTest {
     }
 
     @Test
-    void createAppointment_UnauthorizedWithoutRole() throws Exception {
+    void createAppointment_ForbiddenWithoutRole() throws Exception {
         AppointmentDTO dto = new AppointmentDTO();
         dto.setIdNutritionist(nutritionistUser.getIdUser());
         dto.setIdPatient(patientUser.getIdUser());
@@ -240,7 +238,7 @@ public class AppointmentIntegrationTest {
                 .content(objectMapper.writeValueAsString(dto))
                 .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_UNKNOWN")))
             )
-            .andExpect(status().isUnauthorized());
+            .andExpect(status().isForbidden());
     }
 
     @Test
@@ -262,14 +260,11 @@ public class AppointmentIntegrationTest {
             .andExpect(jsonPath("$.idAppointment").isNotEmpty())
             .andExpect(jsonPath("$.idNutritionist").value(nutritionistUser.getIdUser()))
             .andExpect(jsonPath("$.idPatient").value(patientUser.getIdUser()));
-
-        // El mock de EmailService debe haber sido invocado
-        // (verificado implícitamente por no fallar)
     }
 
     @Test
     void createAppointment_Conflict_Throws() throws Exception {
-        // primera cita
+        // Primera cita
         AppointmentDTO dto1 = new AppointmentDTO();
         dto1.setIdNutritionist(nutritionistUser.getIdUser());
         dto1.setIdPatient(patientUser.getIdUser());
@@ -285,7 +280,7 @@ public class AppointmentIntegrationTest {
             )
             .andExpect(status().isOk());
 
-        // segunda cita solapada
+        // Segunda cita solapada
         AppointmentDTO dto2 = new AppointmentDTO();
         dto2.setIdNutritionist(nutritionistUser.getIdUser());
         dto2.setIdPatient(patientUser.getIdUser());
@@ -324,7 +319,6 @@ public class AppointmentIntegrationTest {
 
     @Test
     void updateAppointment_Success() throws Exception {
-        // pre-creamos la cita
         Appointment saved = appointmentRepository.save(new Appointment(
             null, nutritionist, patient,
             LocalDate.of(2025,5,24), LocalTime.of(11,0), LocalTime.of(11,30), AppointmentType.APPOINTMENT
@@ -349,7 +343,6 @@ public class AppointmentIntegrationTest {
 
     @Test
     void updateAppointment_Conflict_Throws() throws Exception {
-        // dos citas para crear conflicto
         appointmentRepository.save(new Appointment(
             null, nutritionist, patient,
             LocalDate.of(2025,5,25), LocalTime.of(14,0), LocalTime.of(14,30), AppointmentType.APPOINTMENT

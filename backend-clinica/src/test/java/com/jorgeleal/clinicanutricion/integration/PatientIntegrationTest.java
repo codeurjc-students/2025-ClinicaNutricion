@@ -70,7 +70,7 @@ public class PatientIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        // Limpieza de base de datos
+        // Se limpia la base de datos antes de cada test
         patientRepository.deleteAll();
         userRepository.deleteAll();
 
@@ -368,7 +368,7 @@ public class PatientIntegrationTest {
         mockMvc.perform(put("/patients/{id}/status", existingPatient.getUser().getIdUser())
                 .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("")  // null
+                .content("")
             )
             .andExpect(status().isBadRequest());
     }

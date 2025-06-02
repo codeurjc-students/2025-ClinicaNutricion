@@ -59,18 +59,18 @@ public class AuxiliaryIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        // Limpiar BD
+        // Se limpia la base de datos antes de cada test
         auxiliaryRepository.deleteAll();
         userRepository.deleteAll();
 
-        // Stub de CognitoService
+        // Mock CognitoService
         when(cognitoService.createCognitoUser(any(UserDTO.class)))
             .thenReturn("cognito-id-1")
             .thenReturn("cognito-id-2");
         doNothing().when(cognitoService).updateCognitoUser(any(UserDTO.class));
         doNothing().when(cognitoService).deleteCognitoUser(anyString());
 
-        // Crear usuario y auxiliar inicial
+        // Se crea usuario y auxiliar inicial
         existingUser = new User();
         existingUser.setName("Test");
         existingUser.setSurname("User");
@@ -212,8 +212,7 @@ public class AuxiliaryIntegrationTest {
 
     @Test
     void getAllAuxiliaries_NoResults() throws Exception {
-        // vaciamos la tabla para que lance excepción
-        auxiliaryRepository.deleteAll();
+        auxiliaryRepository.deleteAll(); // Eliminar todos los auxiliares para que no haya resultados
         mockMvc.perform(get("/auxiliaries")
                 .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
             )
@@ -285,7 +284,7 @@ public class AuxiliaryIntegrationTest {
         AuxiliaryDTO dto = new AuxiliaryDTO();
         dto.setName("X"); dto.setSurname("Y");
         dto.setBirthDate(LocalDate.of(2000,1,1));
-        dto.setMail("test@example.com");  // ya existe
+        dto.setMail("test@example.com");  // Ya existe
         dto.setPhone("+34000000000");
         dto.setGender(Gender.OTRO);
 
