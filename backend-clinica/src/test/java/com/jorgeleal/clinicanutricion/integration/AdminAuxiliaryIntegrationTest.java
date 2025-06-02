@@ -59,7 +59,7 @@ public class AdminAuxiliaryIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        // Limpieza de base de datos
+        // Se limpia la base de datos antes de cada test
         adminAuxRepository.deleteAll();
         userRepository.deleteAll();
 

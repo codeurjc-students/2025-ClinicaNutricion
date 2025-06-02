@@ -42,6 +42,7 @@ jobs:
   # Frontend: lint, stylelint, prettier-check
   test-frontend:
     runs-on: ubuntu-latest
+    needs: test-backend
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -69,7 +70,7 @@ jobs:
 
   # Backend: empaquetado, deploy a Elastic Beanstalk y Smoke Test
   deploy-backend:
-    needs: test-backend
+    needs: test-frontend
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -125,7 +126,7 @@ jobs:
 
   # Frontend: build y deploy a S3
   deploy-frontend:
-    needs: test-frontend
+    needs: deploy-backend
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

@@ -86,7 +86,7 @@ public class NutritionistIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        // Limpiar DB
+        // Se limpia la base de datos antes de cada test
         nutritionistRepository.deleteAll();
         userRepository.deleteAll();
 
@@ -105,7 +105,7 @@ public class NutritionistIntegrationTest {
         when(appointmentService.getAvailableSlots(anyLong(), anyString(), any(LocalDate.class)))
             .thenReturn(List.of("09:00","10:00"));
 
-        // Crear user + nutritionist
+        // Crear user y nutritionist
         existingUser = new User();
         existingUser.setName("Ana");
         existingUser.setSurname("García");
@@ -160,7 +160,7 @@ public class NutritionistIntegrationTest {
     void updateProfile_BadRequest_NoSub() throws Exception {
         mockMvc.perform(put("/nutritionists/profile")
                 .with(jwt()
-                    .jwt(j -> j.claim("sub", "")) //Sub vacío
+                    .jwt(j -> j.claim("sub", "")) // Sub vacío
                     .authorities(new SimpleGrantedAuthority("ROLE_NUTRITIONIST"))
                 )
                 .contentType(MediaType.APPLICATION_JSON)
@@ -461,8 +461,8 @@ public class NutritionistIntegrationTest {
             )
             .andExpect(status().isOk());
 
-        var n = nutritionistRepository.findByUserIdUser(existingUser.getIdUser()).get();
-        assertFalse(n.isActive());
+        var nutritionist = nutritionistRepository.findByUserIdUser(existingUser.getIdUser()).get();
+        assertFalse(nutritionist.isActive());
         verify(cognitoService, times(1)).disableUser("ana@example.com");
         verify(cognitoService, times(1)).globalSignOut("ana@example.com");
     }
