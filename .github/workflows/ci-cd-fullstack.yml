@@ -70,6 +70,7 @@ jobs:
 
   # Backend: empaquetado, deploy a Elastic Beanstalk y Smoke Test
   deploy-backend:
+    if: github.ref == 'refs/heads/main'
     needs: test-frontend
     runs-on: ubuntu-latest
     steps:
@@ -126,6 +127,7 @@ jobs:
 
   # Frontend: build y deploy a S3
   deploy-frontend:
+    if: github.ref == 'refs/heads/main'
     needs: deploy-backend
     runs-on: ubuntu-latest
     steps:
