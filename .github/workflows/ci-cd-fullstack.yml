@@ -12,6 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       REACT_APP_FRONTEND_URL: ${{ secrets.REACT_APP_FRONTEND_URL }}
+      COGNITO_USER_POOL_ID: ${{ secrets.COGNITO_USER_POOL_ID }}
+      COGNITO_TEMP_PASSWORD: ${{ secrets.COGNITO_TEMP_PASSWORD }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
