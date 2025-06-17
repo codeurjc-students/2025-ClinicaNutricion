@@ -1,22 +1,22 @@
 import React from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import { useAuth } from 'react-oidc-context';
-import Sidebar from './components/Sidebar';
-import UserForm from './components/UserForm';
-import BackButton from './components/BackButton';
-import SearchComponent from './components/SearchComponent';
-import ManagePatients from './pages/admin/ManagePatients';
-import ManageNutritionists from './pages/admin/ManageNutritionists';
-import ManageAuxiliaries from './pages/admin/ManageAuxiliaries';
-import MainPatientScreen from './pages/patient/MainPatientScreen';
-import NutritionistSelection from './pages/patient/NutritionistSelection';
-import TimeSelection from './pages/patient/TimeSelection';
-import AppointmentConfirmation from './pages/patient/AppointmentConfirmation';
-import ManageUsers from './pages/admin/ManageUsers';
-import AdminAgenda from './pages/admin/AdminAgenda';
-import NutritionistAgenda from './pages/nutritionist/NutritionistAgenda';
-import PendingAppointments from './pages/patient/PendingAppointments';
-import Unauthorized from './pages/Unauthorized';
+import Sidebar from '../components/Sidebar';
+import UserForm from '../components/UserForm';
+import BackButton from '../components/BackButton';
+import SearchComponent from '../components/SearchComponent';
+import ManagePatients from '../pages/management/ManagePatients';
+import ManageNutritionists from '../pages/management/ManageNutritionists';
+import ManageAuxiliaries from '../pages/management/ManageAuxiliaries';
+import MainPatientScreen from '../pages/patient/MainPatientScreen';
+import NutritionistSelection from '../pages/patient/NutritionistSelection';
+import TimeSelection from '../pages/patient/TimeSelection';
+import AppointmentConfirmation from '../pages/patient/AppointmentConfirmation';
+import ManageUsers from '../pages/management/ManageUsers';
+import ManagementAgendas from '../pages/management/ManagementAgendas';
+import NutritionistAgenda from '../pages/nutritionist/NutritionistAgenda';
+import PendingAppointments from '../pages/patient/PendingAppointments';
+import Unauthorized from '../pages/Unauthorized';
 
 const AppRoutes = () => {
   const auth = useAuth();
@@ -108,7 +108,7 @@ const AppRoutes = () => {
           path="/auxiliaries/agenda"
           element={
             <ProtectedRoute allowedRoles={['auxiliary']}>
-              <AdminAgenda />
+              <ManagementAgendas />
             </ProtectedRoute>
           }
         />
@@ -146,7 +146,7 @@ const AppRoutes = () => {
           path="/admin/agenda"
           element={
             <ProtectedRoute allowedRoles={['admin']}>
-              <AdminAgenda />
+              <ManagementAgendas />
             </ProtectedRoute>
           }
         />

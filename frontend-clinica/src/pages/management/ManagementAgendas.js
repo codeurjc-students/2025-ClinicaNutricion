@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Form, Spinner } from 'react-bootstrap';
 import NutritionistCalendar from '../../components/NutritionistCalendar';
-import '../../styles/pages/AdminAgenda.css';
+import '../../styles/pages/ManagementAgendas.css';
 import logoImg from '../../assets/sidebar/LogoClinicaPrincipal.png';
 
-const AdminAgenda = () => {
+const ManagementAgendas = () => {
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const [nutritionists, setNutritionists] = useState([]);
   const [selectedNutritionist, setSelectedNutritionist] = useState(null);
@@ -131,4 +131,4 @@ const AdminAgenda = () => {
   );
 };
 
-export default AdminAgenda;
+export default ManagementAgendas;

@@ -3,6 +3,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 
 import software.amazon.awssdk.regions.Region;
@@ -24,9 +25,9 @@ public class EmailService {
     private static final Logger log = LoggerFactory.getLogger(EmailService.class);
     private final SesClient ses;
 
-    public EmailService() {
+    public EmailService(@Value("${AWS_REGION}") String awsRegion) {
         this.ses = SesClient.builder()
-            .region(Region.EU_WEST_3)
+            .region(Region.of(awsRegion))
             .build();
     }
 

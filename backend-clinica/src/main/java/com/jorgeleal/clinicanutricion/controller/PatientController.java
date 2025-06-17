@@ -1,6 +1,13 @@
 package com.jorgeleal.clinicanutricion.controller;
 
-import com.jorgeleal.clinicanutricion.dto.*;
+import com.jorgeleal.clinicanutricion.dto.AppointmentDTO;
+import com.jorgeleal.clinicanutricion.dto.PatientDTO;
+import com.jorgeleal.clinicanutricion.model.Patient;
+import com.jorgeleal.clinicanutricion.model.User;
+import com.jorgeleal.clinicanutricion.service.AppointmentService;
+import com.jorgeleal.clinicanutricion.service.PatientService;
+import com.jorgeleal.clinicanutricion.service.UserService;
+
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -8,8 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jorgeleal.clinicanutricion.model.*;
-import com.jorgeleal.clinicanutricion.service.*;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

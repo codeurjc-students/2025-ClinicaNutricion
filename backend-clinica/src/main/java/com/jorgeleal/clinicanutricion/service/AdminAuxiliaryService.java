@@ -3,8 +3,9 @@ package com.jorgeleal.clinicanutricion.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.jorgeleal.clinicanutricion.model.*;
-import com.jorgeleal.clinicanutricion.dto.*;
+import com.jorgeleal.clinicanutricion.dto.AdminAuxiliaryDTO;
+import com.jorgeleal.clinicanutricion.model.AdminAuxiliary;
+import com.jorgeleal.clinicanutricion.model.User;
 import com.jorgeleal.clinicanutricion.repository.AdminAuxiliaryRepository;
 
 

@@ -1,7 +1,11 @@
 package com.jorgeleal.clinicanutricion.service;
 
-import com.jorgeleal.clinicanutricion.model.*;
-import com.jorgeleal.clinicanutricion.dto.*;
+import com.jorgeleal.clinicanutricion.dto.PatientDTO;
+import com.jorgeleal.clinicanutricion.dto.UserDTO;
+import com.jorgeleal.clinicanutricion.model.Patient;
+import com.jorgeleal.clinicanutricion.model.User;
+import com.jorgeleal.clinicanutricion.model.UserType;
+import com.jorgeleal.clinicanutricion.model.Appointment;
 import com.jorgeleal.clinicanutricion.repository.PatientRepository;
 import com.jorgeleal.clinicanutricion.repository.AppointmentRepository;
 
