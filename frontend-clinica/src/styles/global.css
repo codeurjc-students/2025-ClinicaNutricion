@@ -1,4 +1,3 @@
-/* Importamos Bootstrap */
 @import url('bootstrap/dist/css/bootstrap.min.css');
 
 /* Personalización de Bootstrap */
@@ -12,21 +11,18 @@
   --white-color: #fff;
 }
 
-/* Ajustes generales */
 body {
   background-color: var(--background-color);
   color: var(--text-color);
   font-family: Arial, sans-serif;
 }
 
-/* Ajuste para que las cards tengan sombra */
 .card {
   background-color: var(--white-color);
   border-radius: 10px;
   box-shadow: 0 4px 10px rgb(0 0 0 / 10%);
 }
 
-/* Estilo global para botones personalizados */
 .btn-primary {
   background-color: var(--primary-color);
   border: none;
@@ -44,7 +40,6 @@ body {
   background-color: var(--error-color);
 }
 
-/* Clase de utilidad para textos */
 .text-shadow {
   text-shadow: 1px 1px 3px rgb(0 0 0 / 30%);
 }
