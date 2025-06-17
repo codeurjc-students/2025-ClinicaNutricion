@@ -36,3 +36,7 @@ build/
 /e2e-tests/target/
 /e2e-tests/allure-results/
 /e2e-tests/screenshots/
+
+**/node_modules/
+lambdas/**/node_modules/
+
