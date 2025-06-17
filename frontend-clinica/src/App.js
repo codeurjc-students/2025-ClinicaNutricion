@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from 'react-oidc-context';
-import AppRoutes from './routes';
+import AppRoutes from './routes/routes';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/global.css';
 import logo from './assets/sidebar/LogoClinicaPrincipal.png';
