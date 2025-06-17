@@ -26,10 +26,17 @@ class PatientServiceTest {
     @InjectMocks
     private PatientService service;
 
-    @Mock private PatientRepository patientRepository;
-    @Mock private AppointmentRepository appointmentRepository;
-    @Mock private UserService userService;
-    @Mock private CognitoService cognitoService;
+    @Mock
+    private PatientRepository patientRepository;
+
+    @Mock
+    private AppointmentRepository appointmentRepository;
+
+    @Mock
+    private UserService userService;
+    
+    @Mock
+    private CognitoService cognitoService;
 
     private PatientDTO dto;
     private Patient patient;

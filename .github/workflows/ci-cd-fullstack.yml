@@ -10,6 +10,8 @@ jobs:
   # Backend: análisis estático, unit tests y test de integración
   test-backend:
     runs-on: ubuntu-latest
+    env:
+      REACT_APP_FRONTEND_URL: ${{ secrets.REACT_APP_FRONTEND_URL }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
