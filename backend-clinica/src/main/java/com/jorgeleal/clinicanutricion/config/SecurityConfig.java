@@ -1,5 +1,6 @@
 package com.jorgeleal.clinicanutricion.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -22,13 +23,16 @@ import java.util.List;
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
+
+    private final String frontendUrl;
+
+    public SecurityConfig(@Value("${REACT_APP_FRONTEND_URL}") String frontendUrl) {
+        this.frontendUrl = frontendUrl;
+    }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-
-        String frontendUrl = System.getenv("REACT_APP_FRONTEND_BASE_URL") != null 
-            ? System.getenv("REACT_APP_FRONTEND_BASE_URL") 
-            : "http://localhost:3000";
 
         config.setAllowedOrigins(List.of(frontendUrl));
         config.setAllowedHeaders(List.of(                
