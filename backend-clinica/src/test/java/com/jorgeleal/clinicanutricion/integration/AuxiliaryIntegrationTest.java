@@ -47,12 +47,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 public class AuxiliaryIntegrationTest {
 
-    @Autowired private MockMvc mockMvc;
-    @Autowired private ObjectMapper objectMapper;
-    @Autowired private AuxiliaryRepository auxiliaryRepository;
-    @Autowired private UserRepository userRepository;
+    @Autowired
+    private MockMvc mockMvc;
 
-    @MockitoBean private CognitoService cognitoService;
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private AuxiliaryRepository auxiliaryRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @MockitoBean 
+    private CognitoService cognitoService;
 
     private User existingUser;
     private Auxiliary existingAuxiliary;

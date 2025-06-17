@@ -32,10 +32,17 @@ class AppointmentServiceTest {
     @InjectMocks
     private AppointmentService service;
 
-    @Mock private AppointmentRepository appointmentRepository;
-    @Mock private NutritionistService nutritionistService;
-    @Mock private PatientService patientService;
-    @Mock private EmailService emailService;
+    @Mock
+    private AppointmentRepository appointmentRepository;
+
+    @Mock
+    private NutritionistService nutritionistService;
+
+    @Mock
+    private PatientService patientService;
+    
+    @Mock
+    private EmailService emailService;
 
     private AppointmentDTO dto;
 
