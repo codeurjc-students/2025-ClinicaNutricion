@@ -1,7 +1,10 @@
 package com.jorgeleal.clinicanutricion.service;
 
-import com.jorgeleal.clinicanutricion.model.*;
-import com.jorgeleal.clinicanutricion.dto.*;
+import com.jorgeleal.clinicanutricion.dto.NutritionistDTO;
+import com.jorgeleal.clinicanutricion.dto.UserDTO;
+import com.jorgeleal.clinicanutricion.model.Nutritionist;
+import com.jorgeleal.clinicanutricion.model.User;
+import com.jorgeleal.clinicanutricion.model.UserType;
 import com.jorgeleal.clinicanutricion.repository.NutritionistRepository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

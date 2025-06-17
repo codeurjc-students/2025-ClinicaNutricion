@@ -11,22 +11,29 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminUserGl
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeType;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.UsernameExistsException;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CognitoService {
-    private String userPoolId = System.getenv("COGNITO_USER_POOL_ID") != null 
-    ? System.getenv("COGNITO_USER_POOL_ID") 
-    : "eu-west-3_akIyCC7tP";
+    @Value("${COGNITO_USER_POOL_ID}")
+    private String userPoolId;
 
-    private final CognitoIdentityProviderClient cognitoClient = CognitoIdentityProviderClient.builder()
-        .region(Region.EU_WEST_3)
-        .build();
+    @Value("${COGNITO_TEMP_PASSWORD}")
+    private String temporaryPassword;
+
+    private final CognitoIdentityProviderClient cognitoClient;
+
+    public CognitoService(@Value("${AWS_REGION}") String awsRegion) {
+        this.cognitoClient = CognitoIdentityProviderClient.builder()
+            .region(Region.of(awsRegion))
+            .build();
+    }
 
     public String createCognitoUser(UserDTO userDTO) {
         String groupName = userDTO.getUserType();
-        String temporaryPassword = "Contraseña123!"; // Contraseña temporal
-    
+
         try {
             AdminCreateUserRequest createUserRequest = AdminCreateUserRequest.builder()
                     .userPoolId(userPoolId)
@@ -84,17 +91,6 @@ public class CognitoService {
             .username(username)
             .build();
         cognitoClient.adminDeleteUser(deleteRequest);
-    }
-
-    public void addUserToPatientGroup(String sub) {
-        final String groupName = "patient";
-        AdminAddUserToGroupRequest request = AdminAddUserToGroupRequest.builder()
-            .userPoolId(userPoolId)
-            .username(sub)
-            .groupName(groupName)
-            .build();
-
-        cognitoClient.adminAddUserToGroup(request);
     }
 
     // Deshabilita la cuenta del usuario especificado en el User Pool de Cognito
