@@ -1,6 +1,7 @@
 package com.jorgeleal.clinicanutricion.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jorgeleal.clinicanutricion.config.EnvLoader;
 import com.jorgeleal.clinicanutricion.dto.AuxiliaryDTO;
 import com.jorgeleal.clinicanutricion.dto.UserDTO;
 import com.jorgeleal.clinicanutricion.model.Auxiliary;
@@ -46,6 +47,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Transactional
 public class AuxiliaryIntegrationTest {
+
+    static {
+        EnvLoader.loadEnv();
+    }
 
     @Autowired
     private MockMvc mockMvc;
