@@ -5,16 +5,17 @@ on:
     branches:
       - main
       - develop
+  pull_request:
+    branches:
+      - main 
 
 jobs:
   # Backend: análisis estático, unit tests y test de integración
   test-backend:
+    if: >
+      (github.event_name == 'push' && github.ref == 'refs/heads/develop') ||
+      (github.event_name == 'pull_request' && github.base_ref == 'main')
     runs-on: ubuntu-latest
-    env:
-      REACT_APP_FRONTEND_URL: ${{ secrets.REACT_APP_FRONTEND_URL }}
-      COGNITO_USER_POOL_ID: ${{ secrets.COGNITO_USER_POOL_ID }}
-      COGNITO_TEMP_PASSWORD: ${{ secrets.COGNITO_TEMP_PASSWORD }}
-      AWS_REGION: ${{ secrets.AWS_REGION }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -98,11 +99,6 @@ jobs:
       - name: Build backend with Maven
         working-directory: backend-clinica
         run: mvn clean package -DskipTests
-        env:
-          DB_URL: ${{ secrets.DB_URL }}
-          DB_USERNAME: ${{ secrets.DB_USERNAME }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          REACT_APP_FRONTEND_BASE_URL: ${{ secrets.REACT_APP_FRONTEND_URL }}
 
       - name: Install EB CLI
         run: pip install awsebcli --upgrade

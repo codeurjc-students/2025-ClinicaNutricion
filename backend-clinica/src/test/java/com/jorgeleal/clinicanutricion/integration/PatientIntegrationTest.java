@@ -1,6 +1,7 @@
 package com.jorgeleal.clinicanutricion.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jorgeleal.clinicanutricion.config.EnvLoader;
 import com.jorgeleal.clinicanutricion.dto.PatientDTO;
 import com.jorgeleal.clinicanutricion.dto.UserDTO;
 import com.jorgeleal.clinicanutricion.model.Gender;
@@ -43,6 +44,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Transactional
 public class PatientIntegrationTest {
+
+    static {
+        EnvLoader.loadEnv();
+    }
 
     @Autowired
     private MockMvc mockMvc;
@@ -102,6 +107,21 @@ public class PatientIntegrationTest {
     // GET /patients/profile
     // -------------------
     @Test
+    void getProfile_Unauthorized_NoToken() throws Exception {
+        mockMvc.perform(get("/patients/profile"))
+               .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void getProfile_Forbidden_AsAdmin() throws Exception {
+        mockMvc.perform(get("/patients/profile")
+                    .with(jwt()
+                      .jwt(j -> j.claim("sub", "cognito-setup"))
+                      .authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
+               .andExpect(status().isForbidden());
+    }
+
+    @Test
     void getProfile_BadRequest_NoSub() throws Exception {
         mockMvc.perform(get("/patients/profile")
                 .with(jwt()
@@ -147,7 +167,6 @@ public class PatientIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto))
             )
-            .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.user.idUser").isNumber())
             .andExpect(jsonPath("$.user.mail")
@@ -272,6 +291,18 @@ public class PatientIntegrationTest {
     }
 
     // -------------------
+    // GET /patients/{id}/appointments/pending
+    // -------------------
+    @Test
+    void getPatientPendingAppointments_Forbidden_SubMismatch() throws Exception {
+        mockMvc.perform(get("/patients/{id}/appointments/pending", existingUser.getIdUser())
+                .with(jwt()
+                    .jwt(j -> j.claim("sub", "other-sub"))
+                    .authorities(new SimpleGrantedAuthority("ROLE_PATIENT"))))
+            .andExpect(status().isForbidden());
+    }
+
+    // -------------------
     // PUT /patients/{id}
     // -------------------
     @Test
@@ -351,7 +382,6 @@ public class PatientIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updates))
             )
-            .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.user.idUser").value(existingUser.getIdUser()))
             .andExpect(jsonPath("$.user.name").value("Maria"))
