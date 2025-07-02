@@ -5,7 +5,7 @@
   align-items: center;
   justify-content: center;
   height: 36px !important;
-  background: #17405d;
+  background: #245d86;
 }
 
 .rbc-allday-cell {
@@ -13,7 +13,7 @@
 }
 
 .rbc-time-header-cell .rbc-today {
-  background-color: #04aa6d !important;
+  background-color: #549756 !important;
 }
 
 .rbc-time-slot {
@@ -41,6 +41,10 @@
   overflow: hidden;
 }
 
+.weekend-cell .rbc-date-cell {
+  color: #6c757d !important;
+}
+
 .rbc-event-label {
   display: none !important;
 }
@@ -49,7 +53,6 @@
   width: 100% !important;
 }
 
-/* Timeslots */
 .rbc-day-slot .rbc-time-slot::after {
   content: '';
   border-top: 1px solid #fbb3ec;
@@ -116,6 +119,14 @@
   cursor: pointer;
 }
 
+.react-datepicker-popper {
+  z-index: 1000 !important;
+}
+
+.react-datepicker-popper .react-datepicker {
+  z-index: 1000 !important;
+}
+
 .blockout-event {
   background-color: #c7c4c4 !important;
   color: #fff;
@@ -132,7 +143,7 @@
 }
 
 .appointment-event {
-  background-color: #4caf50 !important;
+  background-color: #66bb6a !important;
   color: #fff;
   width: 100%;
   height: 100%;
@@ -147,11 +158,78 @@
 }
 
 .custom-day-header {
-  background-color: #17405d;
+  background-color: #245d86;
   color: #fff;
   font-size: 18px;
   font-weight: bold;
   text-align: center;
   padding: 8px;
   margin-top: 10px;
+}
+
+/* General month-view day background */
+.rbc-month-view .rbc-row-bg .rbc-day-bg {
+  pointer-events: auto !important;
+}
+
+/* Specific weekend cells in month view */
+.rbc-month-view .rbc-row-bg .rbc-day-bg:nth-child(6),
+.rbc-month-view .rbc-row-bg .rbc-day-bg:nth-child(7) {
+  background-color: #dde5f7 !important;
+  pointer-events: none !important;
+  cursor: default;
+}
+
+/* Weekend date text color */
+.rbc-month-view .rbc-row-content > div:nth-child(6) .rbc-date-cell,
+.rbc-month-view .rbc-row-content > div:nth-child(7) .rbc-date-cell {
+  color: #6c757d !important;
+}
+
+.rbc-day-bg.rbc-today {
+  background-color: #e6f2e6 !important;
+}
+
+.rbc-day-bg.rbc-today ~ .rbc-row-content > div .rbc-date-cell {
+  color: #256029 !important;
+}
+
+.navigation-container .btn-light,
+.navigation-container .btn-outline-primary {
+  background-color: #fff !important;
+  border-color: #6c757d !important;
+  color: #000 !important;
+}
+
+.navigation-container .btn-light:hover,
+.navigation-container .btn-light:focus,
+.navigation-container .btn-light:active,
+.navigation-container .btn-outline-primary:hover,
+.navigation-container .btn-outline-primary:focus,
+.navigation-container .btn-outline-primary:active {
+  background-color: #fff !important;
+  border-color: #6c757d !important;
+  color: #000 !important;
+  box-shadow: none !important;
+}
+
+.view-buttons .btn-primary,
+.view-buttons .btn-primary.active,
+.view-buttons .btn-primary:active,
+.view-buttons .btn-outline-primary.active,
+.view-buttons .btn-outline-primary:active {
+  background-color: #d7dde3 !important;
+  border-color: #5a6268 !important;
+  color: #000 !important;
+  box-shadow: none !important;
+}
+
+.view-buttons .btn-primary:hover,
+.view-buttons .btn-primary:focus,
+.view-buttons .btn-outline-primary:hover,
+.view-buttons .btn-outline-primary:focus {
+  background-color: #d7dde3 !important;
+  border-color: #5a6268 !important;
+  color: #000 !important;
+  box-shadow: none !important;
 }

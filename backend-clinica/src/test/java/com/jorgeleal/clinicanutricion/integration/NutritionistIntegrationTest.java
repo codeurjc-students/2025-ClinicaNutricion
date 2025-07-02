@@ -1,6 +1,7 @@
 package com.jorgeleal.clinicanutricion.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jorgeleal.clinicanutricion.config.EnvLoader;
 import com.jorgeleal.clinicanutricion.dto.AppointmentDTO;
 import com.jorgeleal.clinicanutricion.dto.NutritionistDTO;
 import com.jorgeleal.clinicanutricion.dto.UserDTO;
@@ -51,6 +52,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Transactional
 public class NutritionistIntegrationTest {
+
+    static {
+        EnvLoader.loadEnv();
+    }
 
     @Autowired
     private MockMvc mockMvc;
@@ -151,6 +156,32 @@ public class NutritionistIntegrationTest {
             .andExpect(jsonPath("$.startTime").value("09:00:00"))
             .andExpect(jsonPath("$.endTime").value("17:00:00"))
             .andExpect(jsonPath("$.maxActiveAppointments").value(5));
+    }
+
+    @Test
+    void getProfile_BadRequest_NoSub() throws Exception {
+        mockMvc.perform(get("/nutritionists/profile")
+                .with(jwt()
+                    .jwt(j -> j.claim("sub", ""))  // sub vacío
+                    .authorities(new SimpleGrantedAuthority("ROLE_NUTRITIONIST"))
+                )
+            )
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.error")
+                .value("ID de usuario no encontrado en el token"));
+    }
+
+    @Test
+    void getProfile_NotFound_UserDoesNotExist() throws Exception {
+        mockMvc.perform(get("/nutritionists/profile")
+                .with(jwt()
+                    .jwt(j -> j.claim("sub", "cognito-desconocido"))
+                    .authorities(new SimpleGrantedAuthority("ROLE_NUTRITIONIST"))
+                )
+            )
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.error")
+                .value("Usuario no encontrado"));
     }
 
     // -------------------
@@ -357,6 +388,81 @@ public class NutritionistIntegrationTest {
     }
 
     // -------------------
+    // GET /nutritionists/{id}/appointments
+    // -------------------
+    @Test
+    void getNutritionistAppointments_Success_AsPatientOrAdminOrNutri() throws Exception {
+        mockMvc.perform(get("/nutritionists/{id}/appointments", existingUser.getIdUser())
+                .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_PATIENT")))
+            )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(1));
+    }
+
+    @Test
+    void getNutritionistAppointments_Unauthorized_NoToken() throws Exception {
+        mockMvc.perform(get("/nutritionists/{id}/appointments", existingUser.getIdUser()))
+               .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void getNutritionistAppointments_Forbidden_AsAuxiliary() throws Exception {
+        mockMvc.perform(get("/nutritionists/{id}/appointments", existingUser.getIdUser())
+                .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_AUXILIARY")))
+            )
+            .andExpect(status().isForbidden());
+    }
+
+    // -------------------
+    // GET /nutritionists/{id}/available-slots
+    // -------------------
+    @Test
+    void getAvailableSlots_Success_AsPatient() throws Exception {
+        mockMvc.perform(get("/nutritionists/{id}/available-slots", existingUser.getIdUser())
+                .param("timeRange", "mañana")
+                .param("selectedDate", LocalDate.now().toString())
+                .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_PATIENT")))
+            )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$[0]").value("09:00"))
+            .andExpect(jsonPath("$[1]").value("10:00"));
+    }
+
+    @Test
+    void getAvailableSlots_ServiceThrows_InternalServerError() throws Exception {
+        doThrow(new RuntimeException("error"))
+            .when(appointmentService).getAvailableSlots(
+                eq(existingUser.getIdUser()), anyString(), any(LocalDate.class));
+
+        mockMvc.perform(get("/nutritionists/{id}/available-slots", existingUser.getIdUser())
+                .param("timeRange", "mañana")
+                .param("selectedDate", LocalDate.now().toString())
+                .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_PATIENT")))
+            )
+            .andExpect(status().isInternalServerError())
+            .andExpect(content().string(""));  // body null es una cadena vacía
+    }
+
+    @Test
+    void getAvailableSlots_Forbidden_AsAdmin() throws Exception {
+        mockMvc.perform(get("/nutritionists/{id}/available-slots", existingUser.getIdUser())
+                .param("timeRange", "mañana")
+                .param("selectedDate", LocalDate.now().toString())
+                .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
+            )
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void getAvailableSlots_Unauthorized_NoToken() throws Exception {
+        mockMvc.perform(get("/nutritionists/{id}/available-slots", existingUser.getIdUser())
+                .param("timeRange", "mañana")
+                .param("selectedDate", LocalDate.now().toString())
+            )
+            .andExpect(status().isUnauthorized());
+    }
+
+    // -------------------
     // POST /nutritionists
     // -------------------
     @Test
@@ -437,6 +543,30 @@ public class NutritionistIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto)))
             .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void createNutritionist_DuplicateMail_ReturnsBadRequest() throws Exception {
+        NutritionistDTO dto = new NutritionistDTO();
+        dto.setName("Ana");
+        dto.setSurname("García");
+        dto.setBirthDate(existingUser.getBirthDate());
+        dto.setMail("ana@example.com"); // mail duplicado
+        dto.setPhone("+34111222344");
+        dto.setGender(Gender.FEMENINO);
+        dto.setAppointmentDuration(30);
+        dto.setStartTime(LocalTime.of(9,0));
+        dto.setEndTime(LocalTime.of(17,0));
+        dto.setMaxActiveAppointments(5);
+
+        mockMvc.perform(post("/nutritionists")
+                .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto))
+            )
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.error")
+                .value("Error al crear el nutricionista: El correo electrónico ya está registrado."));
     }
 
     // -------------------

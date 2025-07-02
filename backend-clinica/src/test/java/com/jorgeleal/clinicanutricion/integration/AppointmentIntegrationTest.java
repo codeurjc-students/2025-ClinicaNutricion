@@ -1,6 +1,7 @@
 package com.jorgeleal.clinicanutricion.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jorgeleal.clinicanutricion.config.EnvLoader;
 import com.jorgeleal.clinicanutricion.dto.AppointmentDTO;
 import com.jorgeleal.clinicanutricion.model.*;
 import com.jorgeleal.clinicanutricion.repository.*;
@@ -37,6 +38,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Transactional
 public class AppointmentIntegrationTest {
+
+    static {
+        EnvLoader.loadEnv();
+    }
 
     @Autowired
     private MockMvc mockMvc;
@@ -122,7 +127,7 @@ public class AppointmentIntegrationTest {
 
     @Test
     void getAppointmentById_NotFound() throws Exception {
-        mockMvc.perform(get("/appointments/{id}", "no-such-id"))
+        mockMvc.perform(get("/appointments/{id}", "other-id"))
             .andExpect(status().isInternalServerError())
             .andExpect(jsonPath("$.error").value("Cita no encontrada"));
     }
@@ -416,6 +421,26 @@ public class AppointmentIntegrationTest {
             .andExpect(status().isUnauthorized());
     }
 
+        @Test
+    void updateAppointment_Forbidden_SubMismatch() throws Exception {
+        Appointment saved = appointmentRepository.save(new Appointment(
+            null, nutritionist, patient,
+            LocalDate.of(2025,6,1), LocalTime.of(9,0), LocalTime.of(9,30), AppointmentType.APPOINTMENT
+        ));
+
+        mockMvc.perform(put("/appointments/{id}", saved.getIdAppointment())
+                .with(jwt()
+                    .jwt(j -> j.claim("sub","otro-sub"))
+                    .authorities(new SimpleGrantedAuthority("ROLE_NUTRITIONIST"))
+                )
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new AppointmentDTO()))
+            )
+            .andExpect(status().isForbidden())
+            .andExpect(jsonPath("$.error")
+                .value("No tienes permiso para modificar esta cita"));
+    }
+
     // ----------------------------------------
     // DELETE /appointments/{id}
     // ----------------------------------------
@@ -456,5 +481,41 @@ public class AppointmentIntegrationTest {
             .andExpect(status().isNoContent());
 
         assertThat(appointmentRepository.existsById(toDelete.getIdAppointment())).isFalse();
+    }
+
+     @Test
+    void deleteAppointment_Forbidden_PatientMismatch() throws Exception {
+        Appointment appt = appointmentRepository.save(new Appointment(
+            null, nutritionist, patient,
+            LocalDate.of(2025,6,2), LocalTime.of(10,0), LocalTime.of(10,30), AppointmentType.APPOINTMENT
+        ));
+
+        mockMvc.perform(delete("/appointments/{id}", appt.getIdAppointment())
+                .with(jwt()
+                  .jwt(j -> j.claim("sub","otro-sub"))
+                  .authorities(new SimpleGrantedAuthority("ROLE_PATIENT"))
+                )
+            )
+            .andExpect(status().isForbidden())
+            .andExpect(jsonPath("$.error")
+                .value("No tienes permiso para borrar esta cita"));
+    }
+
+    @Test
+    void deleteAppointment_Forbidden_NutritionistMismatch() throws Exception {
+        Appointment appt = appointmentRepository.save(new Appointment(
+            null, nutritionist, patient,
+            LocalDate.of(2025,6,3), LocalTime.of(11,0), LocalTime.of(11,30), AppointmentType.APPOINTMENT
+        ));
+
+        mockMvc.perform(delete("/appointments/{id}", appt.getIdAppointment())
+                .with(jwt()
+                  .jwt(j -> j.claim("sub","otro-sub"))
+                  .authorities(new SimpleGrantedAuthority("ROLE_NUTRITIONIST"))
+                )
+            )
+            .andExpect(status().isForbidden())
+            .andExpect(jsonPath("$.error")
+                .value("No tienes permiso para borrar esta cita"));
     }
 }

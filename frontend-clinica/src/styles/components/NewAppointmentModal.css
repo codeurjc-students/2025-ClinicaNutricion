@@ -110,3 +110,9 @@
   background-color: #d4edda !important;
   font-weight: bold;
 }
+
+.modal-dialog.new-appointment-dialog {
+  max-width: 90vw;
+  width: 900px;
+  margin: auto;
+}

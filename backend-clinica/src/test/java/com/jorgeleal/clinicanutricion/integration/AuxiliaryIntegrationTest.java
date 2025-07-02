@@ -1,6 +1,7 @@
 package com.jorgeleal.clinicanutricion.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jorgeleal.clinicanutricion.config.EnvLoader;
 import com.jorgeleal.clinicanutricion.dto.AuxiliaryDTO;
 import com.jorgeleal.clinicanutricion.dto.UserDTO;
 import com.jorgeleal.clinicanutricion.model.Auxiliary;
@@ -47,12 +48,24 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 public class AuxiliaryIntegrationTest {
 
-    @Autowired private MockMvc mockMvc;
-    @Autowired private ObjectMapper objectMapper;
-    @Autowired private AuxiliaryRepository auxiliaryRepository;
-    @Autowired private UserRepository userRepository;
+    static {
+        EnvLoader.loadEnv();
+    }
 
-    @MockitoBean private CognitoService cognitoService;
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private AuxiliaryRepository auxiliaryRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @MockitoBean 
+    private CognitoService cognitoService;
 
     private User existingUser;
     private Auxiliary existingAuxiliary;

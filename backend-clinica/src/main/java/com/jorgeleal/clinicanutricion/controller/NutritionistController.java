@@ -1,9 +1,12 @@
 package com.jorgeleal.clinicanutricion.controller;
 
 import com.jorgeleal.clinicanutricion.dto.NutritionistDTO;
+import com.jorgeleal.clinicanutricion.model.Nutritionist;
+import com.jorgeleal.clinicanutricion.model.User;
+import com.jorgeleal.clinicanutricion.service.AppointmentService;
+import com.jorgeleal.clinicanutricion.service.NutritionistService;
+import com.jorgeleal.clinicanutricion.service.UserService;
 import com.jorgeleal.clinicanutricion.dto.AppointmentDTO;
-import com.jorgeleal.clinicanutricion.service.*;
-import com.jorgeleal.clinicanutricion.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -83,7 +86,7 @@ public class NutritionistController {
 
     @PutMapping("/profile")
     public ResponseEntity<?> updateProfile(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody Map<String, Object> updates) {
-        try{
+        try {
             String idCognito = jwt.getClaimAsString("sub");
             if (idCognito == null || idCognito.isEmpty()) {
                 return ResponseEntity

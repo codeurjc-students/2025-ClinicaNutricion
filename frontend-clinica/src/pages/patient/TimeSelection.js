@@ -122,6 +122,15 @@ const TimeSelection = () => {
             onChange={handleDateChange}
             value={selectedDate}
             minDate={today}
+            tileDisabled={({ date }) => {
+              const day = date.getDay();
+              return day === 0 || day === 6;
+            }}
+            tileClassName={({ date }) =>
+              [0, 6].includes(date.getDay())
+                ? 'react-calendar__tile--weekend'
+                : null
+            }
           />
         </div>
 
@@ -174,22 +183,23 @@ const TimeSelection = () => {
         </Modal>
 
         {/* Botón para confirmar fecha y hora */}
-        <Link
-          to="/patients/appointment-confirmation"
-          state={{
-            patient,
-            selectedDate: formattedDate,
-            selectedTime,
-            nutritionist,
-          }}
-        >
-          <button
-            className={`confirm-btn ${selectedDate && selectedTime ? 'enabled' : ''}`}
-            disabled={!selectedDate || !selectedTime}
+        {selectedDate && selectedTime ? (
+          <Link
+            to="/patients/appointment-confirmation"
+            state={{
+              patient,
+              selectedDate: formattedDate,
+              selectedTime,
+              nutritionist,
+            }}
           >
+            <button className="confirm-btn enabled">Confirmar cita</button>
+          </Link>
+        ) : (
+          <button className="confirm-btn" disabled>
             Confirmar cita
           </button>
-        </Link>
+        )}
       </div>
     </div>
   );

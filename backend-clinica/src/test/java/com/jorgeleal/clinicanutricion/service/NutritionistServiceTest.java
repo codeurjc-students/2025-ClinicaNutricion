@@ -30,8 +30,10 @@ class NutritionistServiceTest {
 
     @Mock
     private NutritionistRepository nutritionistRepository;
+
     @Mock
     private UserService userService;
+    
     @Mock
     private CognitoService cognitoService;
 

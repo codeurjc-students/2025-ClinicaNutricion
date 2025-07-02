@@ -5,10 +5,16 @@ on:
     branches:
       - main
       - develop
+  pull_request:
+    branches:
+      - main 
 
 jobs:
   # Backend: análisis estático, unit tests y test de integración
   test-backend:
+    if: >
+      (github.event_name == 'push' && github.ref == 'refs/heads/develop') ||
+      (github.event_name == 'pull_request' && github.base_ref == 'main')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -70,6 +76,7 @@ jobs:
 
   # Backend: empaquetado, deploy a Elastic Beanstalk y Smoke Test
   deploy-backend:
+    if: github.ref == 'refs/heads/main'
     needs: test-frontend
     runs-on: ubuntu-latest
     steps:
@@ -92,11 +99,6 @@ jobs:
       - name: Build backend with Maven
         working-directory: backend-clinica
         run: mvn clean package -DskipTests
-        env:
-          DB_URL: ${{ secrets.DB_URL }}
-          DB_USERNAME: ${{ secrets.DB_USERNAME }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          REACT_APP_FRONTEND_BASE_URL: ${{ secrets.REACT_APP_FRONTEND_URL }}
 
       - name: Install EB CLI
         run: pip install awsebcli --upgrade
@@ -126,6 +128,7 @@ jobs:
 
   # Frontend: build y deploy a S3
   deploy-frontend:
+    if: github.ref == 'refs/heads/main'
     needs: deploy-backend
     runs-on: ubuntu-latest
     steps:

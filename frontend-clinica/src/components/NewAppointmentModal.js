@@ -25,7 +25,13 @@ const NewAppointmentModal = ({ show, onClose, onConfirm, selectedTime }) => {
   };
 
   return (
-    <Modal show={show} onHide={onClose} centered size="lg">
+    <Modal
+      show={show}
+      onHide={onClose}
+      centered
+      size="lg"
+      dialogClassName="new-appointment-dialog"
+    >
       {/* Encabezado del modal con título y botón de cierre */}
       <Modal.Header closeButton>
         <Modal.Title className="text-success text-align">

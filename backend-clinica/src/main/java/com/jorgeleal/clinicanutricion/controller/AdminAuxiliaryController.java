@@ -2,10 +2,13 @@ package com.jorgeleal.clinicanutricion.controller;
 
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import com.jorgeleal.clinicanutricion.dto.*;
 import jakarta.validation.Valid;
-import com.jorgeleal.clinicanutricion.model.*;
-import com.jorgeleal.clinicanutricion.service.*;
+
+import com.jorgeleal.clinicanutricion.dto.AdminAuxiliaryDTO;
+import com.jorgeleal.clinicanutricion.model.User;
+import com.jorgeleal.clinicanutricion.service.AdminAuxiliaryService;
+import com.jorgeleal.clinicanutricion.service.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
