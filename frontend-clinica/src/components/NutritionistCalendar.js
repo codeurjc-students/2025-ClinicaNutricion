@@ -39,7 +39,7 @@ const NutritionistCalendar = ({
 }) => {
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const [appointments, setAppointments] = useState([]);
-  const [view, setView] = useState(Views.WEEK);
+  const [view, setView] = useState(Views.WORK_WEEK);
   const [blockouts, setBlockouts] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [contextMenuInfo, setContextMenuInfo] = useState(null);
@@ -55,6 +55,12 @@ const NutritionistCalendar = ({
   const minTime = workStart.toDate();
   const maxTime = workEnd.toDate();
   const today = moment().startOf('day');
+
+  // Función auxiliar para detectar fines de semana
+  const isWeekend = (date) => {
+    const day = date.getDay();
+    return day === 0 || day === 6;
+  };
 
   // Carga las citas del nutricionista al cambiar de fecha o de ID
   const fetchAppointments = useCallback(async () => {
@@ -101,6 +107,10 @@ const NutritionistCalendar = ({
     const originalAppointments = [...appointments];
     if (moment(start).isBefore(today)) {
       toast.error('No puedes modificar citas a días pasados.');
+      return;
+    }
+    if (isWeekend(start)) {
+      toast.error('No puedes agregar citas en fin de semana.');
       return;
     }
 
@@ -179,7 +189,7 @@ const NutritionistCalendar = ({
         moment(currentDate).format('dddd, MMMM DD').slice(1)
       );
     }
-    if (view === Views.WEEK) {
+    if (view === Views.WORK_WEEK) {
       const from = moment(currentDate).startOf('week');
       const to = moment(currentDate).endOf('week');
       return (
@@ -204,11 +214,20 @@ const NutritionistCalendar = ({
 
   // Navega adelante o atrás en los días, semanas o meses según la vista
   const navigateDate = (direction) => {
-    const newDate = moment(currentDate).add(
+    let nd = moment(currentDate).add(
       direction,
-      view === Views.DAY ? 'days' : view === Views.WEEK ? 'weeks' : 'months',
+      view === Views.DAY
+        ? 'days'
+        : view === Views.WORK_WEEK
+          ? 'weeks'
+          : 'months',
     );
-    setCurrentDate(newDate.toDate());
+    if (view === Views.DAY) {
+      while (isWeekend(nd.toDate())) {
+        nd = nd.add(direction, 'days');
+      }
+    }
+    setCurrentDate(nd.toDate());
   };
 
   // Prepara y muestra el modal de nueva cita
@@ -294,6 +313,7 @@ const NutritionistCalendar = ({
 
   // Personaliza cómo se muestran las citas o bloqueos en el calendario
   const components = {
+    // Renderizado de evento y casilla, igual que antes
     event: ({ event }) => (
       <div
         className={
@@ -308,6 +328,22 @@ const NutritionistCalendar = ({
       cloneElement(children, {
         onContextMenu: (e) => handleRightClick(e, value),
       }),
+
+    // Añadimos aquí el renderizado de los encabezados de celda en Month View
+    month: {
+      dateHeader: ({ date, label }) => (
+        <button
+          type="button"
+          className="rbc-button-link"
+          style={{
+            // Si es fin de semana, el número se pinta gris apagado
+            color: isWeekend(date) ? '#6c757d' : undefined,
+          }}
+        >
+          {label}
+        </button>
+      ),
+    },
   };
 
   return (
@@ -381,8 +417,10 @@ const NutritionistCalendar = ({
                 Day
               </Button>
               <Button
-                variant={view === Views.WEEK ? 'primary' : 'outline-primary'}
-                onClick={() => setView(Views.WEEK)}
+                variant={
+                  view === Views.WORK_WEEK ? 'primary' : 'outline-primary'
+                }
+                onClick={() => setView(Views.WORK_WEEK)}
               >
                 Week
               </Button>
@@ -453,9 +491,12 @@ const NutritionistCalendar = ({
           endAccessor="end"
           style={{ height: 500, marginTop: '10px' }}
           date={currentDate}
+          views={[Views.DAY, Views.WORK_WEEK, Views.MONTH]}
+          defaultView={Views.WORK_WEEK}
           view={view}
           onView={setView}
           onNavigate={(date) => setCurrentDate(date)}
+          drilldownView={Views.DAY}
           onEventDrop={handleEventDrop}
           draggableAccessor={(event) =>
             moment(event.start).isSameOrAfter(today)
@@ -470,9 +511,10 @@ const NutritionistCalendar = ({
             timeGutterFormat: 'HH:mm',
             agendaTimeRangeFormat: ({ start, end }) =>
               `${moment(start).format('HH:mm')} - ${moment(end).format('HH:mm')}`,
-            weekdayFormat: (date) =>
-              moment(date).format('dddd DD').charAt(0).toUpperCase() +
-              moment(date).format('dddd DD').slice(1),
+            weekdayFormat: (date) => {
+              const dayName = moment(date).format('dddd');
+              return dayName.charAt(0).toUpperCase() + dayName.slice(1);
+            },
             dayFormat: (date) =>
               moment(date).format('dddd, DD MMMM').charAt(0).toUpperCase() +
               moment(date).format('dddd, DD MMMM').slice(1),

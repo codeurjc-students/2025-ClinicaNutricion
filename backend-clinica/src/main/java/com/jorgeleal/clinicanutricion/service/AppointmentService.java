@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalTime;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -77,6 +78,11 @@ public class AppointmentService {
     
     @Transactional
     public AppointmentDTO createAppointment(AppointmentDTO dto) {
+        DayOfWeek dow = dto.getDate().getDayOfWeek();
+        if (dow == DayOfWeek.SATURDAY || dow == DayOfWeek.SUNDAY) {
+            throw new RuntimeException("No se pueden crear citas en fin de semana");
+        }
+        
         if (hasConflict(dto)) {
             throw new RuntimeException("Conflicto con otro bloqueo o cita existente.");
         }
@@ -88,9 +94,9 @@ public class AppointmentService {
         Appointment appointment = convertToDomain(dto);
         Appointment saved = appointmentRepository.save(appointment);
         AppointmentDTO result  = convertToDTO(saved);
-        Patient patient  =patientService.getPatientById(dto.getIdPatient());
+        Patient patient  = patientService.getPatientById(dto.getIdPatient());
 
-        if(dto.getType() == AppointmentType.APPOINTMENT) {
+        if (dto.getType() == AppointmentType.APPOINTMENT) {
             emailService.sendAppointmentConfirmation(
                 patient.getUser().getMail(),
                 patient.getUser().getName(),
