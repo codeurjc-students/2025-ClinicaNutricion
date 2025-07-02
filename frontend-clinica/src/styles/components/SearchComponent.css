@@ -33,19 +33,6 @@
   padding: 8px;
 }
 
-.search-form button {
-  padding: 8px 15px;
-  background-color: #4caf50;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-.search-form button:hover {
-  background-color: #45a049;
-}
-
 .table-responsive {
   max-height: none;
   height: auto;
@@ -106,13 +93,24 @@
   border-radius: 4px;
 }
 
+.search-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.modal-body .search-buttons {
+  justify-content: flex-end;
+}
+
 .search-btn:hover {
   background-color: #45a049;
 }
 
 .clear-btn {
   padding: 8px 15px;
-  background-color: #d9534f;
+  background-color: #a5a3a3;
   color: #fff;
   border: none;
   cursor: pointer;
@@ -121,7 +119,7 @@
 }
 
 .clear-btn:hover {
-  background-color: #c9302c;
+  background-color: #a5a3a3;
 }
 
 .toggle-container {
