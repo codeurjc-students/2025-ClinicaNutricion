@@ -167,6 +167,12 @@
   margin-top: 10px;
 }
 
+/* General month-view day background */
+.rbc-month-view .rbc-row-bg .rbc-day-bg {
+  pointer-events: auto !important;
+}
+
+/* Specific weekend cells in month view */
 .rbc-month-view .rbc-row-bg .rbc-day-bg:nth-child(6),
 .rbc-month-view .rbc-row-bg .rbc-day-bg:nth-child(7) {
   background-color: #dde5f7 !important;
@@ -174,13 +180,10 @@
   cursor: default;
 }
 
+/* Weekend date text color */
 .rbc-month-view .rbc-row-content > div:nth-child(6) .rbc-date-cell,
 .rbc-month-view .rbc-row-content > div:nth-child(7) .rbc-date-cell {
   color: #6c757d !important;
-}
-
-.rbc-month-view .rbc-row-bg .rbc-day-bg {
-  pointer-events: auto !important;
 }
 
 .rbc-day-bg.rbc-today {
@@ -189,6 +192,25 @@
 
 .rbc-day-bg.rbc-today ~ .rbc-row-content > div .rbc-date-cell {
   color: #256029 !important;
+}
+
+.navigation-container .btn-light,
+.navigation-container .btn-outline-primary {
+  background-color: #fff !important;
+  border-color: #6c757d !important;
+  color: #000 !important;
+}
+
+.navigation-container .btn-light:hover,
+.navigation-container .btn-light:focus,
+.navigation-container .btn-light:active,
+.navigation-container .btn-outline-primary:hover,
+.navigation-container .btn-outline-primary:focus,
+.navigation-container .btn-outline-primary:active {
+  background-color: #fff !important;
+  border-color: #6c757d !important;
+  color: #000 !important;
+  box-shadow: none !important;
 }
 
 .view-buttons .btn-primary,
@@ -208,25 +230,6 @@
 .view-buttons .btn-outline-primary:focus {
   background-color: #d7dde3 !important;
   border-color: #5a6268 !important;
-  color: #000 !important;
-  box-shadow: none !important;
-}
-
-.navigation-container .btn-light,
-.navigation-container .btn-outline-primary {
-  background-color: #fff !important;
-  border-color: #6c757d !important;
-  color: #000 !important;
-}
-
-.navigation-container .btn-light:hover,
-.navigation-container .btn-light:focus,
-.navigation-container .btn-light:active,
-.navigation-container .btn-outline-primary:hover,
-.navigation-container .btn-outline-primary:focus,
-.navigation-container .btn-outline-primary:active {
-  background-color: #fff !important;
-  border-color: #6c757d !important;
   color: #000 !important;
   box-shadow: none !important;
 }
