@@ -92,13 +92,35 @@
 }
 
 .time-selection .react-calendar-tile-active {
-  background-color: #2f7d60 !important;
+  background-color: #2f7d60;
   color: #fff !important;
 }
 
-.time-selection .react-calendar-tile-now {
+.time-selection .react-calendar__tile--now:not(.react-calendar__tile--active) {
   border: 2px solid #2f7d60;
   background-color: #e6fbf0;
+  color: #284e3d;
+}
+.time-selection
+  .react-calendar__tile--now:not(.react-calendar__tile--active):hover {
+  background-color: #d4f1e1;
+}
+
+.time-selection
+  button.react-calendar__tile.react-calendar__tile--active.react-calendar__tile--now {
+  background-color: #2f7d60;
+  color: #ffffff;
+}
+.time-selection
+  button.react-calendar__tile.react-calendar__tile--active.react-calendar__tile--now:hover {
+  background-color: #1aa45b;
+}
+
+.time-selection button.react-calendar__tile.react-calendar__tile--active,
+.time-selection button.react-calendar__tile.react-calendar__tile--rangeStart,
+.time-selection button.react-calendar__tile.react-calendar__tile--rangeEnd {
+  background-color: #2f7d60 !important;
+  border: 2px solid #2f7d60;
 }
 
 .time-selection .react-calendar-tile-disabled {
@@ -192,6 +214,13 @@
   gap: 10px;
   max-height: 400px;
   overflow-y: auto;
+}
+
+/* Tono apagado a sábados y domingos */
+.react-calendar__tile--weekend {
+  color: #ccc;
+  cursor: not-allowed;
+  background-color: #f8f8f8;
 }
 
 @media (width <= 480px) {
