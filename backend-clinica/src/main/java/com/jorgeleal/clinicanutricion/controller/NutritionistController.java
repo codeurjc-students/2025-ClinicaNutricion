@@ -86,7 +86,7 @@ public class NutritionistController {
 
     @PutMapping("/profile")
     public ResponseEntity<?> updateProfile(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody Map<String, Object> updates) {
-        try{
+        try {
             String idCognito = jwt.getClaimAsString("sub");
             if (idCognito == null || idCognito.isEmpty()) {
                 return ResponseEntity

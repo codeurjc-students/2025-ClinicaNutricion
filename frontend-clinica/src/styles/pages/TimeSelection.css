@@ -96,23 +96,23 @@
   color: #fff !important;
 }
 
+/* stylelint-disable selector-class-pattern */
 .time-selection .react-calendar__tile--now:not(.react-calendar__tile--active) {
   border: 2px solid #2f7d60;
   background-color: #e6fbf0;
   color: #284e3d;
 }
-.time-selection
-  .react-calendar__tile--now:not(.react-calendar__tile--active):hover {
+
+.time-selection .react-calendar__tile--now:not(.react-calendar__tile--active):hover {
   background-color: #d4f1e1;
 }
 
-.time-selection
-  button.react-calendar__tile.react-calendar__tile--active.react-calendar__tile--now {
+.time-selection button.react-calendar__tile.react-calendar__tile--active.react-calendar__tile--now {
   background-color: #2f7d60;
-  color: #ffffff;
+  color: #fff;
 }
-.time-selection
-  button.react-calendar__tile.react-calendar__tile--active.react-calendar__tile--now:hover {
+
+.time-selection button.react-calendar__tile.react-calendar__tile--active.react-calendar__tile--now:hover {
   background-color: #1aa45b;
 }
 
@@ -123,11 +123,17 @@
   border: 2px solid #2f7d60;
 }
 
+.react-calendar__tile--weekend {
+  color: #ccc;
+  cursor: not-allowed;
+  background-color: #f8f8f8;
+}
+/* stylelint-enable selector-class-pattern */
+
 .time-selection .react-calendar-tile-disabled {
   color: #aeb5ab !important;
 }
 
-/* Listado de horas */
 .time-selection .time-button-container,
 .modal-time-buttons {
   background-color: #e9f8f1;
@@ -207,20 +213,12 @@
   background-color: #1aa45b;
 }
 
-/* Modal de horas adicional */
 .modal-time-buttons {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   max-height: 400px;
   overflow-y: auto;
-}
-
-/* Tono apagado a sábados y domingos */
-.react-calendar__tile--weekend {
-  color: #ccc;
-  cursor: not-allowed;
-  background-color: #f8f8f8;
 }
 
 @media (width <= 480px) {
