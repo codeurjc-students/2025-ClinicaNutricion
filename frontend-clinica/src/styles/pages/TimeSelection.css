@@ -103,16 +103,19 @@
   color: #284e3d;
 }
 
-.time-selection .react-calendar__tile--now:not(.react-calendar__tile--active):hover {
+.time-selection
+  .react-calendar__tile--now:not(.react-calendar__tile--active):hover {
   background-color: #d4f1e1;
 }
 
-.time-selection button.react-calendar__tile.react-calendar__tile--active.react-calendar__tile--now {
+.time-selection
+  button.react-calendar__tile.react-calendar__tile--active.react-calendar__tile--now {
   background-color: #2f7d60;
   color: #fff;
 }
 
-.time-selection button.react-calendar__tile.react-calendar__tile--active.react-calendar__tile--now:hover {
+.time-selection
+  button.react-calendar__tile.react-calendar__tile--active.react-calendar__tile--now:hover {
   background-color: #1aa45b;
 }
 
