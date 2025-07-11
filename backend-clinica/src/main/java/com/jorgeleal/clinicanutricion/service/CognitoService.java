@@ -20,9 +20,7 @@ public class CognitoService {
     @Value("${COGNITO_USER_POOL_ID}")
     private String userPoolId;
 
-    @Value("${COGNITO_TEMP_PASSWORD}")
-    private String temporaryPassword;
-
+    private final String temporaryPassword = "Contraseña123!";
     private final CognitoIdentityProviderClient cognitoClient;
 
     public CognitoService(@Value("${AWS_REGION}") String awsRegion) {
