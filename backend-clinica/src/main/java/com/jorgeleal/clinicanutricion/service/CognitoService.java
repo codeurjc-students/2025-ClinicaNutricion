@@ -20,9 +20,6 @@ public class CognitoService {
     @Value("${COGNITO_USER_POOL_ID}")
     private String userPoolId;
 
-    @Value("${COGNITO_TEMP_PASSWORD}")
-    private String temporaryPassword;
-
     private final CognitoIdentityProviderClient cognitoClient;
 
     public CognitoService(@Value("${AWS_REGION}") String awsRegion) {
@@ -38,7 +35,7 @@ public class CognitoService {
             AdminCreateUserRequest createUserRequest = AdminCreateUserRequest.builder()
                     .userPoolId(userPoolId)
                     .username(userDTO.getMail())
-                    .temporaryPassword(temporaryPassword)
+                    .temporaryPassword("Contraseña123!")
                     .messageAction("SUPPRESS")
                     .userAttributes(
                             AttributeType.builder().name("email").value(userDTO.getMail()).build(),
