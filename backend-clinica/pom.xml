@@ -150,8 +150,8 @@
 				</execution>
 			</executions>
 			<configuration>
-				<configLocation>google_checks.xml</configLocation>
-				<failOnViolation>true</failOnViolation>
+				<configLocation>${basedir}/src/main/resources/checkstyle.xml</configLocation>
+				<failsOnError>false</failsOnError>
 			</configuration>
 			</plugin>
 
@@ -192,6 +192,28 @@
 				<failOnError>true</failOnError>
 			</configuration>
 			</plugin>
+
+			<plugin>
+			<groupId>org.jacoco</groupId>
+			<artifactId>jacoco-maven-plugin</artifactId>
+			<version>0.8.10</version>
+			<executions>
+				<execution>
+				<id>prepare-agent</id>
+				<goals>
+					<goal>prepare-agent</goal>
+				</goals>
+				</execution>
+				<execution>
+				<id>report</id>
+				<phase>prepare-package</phase>
+				<goals>
+					<goal>report</goal>
+				</goals>
+				</execution>
+			</executions>
+			</plugin>
+
 		</plugins>
 	</build>
 

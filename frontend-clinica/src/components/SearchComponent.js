@@ -317,12 +317,15 @@ const SearchComponent = ({
                 ) : (
                   <>
                     <th>Editar</th>
-                    {entityType === 'auxiliaries' && <th>Eliminar</th>}
+                    {entityType === 'auxiliaries' && userType === 'admin' && (
+                      <th>Eliminar</th>
+                    )}
+
                     {(entityType === 'nutritionists' ||
                       entityType === 'patients') && (
                       <>
                         <th>Estado</th>
-                        <th>Eliminar</th>
+                        {userType === 'admin' && <th>Eliminar</th>}
                       </>
                     )}
                   </>
@@ -400,18 +403,20 @@ const SearchComponent = ({
                             </div>
                           </td>
                         )}
-                        <td className="action-cell">
-                          <button
-                            className="action-btn"
-                            onClick={() => openDeleteModal(item.idUser)}
-                          >
-                            <img
-                              src={deleteIcon}
-                              alt="Eliminar"
-                              className="action-icon"
-                            />
-                          </button>
-                        </td>
+                        {userType === 'admin' && (
+                          <td className="action-cell">
+                            <button
+                              className="action-btn"
+                              onClick={() => openDeleteModal(item.idUser)}
+                            >
+                              <img
+                                src={deleteIcon}
+                                alt="Eliminar"
+                                className="action-icon"
+                              />
+                            </button>
+                          </td>
+                        )}
                       </>
                     )}
                   </tr>

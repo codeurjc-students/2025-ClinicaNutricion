@@ -108,7 +108,7 @@ public class PatientController {
         @RequestParam(required = false) String surname,
         @RequestParam(required = false) String phone,
         @RequestParam(required = false) String email,
-        @RequestParam(required = false) Boolean active){
+        @RequestParam(required = false) Boolean active) {
 
         List<PatientDTO> patients = patientService.getPatientsByFilters(name, surname, phone, email, active);
         return ResponseEntity.ok(patients);
